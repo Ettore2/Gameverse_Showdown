@@ -428,8 +428,11 @@ public class ChooseCharactersScreen extends GameState{
                 if (c1_positionIsTakenY == -1 && c1_positionIsTakenX == -1) {
                     updateC1(lblCharacters[c1_positionY][c1_positionX].id);
                 }
-            } else if (c1_positionY + 1 >= lblCharacters.length) {
-                if (c1_positionX >= 0 && c1_positionX <= 2 && !btnConfirmsCustom[c1_positionBtnX + 1].disabled) {
+            } else if (c1_positionY + 1 >= lblCharacters.length && checkLblCharacters) {
+
+                if (c1_positionX >= 0 && c1_positionX <= 2 && !btnConfirmsCustom[1].disabled) {
+
+                    System.out.println("ok");
 
                     lblCharacters[c1_positionY][c1_positionX].isOver = false;
                     btnConfirmsCustom[0].isOver = true;
@@ -438,7 +441,7 @@ public class ChooseCharactersScreen extends GameState{
                     c1_positionBtnX = 0;
                     c1_tmpPosition = 0;
 
-                } else if (c1_positionX > 2 && c1_positionX <= 5 && !btnConfirmsCustom[c1_positionBtnX + 1].disabled) {
+                } else if (c1_positionX > 2 && c1_positionX <= 5 && !btnConfirmsCustom[1].disabled) {
 
                     lblCharacters[c1_positionY][c1_positionX].isOver = false;
                     btnConfirmsCustom[1].isOver = true;
@@ -447,7 +450,7 @@ public class ChooseCharactersScreen extends GameState{
                     c1_positionBtnX = 1;
                     c1_tmpPosition = 1;
 
-                } else if (btnConfirmsCustom[c1_positionBtnX + 1].disabled) {
+                } else if (btnConfirmsCustom[1].disabled) {
 
                     lblCharacters[c1_positionY][c1_positionX].isOver = false;
                     btnConfirmsCustom[0].isOver = true;
@@ -455,7 +458,6 @@ public class ChooseCharactersScreen extends GameState{
                     checkBtnCustomsConfirms = true;
                     c1_positionBtnX = 0;
                     c1_tmpPosition = 0;
-
                 }
             }
         }
