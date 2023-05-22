@@ -1,0 +1,98 @@
+package com.mygdx.game;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+
+import java.awt.geom.Point2D;
+import java.util.Vector;
+
+public class BattleStage extends GenericGameObject{
+    public static final String STAGE_TAG="stage";
+    public static final String GROUND_TAG="ground", LEFT_BOUND_TAG="leftBound", RIGHT_BOUND_TAG="rightBound";
+    final String STAGES_PHOTOS_DIRECTORY = "Stages/";
+    final float BOUNDS_SIZE = 3;
+
+    final String[] STAGES_NAMES = {"stage mario"};
+    final float[] STAGES_HEIGHTS = {123};
+    final String[] STAGES_PHOTOS = {"Stage 1/sfondo 1 tot.png"};
+    final Point2D.Float[] STAGES_C1_SPAWNS = {new Point2D.Float(-1.5f,1.4f)};
+    final Point2D.Float[] STAGES_C2_SPAWNS = {new Point2D.Float(1.5f,1.4f)};
+
+
+
+    String tag;
+    final int stageId;
+    Character c1, c2;
+    BoxCollider groundCollider,leftCollider,rightCollider;
+    Image img;
+    Vector<Collider2D> existingColliders;
+
+
+    BattleStage(int stageId, Character c1, Character c2, Vector<Collider2D> existingColliders){
+        super(0,0,"");
+        this.stageId = stageId;
+        this.existingColliders = existingColliders;
+        this.c1 = c1;
+        this.c2 = c2;
+
+        constructor();
+
+    }
+    BattleStage(PerspectiveCamera camera3D, int stageId, int idC1, int idC2, Vector<Collider2D> existingColliders){
+        super(0,0,"");
+        this.existingColliders = existingColliders;
+        this.stageId = stageId;
+        this.c1 = new Character(camera3D, idC1, STAGES_C1_SPAWNS[stageId].x, STAGES_C1_SPAWNS[stageId].y, 0, 0, 1, 0, 90, existingColliders);
+        this.c2 = new Character(camera3D, idC2, STAGES_C2_SPAWNS[stageId].x, STAGES_C2_SPAWNS[stageId].y, 0, 0, -1, 0, 90, existingColliders);
+
+        constructor();
+
+    }
+
+    private void constructor(){
+        c1.battleStage = this;
+        c2.battleStage = this;
+        c1.enemy = c2;
+        c2.enemy = c1;
+        this.tag=STAGE_TAG;
+        img = new Image(new Texture(Gdx.files.internal(STAGES_PHOTOS_DIRECTORY + STAGES_PHOTOS[stageId])));
+        img.setPosition(0, -120);
+
+        //setto colliders stages
+        groundCollider = new BoxCollider(this,0,STAGES_HEIGHTS[stageId]-BOUNDS_SIZE/2,Gdx.graphics.getWidth(),BOUNDS_SIZE);
+        groundCollider.setTag(GROUND_TAG);
+        groundCollider.useRelativePosition = false;
+        //groundCollider.isVisible = false;
+        existingColliders.add(groundCollider);
+
+        leftCollider = new BoxCollider(this,-9.7f/2-BOUNDS_SIZE/2,0,BOUNDS_SIZE,1000);
+        leftCollider.setTag(LEFT_BOUND_TAG);
+        leftCollider.useRelativePosition = false;
+        //leftCollider.isVisible = false;
+        existingColliders.add(leftCollider);
+
+        rightCollider = new BoxCollider(this,9.7f/2+BOUNDS_SIZE/2,0,BOUNDS_SIZE,1000);
+        rightCollider.setTag(RIGHT_BOUND_TAG);
+        rightCollider.useRelativePosition = false;
+        //rightCollider.isVisible = false;
+        existingColliders.add(rightCollider);
+
+        colliders.add(groundCollider);
+        colliders.add(leftCollider);
+        colliders.add(rightCollider);
+    }
+
+    public void draw(Batch batch, float parentAlfa){
+        img.draw(batch, parentAlfa);
+
+
+    }
+
+
+
+
+
+}
