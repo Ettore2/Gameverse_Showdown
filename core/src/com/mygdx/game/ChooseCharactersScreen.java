@@ -478,7 +478,20 @@ public class ChooseCharactersScreen extends GameState{
     @Override
     public void c1_buttonB() {//L == o
         if(c1_positionIsTakenX != -1 && c1_positionIsTakenY != -1){
-            lblCharacters[c1_positionIsTakenX][c1_positionIsTakenY].isTaken = false;
+            lblCharacters[c1_positionIsTakenY][c1_positionIsTakenX].isTaken = false;
+
+            lblCharacters[c1_positionY][c1_positionX].isOver = false;
+
+            checkLblCharacters = true;
+            checkBtnCustomsConfirms = false;
+
+            c1_positionX = c1_positionIsTakenX;
+            c1_positionY = c1_positionIsTakenY;
+
+            lblCharacters[c1_positionY][c1_positionX].isOver = true;
+
+            btnConfirmsCustom[c1_positionBtnX].isOver = false;
+
             c1_positionIsTakenX = -1;
             c1_positionIsTakenY = -1;
             updateC1(lblCharacters[c1_positionY][c1_positionX].id);
