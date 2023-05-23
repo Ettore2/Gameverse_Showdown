@@ -9,7 +9,7 @@ import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.controllers.Controllers;
 
 public class Main extends Game {
-    public static final boolean USE_CONTROLLERS = true;
+    public static final boolean USE_CONTROLLERS = false;
     public static boolean EMULATING_CONTROLLER_1 = true;//per adesso tastiera sempre attiva
 
     public Controller c1,c2;

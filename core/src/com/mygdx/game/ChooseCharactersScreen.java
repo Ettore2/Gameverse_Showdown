@@ -2,6 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.UBJsonReader;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
@@ -22,6 +24,8 @@ public class ChooseCharactersScreen extends GameState{
     private int c2_positionX, c2_positionY;
     private int c2_positionIsTakenX, c2_positionIsTakenY;
     private boolean checkLblCharacters, checkBtnCustomsConfirms;
+
+    private String[] nameCharacter = {"Mario", "Donkey Kong"};
     private Image backgroundImage;
     private Stage stage;
     private Camera camera;
@@ -33,7 +37,7 @@ public class ChooseCharactersScreen extends GameState{
     private Skin skinOrange, skinDarkOrange, skinBlue, skinRed;
 
     private Texture menuBox1, menuBox2;
-    private Image boxImage1, boxImage2;
+    private Image boxImage1, boxImage2, c1Name, c2Name, vs;
     private ProgressBar[] statsBar1, statsBar2;
 
     Character c1, c2;
@@ -133,7 +137,7 @@ public class ChooseCharactersScreen extends GameState{
 
         boxImage1 = new Image(menuBox1);
         boxImage1.setSize(GameConstants.screenWidth * 0.14f, GameConstants.screenHeight * 0.45f);
-        boxImage1.setPosition(GameConstants.screenWidth * 0.016f, GameConstants.screenHeight * 0.183f);
+        boxImage1.setPosition(GameConstants.screenWidth * 0.009f, GameConstants.screenHeight * 0.183f);
 
         boxImage2 = new Image(menuBox2);
         boxImage2.setSize(GameConstants.screenWidth * 0.14f, GameConstants.screenHeight * 0.45f);
@@ -161,6 +165,20 @@ public class ChooseCharactersScreen extends GameState{
         statsBar2[2].setPosition(GameConstants.screenWidth * 0.855f, GameConstants.screenHeight * 0.316f);
         statsBar2[3].setPosition(GameConstants.screenWidth * 0.855f, GameConstants.screenHeight * 0.216f);
 
+        //name of characters
+
+        c1Name = new Image(new Texture("Img/CharaName/Mario.png"));
+        c1Name.setPosition(GameConstants.screenWidth * 0.16f, GameConstants.screenHeight - (GameConstants.screenHeight * 0.246f));
+        c1Name.setScale(0.4f);
+
+        c2Name = new Image(new Texture("Img/CharaName/Donkey Kong.png"));
+        c2Name.setPosition(GameConstants.screenWidth - (GameConstants.screenWidth * 0.45f), GameConstants.screenHeight - (GameConstants.screenHeight * 0.246f));
+        c2Name.setScale(0.4f);
+
+        //vs
+
+        vs = new Image(new Texture("Img/BattleScreen/Versus.png"));
+        vs.setPosition(GameConstants.screenWidth/2f - vs.getWidth()/2, GameConstants.screenHeight - (GameConstants.screenHeight * 0.356f));
 
         //variable for logic
 
@@ -197,6 +215,11 @@ public class ChooseCharactersScreen extends GameState{
 
         stage.addActor(boxImage1);
         stage.addActor(boxImage2);
+
+        stage.addActor(c1Name);
+        stage.addActor(c2Name);
+
+        stage.addActor(vs);
 
 
         for (int i = 0; i < 4; i++) {
@@ -238,10 +261,12 @@ public class ChooseCharactersScreen extends GameState{
             c1.controller.update(Gdx.graphics.getDeltaTime());
             modelBatch.render(c1, environment);
         }
+
         if(c2 != null){
             c2.controller.update(Gdx.graphics.getDeltaTime());
             modelBatch.render(c2, environment);
         }
+
         modelBatch.end();
     }
 
@@ -282,12 +307,21 @@ public class ChooseCharactersScreen extends GameState{
             statsBar1[1].setValue(c1.getAttackStat());
             statsBar1[2].setValue(c1.getAgilityStat());
             statsBar1[3].setValue(c1.getDefenseStat());
+
+            Texture tmp = new Texture("Img/CharaName/" + nameCharacter[c1.id] + ".png");
+            TextureRegionDrawable tmp1 = new TextureRegionDrawable(tmp);
+            c1Name.setDrawable(tmp1);
+            c1Name.setSize(tmp.getWidth(), tmp.getHeight());
+
+            c1Name.setVisible(true);
         }else{
             c1 = null;
             statsBar1[0].setValue(0);
             statsBar1[1].setValue(0);
             statsBar1[2].setValue(0);
             statsBar1[3].setValue(0);
+
+            c1Name.setVisible(false);
         }
     }
     public void updateC2(int id){
@@ -300,12 +334,21 @@ public class ChooseCharactersScreen extends GameState{
             statsBar2[1].setValue(c2.getAttackStat());
             statsBar2[2].setValue(c2.getAgilityStat());
             statsBar2[3].setValue(c2.getDefenseStat());
+
+            Texture tmp = new Texture("Img/CharaName/" + nameCharacter[c2.id] + ".png");
+            c2Name.setPosition(GameConstants.screenWidth - GameConstants.screenWidth * 0.16f - (tmp.getWidth() * c2Name.getScaleX()), GameConstants.screenHeight - (GameConstants.screenHeight * 0.246f));
+            TextureRegionDrawable tmp1 = new TextureRegionDrawable(tmp);
+            c2Name.setDrawable(tmp1);
+            c2Name.setSize(tmp.getWidth(), tmp.getHeight());
+            c2Name.setVisible(true);
         }else{
             c2 = null;
             statsBar2[0].setValue(0);
             statsBar2[1].setValue(0);
             statsBar2[2].setValue(0);
             statsBar2[3].setValue(0);
+
+            c2Name.setVisible(false);
         }
     }
 

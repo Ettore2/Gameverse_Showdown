@@ -137,8 +137,8 @@ public class BattleScreen extends GameState {
         healthSkin = new Skin(Gdx.files.internal(GameConstants.SKIN_PROGRESSBAR));
         staminaSkin = new Skin(Gdx.files.internal(GameConstants.SKIN_PROGRESSBAR));
         health1 = new ProgressBar(0f, personaggio1.maxLife, 1f, false, healthSkin, "horizontal-lifeC1");
-        health1.setSize(GameConstants.screenWidth*0.3f, GameConstants.screenHeight*0.009f);
-        health1.setPosition(GameConstants.screenWidth*0.1f, GameConstants.screenHeight*0.89f);
+        health1.setSize(GameConstants.screenWidth * 0.3f, GameConstants.screenHeight * 0.009f);
+        health1.setPosition(GameConstants.screenWidth * 0.1f, GameConstants.screenHeight * 0.89f);
 
         health2 = new ProgressBar(0f, personaggio2.maxLife, 1f, false, healthSkin, "horizontal-lifeC2");
         health2.setSize(GameConstants.screenWidth*0.3f, GameConstants.screenHeight*0.009f);
