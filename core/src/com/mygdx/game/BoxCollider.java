@@ -11,20 +11,28 @@ public class BoxCollider extends Collider2D{
     public float width,height;
 
     //costruttori
-    BoxCollider(@NotNull GameObject owner, @NotNull Point2D.Float center, String tag, float width, float height) {
-        super(SQUARE, owner, center, tag);
+    BoxCollider(@NotNull GameObject owner, @NotNull GameObject absoluteOwner, @NotNull Point2D.Float center, String tag, float width, float height) {
+        super(SQUARE, owner, absoluteOwner, center, tag);
         this.width = width;
         this.height = height;
     }
-    BoxCollider(@NotNull GameObject owner, float xCenter, float yCenter, String tag, float width, float height) {
-        this(owner, new Point2D.Float(xCenter,yCenter), tag, width, height);
-
+    BoxCollider(@NotNull GameObject owner, @NotNull Point2D.Float center, String tag, float width, float height) {
+        this(owner, owner, center, tag, width, height);
     }
     BoxCollider(@NotNull GameObject owner, @NotNull Point2D.Float center, float width, float height) {
-        this(owner, center, "", width, height);
+        this(owner, owner, center, "", width, height);
+    }
+
+    BoxCollider(@NotNull GameObject owner, @NotNull GameObject absoluteOwner, float xCenter, float yCenter, String tag, float width, float height) {
+        this(owner, absoluteOwner, new Point2D.Float(xCenter,yCenter), tag, width, height);
+
+    }
+    BoxCollider(@NotNull GameObject owner, float xCenter, float yCenter, String tag, float width, float height) {
+        this(owner, owner, new Point2D.Float(xCenter,yCenter), tag, width, height);
+
     }
     BoxCollider(@NotNull GameObject owner, float xCenter, float yCenter, float width, float height) {
-        this(owner, new Point2D.Float(xCenter,yCenter), "", width, height);
+        this(owner, new Point2D.Float(xCenter,yCenter), width, height);
 
     }
 

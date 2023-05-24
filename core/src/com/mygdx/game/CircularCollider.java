@@ -11,17 +11,27 @@ public class CircularCollider extends Collider2D{
     private ShapeRenderer renderer;
 
     //costruttori
+    CircularCollider(@NotNull GameObject owner, @NotNull GameObject absoluteOwner, @NotNull Point2D.Float center, String tag, float radius) {
+        super(CIRCLE, owner, absoluteOwner, center, tag);
+        this.radius = radius;
+    }
     CircularCollider(@NotNull GameObject owner, @NotNull Point2D.Float center, String tag, float radius) {
         super(CIRCLE, owner, center, tag);
         this.radius = radius;
     }
-    CircularCollider(@NotNull GameObject owner, float xCenter, float yCenter, String tag, float radius) {
-        this(owner, new Point2D.Float(xCenter, yCenter), tag, radius);
-
-    }
     CircularCollider(@NotNull GameObject owner, @NotNull Point2D.Float center, float radius) {
         super(CIRCLE, owner, center);
         this.radius = radius;
+    }
+
+    CircularCollider(@NotNull GameObject owner, @NotNull GameObject absoluteOwner, float xCenter, float yCenter, String tag, float radius) {
+        this(owner, absoluteOwner, new Point2D.Float(xCenter, yCenter), tag, radius);
+
+    }
+
+    CircularCollider(@NotNull GameObject owner, float xCenter, float yCenter, String tag, float radius) {
+        this(owner, new Point2D.Float(xCenter, yCenter), tag, radius);
+
     }
     CircularCollider(@NotNull GameObject owner, float xCenter, float yCenter, float radius) {
         this(owner, new Point2D.Float(xCenter, yCenter), radius);

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.geom.Point2D;
 
 public abstract class Collider2D implements HaveTag, HavePosition2D{
-    public static boolean DEFAULT_VISIBILITY = false;
+    public static boolean DEFAULT_VISIBILITY = true;
     public static final int SQUARE = 0, CIRCLE = 1;
     public static final Color colorColliders = new Color(0f,1f,0f,1f);//trasparenza non funziona
 
@@ -16,17 +16,22 @@ public abstract class Collider2D implements HaveTag, HavePosition2D{
     protected String tag;
     protected Point2D.Float center;
     public boolean isActive,useRelativePosition,isVisible;
-    protected GameObject owner;
+    protected GameObject owner, absoluteOwner;
 
-    Collider2D(int type, @NotNull GameObject owner, @NotNull Point2D.Float center, String tag){
+    Collider2D(int type, @NotNull GameObject owner, @NotNull GameObject absoluteOwner, @NotNull Point2D.Float center, String tag){
         this.center = center;
         this.type = type;
         this.owner = owner;
+        this.absoluteOwner = absoluteOwner;
         this.tag = tag;
 
         isActive = true;
         useRelativePosition = true;
         isVisible = DEFAULT_VISIBILITY;
+    }
+
+    Collider2D(int type, @NotNull GameObject owner, @NotNull Point2D.Float center, String tag){
+        this(type, owner, owner, center, tag);
     }
     Collider2D(int type,@NotNull GameObject owner,float xCenter, float yCenter,String tag){
         this(type, owner, new Point2D.Float(xCenter, yCenter),tag);

@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -225,11 +226,11 @@ public class BattleScreen extends GameState {
         if(!USE_DEBUG_FOR_P1 || (!personaggio1.isAttacking() || (((Gdx.input.isKeyPressed(Input.Keys.Z) && DEBUG_FRAME_TIMER == DEBUG_SNSIBILITY_DELAY))))){//debug
         if (currentState == STATE_BATTLE) {
 
-            //controllo collisioni
+            //controllo collisioni (Collider2D posseduto da Attack posseduto da Character)
             for (int i = 0; i < existingColliders.size() - 1; i++) {
                 for (int j = i + 1; j < existingColliders.size(); j++) {
                     //i tutti e 2 i collider sono attivi
-                    if (existingColliders.get(i).getOwner() != existingColliders.get(j).getOwner() && existingColliders.get(i).isActive && existingColliders.get(j).isActive) {
+                    if (existingColliders.get(i).absoluteOwner != existingColliders.get(j).absoluteOwner && existingColliders.get(i).isActive && existingColliders.get(j).isActive) {
                         if (existingColliders.get(i).isColliding(existingColliders.get(j))) {
                             existingColliders.get(i).collision(existingColliders.get(j));
                             existingColliders.get(j).collision(existingColliders.get(i));
@@ -280,6 +281,20 @@ public class BattleScreen extends GameState {
         //disegno grafica 3D
         modelBatch.begin(camera3D);
         modelBatch.render(instances, environment);
+        if(personaggio1 != null){
+            for(Projectile projectile : personaggio1.existingCharacterProjectiles){
+                projectile.model.transform.setTranslation(projectile.get2DPosition().x+projectile.modelRelativePosition.x,projectile.get2DPosition().y+projectile.modelRelativePosition.y,0);
+                System.out.println(projectile.get2DPosition().x+"    "+projectile.get2DPosition().y);
+                System.out.println(projectile.model.transform.getTranslation(new Vector3()).x+"   "+(projectile.model.transform.getTranslation(new Vector3()).y+"   "+(projectile.model.transform.getTranslation(new Vector3()).z)));
+                System.out.println(personaggio1.transform.getTranslation(new Vector3()).x+"   "+(personaggio1.transform.getTranslation(new Vector3()).y+"   "+(personaggio1.transform.getTranslation(new Vector3()).z)));
+                modelBatch.render(projectile.model, environment);
+            }
+        }
+        if(personaggio2 != null){
+            for(Projectile projectile : personaggio2.existingCharacterProjectiles){
+                modelBatch.render(projectile.model, environment);
+            }
+        }
         modelBatch.end();
 
 

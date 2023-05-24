@@ -14,6 +14,8 @@ import java.util.Vector;
 
 public class Character extends ModelInstance implements GameObject{
     public static final int AVILABLE_CHARACTERS = 2;
+
+    final static float JUMP_SPAM_BLOCKER = 0.33f;//per evitare spam accidentale
     public static final int GUARD_HIT_STUN_FRAMES = 20;
     public static final int GUARD_START_FRAMES_DELAY = 6;
     public static final int GUARD_EXIT_FRAMES_DELAY = 7;
@@ -23,11 +25,10 @@ public class Character extends ModelInstance implements GameObject{
     public static final int GUARD_BREAK_REGENERATION_ACTIVATION_DELAY = 360;//dopo quanto (tenere >= GUARD_NORMAL_REGENERATION_DELAY)
     public static final int FRAMES_FOR_GUARD_REGENERATION_AMMOUNT = 3;// ogni quanto
     public static final int GUARD_REGENARATION_AMMOUNT = 1;//di quanto
-    public static final int DASH_ACTIVATION_FRAME_WINDOW = 4;
     public static final float MAX_STATS = 5;
+    public static final String PLAYER_TAG = "player";
+    public static final String BODY_COLLIDER_TAG = "body collider";
 
-    public final String PLAYER_TAG = "player";
-    public final String BODY_COLLIDER_TAG = "body collider";
     public static float groundHeight = 0;
     public static final int MOVE_SX = -1, MOVE_STOP = 0, MOVE_DX = 1;//non modificare
     public static final int FACING_SX = -1, FACING_DX = 1;//non modificare
@@ -70,10 +71,11 @@ public class Character extends ModelInstance implements GameObject{
     int currentAttackId, lastAttackId, currentAttackState;
     boolean attackedLastFrame;
     float autoComboTimer;
+    Vector<ModelInstance> projectilesModels;
     boolean endedAttackThisExecution; //per evitare di avere un pixel di animazione camminata facendo auto combo
-    final float jumpSpamBlocker;//per evitare spam accidentale
     float jumpTimer;
     boolean jumpedThisExecution; //per evitare che resetti i jump a 2 prima di staccarsi dal terreno
+    Vector<Projectile> existingCharacterProjectiles;
 
 
 
@@ -84,7 +86,8 @@ public class Character extends ModelInstance implements GameObject{
     private Vector<Collider2D> personalColliders;
     private Vector<Collider2D> existingColliders;
 
-    Attack hit;
+    Attack melleHitsToExecute;
+    Vector<Projectile> projectileHitsToExecute;
 
 
 
@@ -117,7 +120,6 @@ public class Character extends ModelInstance implements GameObject{
         lastAttackId = ATTACK_NONE;
         attackedLastFrame = false;
         autoComboTimer = 0f;
-        jumpSpamBlocker = 0.35f;
         jump = false;
         canMove = true;
         this.personalColliders = new Vector<>();
@@ -132,6 +134,8 @@ public class Character extends ModelInstance implements GameObject{
         guarding = false;
         canMoveRight = true;
         canMoveLeft = true;
+
+        projectileHitsToExecute = new Vector<>();
 
         idleAnimationSpeed = 1;
         walkAnimationSpeed = 1;
@@ -155,6 +159,8 @@ public class Character extends ModelInstance implements GameObject{
         headCol.useRelativePosition = true;
         existingColliders.add(headCol);
 
+        existingCharacterProjectiles = new Vector<>();
+
         switch (characterId){
             case MARIO_ID:
                 new_Mario();
@@ -171,6 +177,9 @@ public class Character extends ModelInstance implements GameObject{
         transform.setTranslation(xPos, yPos, zPos);
     }
     private void new_Mario(){
+        //debug proiettili
+
+
         attackStat = 2;
         defenseStat = 3;
         agilityStat = 2;
@@ -207,6 +216,8 @@ public class Character extends ModelInstance implements GameObject{
         attacks[ATTACK_1_AIRBORN][0] = Attack.getAttack(this,ATTACK_1_AIRBORN,0);
         attacks[ATTACK_2_AIRBORN][0] = Attack.getAttack(this,ATTACK_2_AIRBORN,0);
         attacks[ATTACK_3_AIRBORN][0] = Attack.getAttack(this,ATTACK_3_AIRBORN,0);
+
+        attacks[ATTACK_2_GROUNDED][0] = new Attack.Attack_mario_projectile_prove(this);
 
         controller.setAnimation(idleAnimation);//importante
 
@@ -323,6 +334,7 @@ public class Character extends ModelInstance implements GameObject{
          */
 
         if(battleStage != null && !puppet){//se sono in un campo di battaglia
+            //consumazione inputs a fine metodo
 
             //se setto la stessa animazione con stessi loop l'animazione non cambia (non interrompo fluidità)
             //l'ordine del codice è importante
@@ -345,7 +357,6 @@ public class Character extends ModelInstance implements GameObject{
             }
             //System.out.println(moveLeft+"\t"+moveRight); //debug
 
-            //consumazione inputs a fine metodo
 
             //setto idle animation grounded
             if(!guarding && !isStunned() && grounded && (moveDirection == MOVE_STOP || controller.current.loopCount == 0 || (isAttacking() && controller.current.animation.id.equals(walkAnimation))) && (!isAttacking() || controller.current.loopCount == 0 || controller.current.animation.id.equals(walkAnimation))){
@@ -465,7 +476,7 @@ public class Character extends ModelInstance implements GameObject{
             if(!guarding && !isStunned() && !isAttacking() && jump && availableJumps > 0){
                 jump = false;
                 currentYForce = jumpForce;
-                jumpTimer = jumpSpamBlocker;
+                jumpTimer = JUMP_SPAM_BLOCKER;
                 availableJumps--;
                 jumpedThisExecution = true;
             }//setto valori "logica" di jump
@@ -583,6 +594,12 @@ public class Character extends ModelInstance implements GameObject{
                 }
             }
 
+            //esecuzione proiettili spawnati
+            for(int i =0 ; i < existingCharacterProjectiles.size(); i++){
+                existingCharacterProjectiles.get(i).execute();
+
+            }
+
 
             //prendo posizione corrente
             Vector3 positionTmp = new Vector3();
@@ -626,6 +643,7 @@ public class Character extends ModelInstance implements GameObject{
             controller.setAnimation(idleAnimation, -1);
         }
     }
+
 
     public boolean isAttacking(){
         //System.out.println(currentAttackId != ATTACK_NONE);//debug
@@ -678,14 +696,6 @@ public class Character extends ModelInstance implements GameObject{
         }
         return false;
     }
-    public boolean tryToCrouch(){
-        //System.out.println(jumpTimer);
-        if(!isAttacking() && !isStunned()){
-            jump = true;
-            return true;
-        }
-        return false;
-    }
     public void setMoveLeft(boolean val){
         moveLeft = val;
 
@@ -709,6 +719,49 @@ public class Character extends ModelInstance implements GameObject{
         for(Collider2D col : personalColliders){
             if(col.isVisible)col.draw(r);
         }
+    }
+    public void addCollider(Collider2D col){
+        this.personalColliders.add(col);
+        this.existingColliders.add(col);
+
+    }
+    public void removeCollider(Collider2D col){
+        if(this.personalColliders.contains(col)){
+            this.personalColliders.remove(col);
+            this.existingColliders.remove(col);
+        }
+    }
+    public void resolveHits(){//chiamato in ogni frame in cui collido con un attacco
+        if(melleHitsToExecute != null){
+
+            melleHitsToExecute.hit(this);
+
+            //se non ho armatura setto l'attacco a null
+            if(!haveArmor && this.currentAttackId != ATTACK_NONE){
+                this.attacks[currentAttackId][currentAttackState].interrupt();
+                this.currentAttackState = 0;
+                this.currentAttackId = ATTACK_NONE;
+            }
+
+            melleHitsToExecute = null;// se l'attacco sta ancora hittando hit sara ancora diversa da nul nel prossimo frame
+        }//attacchi fisici
+
+        for(Projectile projectile: projectileHitsToExecute){
+            projectile.hit(this);
+
+            //se non ho armatura setto l'attacco a null
+            if(!haveArmor && this.currentAttackId != ATTACK_NONE){
+                this.attacks[currentAttackId][currentAttackState].interrupt();
+                this.currentAttackState = 0;
+                this.currentAttackId = ATTACK_NONE;
+            }
+
+        }//proiettili
+        projectileHitsToExecute.clear();
+    }
+    public void setIdleAnimation(){
+        this.controller.setAnimation(idleAnimation,-1);
+        controller.current.speed = idleAnimationSpeed;
     }
 
 
@@ -744,29 +797,15 @@ public class Character extends ModelInstance implements GameObject{
         this.tag = tag;
 
     }
-
-    public void addCollider(Collider2D col){
-        this.personalColliders.add(col);
-        this.existingColliders.add(col);
-
-    }
-
-    public void removeCollider(Collider2D col){
-        if(this.personalColliders.contains(col)){
-            this.personalColliders.remove(col);
-            this.existingColliders.remove(col);
-        }
-    }
-
     public void collision(Collider2D myCollider, Collider2D otherCollider) {
 
         //se la collisione è avvenuta tra il mio corpo e un attacco
         if(myCollider.getTag().equals(BODY_COLLIDER_TAG)){
-            if(otherCollider.getTag().equals(Attack.ATTACK_TAG)) {
-                hit = ((Character) otherCollider.owner).getCurrentAttack();
+            if(otherCollider.getTag().equals(Attack.ATTACK_COLLIDER_TAG)) {
+                melleHitsToExecute = (Attack)(otherCollider.owner);
             }
             if(otherCollider.getTag().equals(BattleStage.RIGHT_BOUND_TAG) || otherCollider.getTag().equals(BattleStage.LEFT_BOUND_TAG)){
-            //if(false){
+                //if(false){
                 if(grounded){
                     currentXForce = 0;
                 }else{
@@ -787,30 +826,12 @@ public class Character extends ModelInstance implements GameObject{
                     }
                 }
             }
-
-
-
-        }
-    }
-
-    public void resolveHits(){//chiamato in ogni frame in cui collido con un attacco
-        if(hit != null){
-
-            hit.hit(this);
-
-            //se non ho armatura setto l'attacco a null
-            if(!haveArmor && this.currentAttackId != ATTACK_NONE){
-                this.attacks[currentAttackId][currentAttackState].interrupt();
-                this.currentAttackState = 0;
-                this.currentAttackId = ATTACK_NONE;
+            if(otherCollider.getTag().equals(Projectile.PROJECTILE_OLLIDER_TAG)){
+                projectileHitsToExecute.add((Projectile)otherCollider.owner);
             }
 
-            hit = null;// se l'attacco sta ancora hittando hit sara ancora diversa da nul nel prossimo frame
+
         }
-    }
-    public void setIdleAnimation(){
-        this.controller.setAnimation(idleAnimation,-1);
-        controller.current.speed = idleAnimationSpeed;
     }
 }
 

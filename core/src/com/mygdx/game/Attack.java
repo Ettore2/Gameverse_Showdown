@@ -1,14 +1,19 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.math.Vector2;
+import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
-public abstract class Attack {
+public abstract class Attack implements GameObject{
     //ricordo di dare tag a colliders (lo posso fare da costruttore)
     //usare metodi per settare attributi di attacchi
-    static final String ATTACK_TAG="attack";
+    static final String ATTACK_COLLIDER_TAG = "attack collider";
+    static final String ATTACK_OBJ_TAG = "attack obj";
+    //settare absolute owner
+
     /*
     c01attacks3s calcio in mezzo
     c02attackhi3 montante
@@ -28,7 +33,7 @@ public abstract class Attack {
         public void firstActiveFrame(){
             super.firstActiveFrame();
 
-            BoxCollider colTmp = new BoxCollider(c,c.facingDirection * 0.27f,-1.78f,ATTACK_TAG,0.3f,0.1f);
+            BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.27f,-1.78f, ATTACK_COLLIDER_TAG,0.3f,0.1f);
             addCollider(colTmp);
         }
     }//pugno 1 (combo 0)
@@ -40,7 +45,7 @@ public abstract class Attack {
         public void firstActiveFrame(){
             super.firstActiveFrame();
 
-            BoxCollider colTmp = new BoxCollider(c,c.facingDirection * 0.43f,-1.76f,ATTACK_TAG,0.4f,0.13f);
+            BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.43f,-1.76f, ATTACK_COLLIDER_TAG,0.4f,0.13f);
             addCollider(colTmp);
         }
     }//pugno 2 (combo 1)
@@ -52,7 +57,7 @@ public abstract class Attack {
         public void firstActiveFrame(){
             super.firstActiveFrame();
 
-            BoxCollider colTmp = new BoxCollider(c,c.facingDirection * 0.3f,-1.95f,ATTACK_TAG,0.1f,0.13f);
+            BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.3f,-1.95f, ATTACK_COLLIDER_TAG,0.1f,0.13f);
             addCollider(colTmp);
 
         }
@@ -60,10 +65,10 @@ public abstract class Attack {
             super.activeFrames(nFrame);
 
             if(nFrame == 4){
-                ((BoxCollider)createdColliders.get(0)).setDimensions(new Point2D.Float(c.facingDirection * 0.4f,-1.8f),0.14f,0.22f);
+                ((BoxCollider)createdColliders.get(0)).setDimensions(new Point2D.Float(creator.facingDirection * 0.4f,-1.8f),0.14f,0.22f);
             }
             if(nFrame == 8){
-                ((BoxCollider)createdColliders.get(0)).setDimensions(new Point2D.Float(c.facingDirection * 0.4f,-1.5f),0.2f,0.35f);
+                ((BoxCollider)createdColliders.get(0)).setDimensions(new Point2D.Float(creator.facingDirection * 0.4f,-1.5f),0.2f,0.35f);
             }
             if(nFrame == 16){
                 removeAllColliders();
@@ -78,25 +83,25 @@ public abstract class Attack {
         public void activeFrames(int nFrame){
             super.activeFrames(nFrame);
             if(nFrame == 4){
-                CircularCollider colTmp = new CircularCollider(c,c.facingDirection * -0.3f,-1.65f,ATTACK_TAG,0.14f);
+                CircularCollider colTmp = new CircularCollider(this, creator, creator.facingDirection * -0.3f,-1.65f, ATTACK_COLLIDER_TAG,0.14f);
                 addCollider(colTmp);
             }
             if(nFrame == 5){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * -0.2f,-1.55f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * -0.2f,-1.55f));
             }
             if(nFrame == 11){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * -0.1f,-1.43f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * -0.1f,-1.43f));
                 ((CircularCollider)createdColliders.get(0)).radius = 0.16f;
             }
             if(nFrame == 16){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * 0.2f,-1.42f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.2f,-1.42f));
             }
             if(nFrame == 18){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * 0.35f,-1.55f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.35f,-1.55f));
                 ((CircularCollider)createdColliders.get(0)).radius = 0.18f;
             }
             if(nFrame == 20){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * 0.448f,-1.7f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.448f,-1.7f));
                 ((CircularCollider)createdColliders.get(0)).radius = 0.2f;
             }
 
@@ -109,7 +114,7 @@ public abstract class Attack {
         }
         public void firstActiveFrame() {
             super.firstActiveFrame();
-            addCollider(new CircularCollider(c,c.facingDirection * 0.17f,-1.5f, ATTACK_TAG,0.12f));
+            addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.17f,-1.5f, ATTACK_COLLIDER_TAG,0.12f));
         }
 
         public void activeFrames(int nFrame){
@@ -122,11 +127,11 @@ public abstract class Attack {
                 createdColliders.get(0).setY2DPosition(-1f);
             }
             if(nFrame == 11){
-                createdColliders.get(0).setX2DPosition(c.facingDirection * 0.10f);
+                createdColliders.get(0).setX2DPosition(creator.facingDirection * 0.10f);
                 ((CircularCollider) createdColliders.get(0)).radius=0.14f;
             }
             if(nFrame == 13){
-                createdColliders.get(0).setX2DPosition(c.facingDirection * 0.04f);
+                createdColliders.get(0).setX2DPosition(creator.facingDirection * 0.04f);
             }
         }
     }//montante
@@ -138,7 +143,7 @@ public abstract class Attack {
         }
         public void firstActiveFrame() {
             super.firstActiveFrame();
-            addCollider(new BoxCollider(c,c.facingDirection * 0.19f,-1.8f, ATTACK_TAG,0.25f,0.14f));
+            addCollider(new BoxCollider(this, creator, creator.facingDirection * 0.19f,-1.8f, ATTACK_COLLIDER_TAG,0.25f,0.14f));
         }
     }//calcio aereo
     static class Attack_mario_aerial_b_0 extends Attack{
@@ -152,20 +157,20 @@ public abstract class Attack {
             super.activeFrames(nFrame);
 
             if(nFrame == 16){
-                addCollider(new CircularCollider(c,c.facingDirection * 0.39f,-1.65f, ATTACK_TAG,0.12f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.39f,-1.65f, ATTACK_COLLIDER_TAG,0.12f));
             }
             if(nFrame == 17){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * 0.49f,-1.82f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.49f,-1.82f));
             }
             if(nFrame == 20){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * 0.3f,-2f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.3f,-2f));
                 ((CircularCollider)createdColliders.get(0)).radius = 0.14f;
             }
             if(nFrame == 22){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * 0.15f,-2.08f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.15f,-2.08f));
             }
             if(nFrame == 24){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * -0.02f,-2f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * -0.02f,-2f));
                 ((CircularCollider)createdColliders.get(0)).radius = 0.15f;
             }
         }
@@ -179,23 +184,23 @@ public abstract class Attack {
         public void activeFrames(int nFrame) {
             super.activeFrames(nFrame);
             if(nFrame == 8){
-                addCollider(new CircularCollider(c,c.facingDirection * 0.38f,-1.15f, ATTACK_TAG,0.11f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.38f,-1.15f, ATTACK_COLLIDER_TAG,0.11f));
             }
             if(nFrame == 9){
-                addCollider(new CircularCollider(c,c.facingDirection * 0.22f,-1.115f, ATTACK_TAG,0.11f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.22f,-1.115f, ATTACK_COLLIDER_TAG,0.11f));
             }
             if(nFrame == 10){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * 0.07f,-1.110f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.07f,-1.110f));
             }
             if(nFrame == 11){
-                createdColliders.get(1).set2DPosition(new Point2D.Float(c.facingDirection * -0.08f,-1.115f));
+                createdColliders.get(1).set2DPosition(new Point2D.Float(creator.facingDirection * -0.08f,-1.115f));
             }
             if(nFrame == 12){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * -0.18f,-1.110f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * -0.18f,-1.110f));
             }
             if(nFrame == 13){
                 remoreCollider(createdColliders.get(0));
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * -0.28f,-1.13f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * -0.28f,-1.13f));
             }
             if(nFrame == 14){
                 removeAllColliders();
@@ -203,6 +208,19 @@ public abstract class Attack {
 
         }
     }//calcio alto aereo
+
+    static class Attack_mario_projectile_prove extends Attack{
+        Attack_mario_projectile_prove(Character c) {
+            super(c,"c05attackairhi",1.4f,7,7,18,1,17,17,17,0);
+            this.setAllowMovementDuringActiveFrames(false);
+        }
+        public void firstActiveFrame() {
+            super.firstActiveFrame();
+
+            //instanzio il proietile
+            new Projectile.projectile_mario_prove(this.creator);
+        }
+    }
 
 
     //BONKEY KONG
@@ -216,7 +234,7 @@ public abstract class Attack {
             super.activeFrames(nFrame);
 
             if(nFrame == 7){
-                BoxCollider colTmp = new BoxCollider(c,c.facingDirection * 0.4f,-1.7f,ATTACK_TAG,1f,0.34f);
+                BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.4f,-1.7f, ATTACK_COLLIDER_TAG,1f,0.34f);
                 addCollider(colTmp);
             }
 
@@ -231,7 +249,7 @@ public abstract class Attack {
             super.activeFrames(nFrame);
 
             if(nFrame == 4){
-                BoxCollider colTmp = new BoxCollider(c,c.facingDirection * 0.65f,-1.6f,ATTACK_TAG,0.8f,1.3f);
+                BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.65f,-1.6f, ATTACK_COLLIDER_TAG,0.8f,1.3f);
                 addCollider(colTmp);
             }
             if(nFrame == 18){
@@ -248,11 +266,11 @@ public abstract class Attack {
         public void activeFrames(int nFrame){
             super.activeFrames(nFrame);
             if(nFrame == 4){
-                BoxCollider colTmp = new BoxCollider(c,c.facingDirection * 0.3f,-1.65f,ATTACK_TAG,0.65f,0.36f);
+                BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.3f,-1.65f, ATTACK_COLLIDER_TAG,0.65f,0.36f);
                 addCollider(colTmp);
             }
             if(nFrame > 4){
-                createdColliders.get(0).setX2DPosition((float) (c.facingDirection *( 0.3f + 0.34 * (nFrame - 4))));
+                createdColliders.get(0).setX2DPosition((float) (creator.facingDirection *( 0.3f + 0.34 * (nFrame - 4))));
             }
             if(nFrame == 7){
                 removeAllColliders();
@@ -270,30 +288,30 @@ public abstract class Attack {
             super.activeFrames(nFrame);
 
             if(nFrame == 6){
-                addCollider(new CircularCollider(c,c.facingDirection * 0.63f,-1.2f, ATTACK_TAG,0.235f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.63f,-1.2f, ATTACK_COLLIDER_TAG,0.235f));
             }
             if(nFrame == 7){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * 0.63f,-1f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.63f,-1f));
             }
             if(nFrame == 9){
-                addCollider(new CircularCollider(c,c.facingDirection * 0.12f,-0.6f, ATTACK_TAG,0.235f));
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * 0.55f,-0.6f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.12f,-0.6f, ATTACK_COLLIDER_TAG,0.235f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.55f,-0.6f));
             }
             if(nFrame == 10){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * -0.2f,-0.6f));
-                createdColliders.get(1).set2DPosition(new Point2D.Float(c.facingDirection * -0.5f,-0.6f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * -0.2f,-0.6f));
+                createdColliders.get(1).set2DPosition(new Point2D.Float(creator.facingDirection * -0.5f,-0.6f));
             }
             if(nFrame == 11){
-                createdColliders.get(1).set2DPosition(new Point2D.Float(c.facingDirection * -0.5f,-0.6f));
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * -0.7f,-0.86f));
+                createdColliders.get(1).set2DPosition(new Point2D.Float(creator.facingDirection * -0.5f,-0.6f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * -0.7f,-0.86f));
             }
             if(nFrame == 12){
-                createdColliders.get(1).set2DPosition(new Point2D.Float(c.facingDirection * -1f,-1.35f));
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * -1.1f,-1.6f));
+                createdColliders.get(1).set2DPosition(new Point2D.Float(creator.facingDirection * -1f,-1.35f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * -1.1f,-1.6f));
             }
             if(nFrame == 13){
                 remoreCollider(createdColliders.get(0));
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * -1.1f,-2f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * -1.1f,-2f));
             }
             if(nFrame == 15){
                 removeAllColliders();
@@ -302,10 +320,10 @@ public abstract class Attack {
         }
         public void applyKnockBack(Character c){
             c.currentYForce = knockback.y;
-            if(c.get2DPosition().x * this.c.facingDirection >= this.c.get2DPosition().x * this.c.facingDirection){
-                c.currentXForce = this.c.facingDirection * knockback.x;
+            if(c.get2DPosition().x * this.creator.facingDirection >= this.creator.get2DPosition().x * this.creator.facingDirection){
+                c.currentXForce = this.creator.facingDirection * knockback.x;
             }else{
-                c.currentXForce = this.c.facingDirection * knockback.x * -1;
+                c.currentXForce = this.creator.facingDirection * knockback.x * -1;
             }
         }
     }//manata alta
@@ -320,22 +338,22 @@ public abstract class Attack {
             super.activeFrames(nFrame);
 
             if(nFrame == 10){
-                addCollider(new CircularCollider(c,c.facingDirection *  0.42f,-1.76f, ATTACK_TAG,0.21f));
-                addCollider(new CircularCollider(c,c.facingDirection *  0.25f,-1.66f, ATTACK_TAG,0.21f));
-                addCollider(new CircularCollider(c,c.facingDirection *  0.1f,-1.56f, ATTACK_TAG,0.21f));
-                addCollider(new CircularCollider(c,c.facingDirection * -0.1f,-1.46f, ATTACK_TAG,0.21f));
-                addCollider(new CircularCollider(c,c.facingDirection * -0.25f,-1.36f, ATTACK_TAG,0.21f));
-                addCollider(new CircularCollider(c,c.facingDirection * -0.42f,-1.26f, ATTACK_TAG,0.21f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection *  0.42f,-1.76f, ATTACK_COLLIDER_TAG,0.21f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection *  0.25f,-1.66f, ATTACK_COLLIDER_TAG,0.21f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection *  0.1f,-1.56f, ATTACK_COLLIDER_TAG,0.21f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * -0.1f,-1.46f, ATTACK_COLLIDER_TAG,0.21f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * -0.25f,-1.36f, ATTACK_COLLIDER_TAG,0.21f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * -0.42f,-1.26f, ATTACK_COLLIDER_TAG,0.21f));
             }
 
         }
 
         public void applyKnockBack(Character c){
             c.currentYForce = knockback.y;
-            if(c.get2DPosition().x * this.c.facingDirection >= this.c.get2DPosition().x * this.c.facingDirection){
-                c.currentXForce = this.c.facingDirection * knockback.x;
+            if(c.get2DPosition().x * this.creator.facingDirection >= this.creator.get2DPosition().x * this.creator.facingDirection){
+                c.currentXForce = this.creator.facingDirection * knockback.x;
             }else{
-                c.currentXForce = this.c.facingDirection * knockback.x * -1;
+                c.currentXForce = this.creator.facingDirection * knockback.x * -1;
             }
         }
     }//tornado aereo
@@ -351,28 +369,28 @@ public abstract class Attack {
 
 
             if(nFrame == 19){
-                addCollider(new CircularCollider(c,c.facingDirection * 0.78f,-1f, ATTACK_TAG,0.21f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.78f,-1f, ATTACK_COLLIDER_TAG,0.21f));
             }
             if(nFrame == 20){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * 0.88f,-1.54f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.88f,-1.54f));
             }
             if(nFrame == 21){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * 0.68f,-1.9f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.68f,-1.9f));
             }
             if(nFrame == 22){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * 0.3f,-2.4f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.3f,-2.4f));
             }
             if(nFrame == 22){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * 0.2f,-2.4f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.2f,-2.4f));
             }
             if(nFrame == 24){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * 0.07f,-2.35f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.07f,-2.35f));
             }
             if(nFrame == 25){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * -0.1f,-2.35f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * -0.1f,-2.35f));
             }
             if(nFrame == 26){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * -0.17f,-2.35f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * -0.17f,-2.35f));
                 ((CircularCollider)createdColliders.get(0)).radius = 0.225f;
             }
             if(nFrame == 30){
@@ -389,10 +407,10 @@ public abstract class Attack {
         public void activeFrames(int nFrame) {
             super.activeFrames(nFrame);
             if(nFrame == 11){
-                addCollider(new CircularCollider(c,c.facingDirection * 0.6f,-1.3f, ATTACK_TAG,0.2f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.6f,-1.3f, ATTACK_COLLIDER_TAG,0.2f));
             }
             if(nFrame == 12){
-                createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * 0.7f,-1.75f));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.7f,-1.75f));
             }
             if(nFrame == 24){
                 removeAllColliders();
@@ -402,7 +420,9 @@ public abstract class Attack {
     }//testata aerea
 
 
-    Character c;
+    Character creator;
+    String tag;
+    Point2D.Float position;
     String animationName;
     float animationSpeed;
     int lifeDamage, guardDamage;
@@ -423,8 +443,11 @@ public abstract class Attack {
     float lastTime;
 
     //costruttori
-    private Attack(Character c, String animationName, float animationSpeed, int lifeDamage, int guardDamage, int startUpFrames, int activeFrames, int lifeHitRecoveryFrames, int guardHitRecoveryFrames, int missRecoveryFrames, int enemyRecoveryFrames){
-        this.c = c;
+    private Attack(@NotNull Character c,@NotNull String animationName, float animationSpeed, int lifeDamage, int guardDamage, int startUpFrames, int activeFrames, int lifeHitRecoveryFrames, int guardHitRecoveryFrames, int missRecoveryFrames, int enemyRecoveryFrames){
+        this.position = new Point2D.Float(0,0);
+        this.tag = ATTACK_OBJ_TAG;
+
+        this.creator = c;
         this.animationName = animationName;
         this.animationSpeed = animationSpeed;
         this.lifeDamage =  lifeDamage;
@@ -502,7 +525,7 @@ public abstract class Attack {
     //metodi da non averrydare
     public void execute(){
         //System.out.print("frame: "+frameCounter+" "); //debug
-        c.autoComboTimer=Character.AUTOCOMBO_TIME_TOLLERANCE;// valore temporaneo per non far cancellare lo stato
+        creator.autoComboTimer=Character.AUTOCOMBO_TIME_TOLLERANCE;// valore temporaneo per non far cancellare lo stato
 
 
         if(frameCounter == 0){
@@ -516,9 +539,9 @@ public abstract class Attack {
         if(frameCounter >= startUpFrames && frameCounter < startUpFrames+activeFrames){//active
             activeFrames(frameCounter-startUpFrames);
 
-            if(!c.controller.current.animation.id.equals(this.animationName)){
-                c.controller.setAnimation(this.animationName,1);
-                c.controller.current.speed = this.animationSpeed;
+            if(!creator.controller.current.animation.id.equals(this.animationName)){
+                creator.controller.setAnimation(this.animationName,1);
+                creator.controller.current.speed = this.animationSpeed;
             }//mi assicuro di star mostrando l'animazione
         }//active frames
 
@@ -534,12 +557,12 @@ public abstract class Attack {
         if(haveHitted){
             if(frameCounter == startUpFrames+activeFrames+ lifeHitRecoveryFrames){
                 attackHitEnd();//concludo attacco
-                c.currentAttackId=Character.ATTACK_NONE;
+                creator.currentAttackId=Character.ATTACK_NONE;
             }//fine hit
         }else{
             if(frameCounter == startUpFrames+activeFrames+missRecoveryFrames){
                 attackMissEnd();//concludo attacco
-                c.currentAttackId=Character.ATTACK_NONE;
+                creator.currentAttackId=Character.ATTACK_NONE;
             }//fine miss
         }//cofice fine (1 volta a fine attacco)
 
@@ -550,18 +573,18 @@ public abstract class Attack {
     }
     public void addCollider(Collider2D col){
         this.createdColliders.add(col);
-        c.addCollider(col);
+        creator.addCollider(col);
     }
     public void remoreCollider(Collider2D col){
         if(this.createdColliders.contains(col)){
             this.createdColliders.remove(col);
-            c.removeCollider(col);
+            creator.removeCollider(col);
         }
 
     }
     public void removeAllColliders(){
         for(Collider2D col : createdColliders){
-            c.removeCollider(col);
+            creator.removeCollider(col);
         }
     }
     public void setknockback(Vector2 knockback){
@@ -570,42 +593,44 @@ public abstract class Attack {
     }
     public void setknockback(float xVal, float yVal){
         setknockback(new Vector2(xVal, yVal));
+
     }
     public void setAllowMovementDuringActiveFrames(boolean allowMovement){
         enableMovement = allowMovement;
+
     }
 
 
 
     //metodi che si possono averrydare (chiamando super)
     public void attackStart(){
-        c.jump=false;//sovrascrivo inputs di salto
-        c.moveDirection = Character.MOVE_STOP;
+        creator.jump=false;//sovrascrivo inputs di salto
+        creator.moveDirection = Character.MOVE_STOP;
         currentlyEnableMovement = false;
-        c.controller.setAnimation(c.idleAnimation,-1);
+        creator.controller.setAnimation(creator.idleAnimation,-1);
 
         this.haveHitted = false;
         //System.out.println("start"); //debug
     }
     public void startupFrames(int nFrame){
         currentlyEnableMovement = enableMovement;
-        if(c.grounded){
-            c.controller.setAnimation(c.idleAnimation,-1);
-            c.controller.current.speed = c.idleAnimationSpeed;
+        if(creator.grounded){
+            creator.controller.setAnimation(creator.idleAnimation,-1);
+            creator.controller.current.speed = creator.idleAnimationSpeed;
         }else{
-            c.controller.setAnimation(c.fallingAnimation,-1);
-            c.controller.current.speed = c.fallingAnimationSpeed;
+            creator.controller.setAnimation(creator.fallingAnimation,-1);
+            creator.controller.current.speed = creator.fallingAnimationSpeed;
         }
 
     }
     public void firstActiveFrame(){
-        c.controller.setAnimation(animationName);
-        c.controller.current.speed = animationSpeed;
-        c.controller.current.time = 0;
+        creator.controller.setAnimation(animationName);
+        creator.controller.current.speed = animationSpeed;
+        creator.controller.current.time = 0;
 
     }
     public void activeFrames(int nFrame){
-        c.canMove= currentlyEnableMovement;
+        creator.canMove= currentlyEnableMovement;
         if(nFrame == 0){
             firstActiveFrame();
         }
@@ -616,10 +641,10 @@ public abstract class Attack {
 
     }
     public void hitRecoveryFrames(int nFrame){
-        c.canMove=false;
+        creator.canMove=false;
         //System.out.println("hitRecovery"); //debug
-        if(c.controller.current.loopCount == 0){//permetto ad animazione active frames di prendere parte di recovery frames
-            c.controller.setAnimation(c.idleAnimation,-1);
+        if(creator.controller.current.loopCount == 0){//permetto ad animazione active frames di prendere parte di recovery frames
+            creator.controller.setAnimation(creator.idleAnimation,-1);
         }
 
         if(nFrame == 0){
@@ -627,10 +652,10 @@ public abstract class Attack {
         }
     }
     public void missRecoveryFrames(int nFrame){
-        c.canMove = false;
+        creator.canMove = false;
         //System.out.println("missRecovery"); //debug
-        if(c.controller.current.loopCount == 0) {//permetto ad animazione active frames di prendere parte di recovery frames
-            c.controller.setAnimation(c.idleAnimation,-1);
+        if(creator.controller.current.loopCount == 0) {//permetto ad animazione active frames di prendere parte di recovery frames
+            creator.controller.setAnimation(creator.idleAnimation,-1);
         }
 
         if(nFrame == 0){
@@ -638,12 +663,12 @@ public abstract class Attack {
         }
     }
     public void attackHitEnd(){
-        c.autoComboTimer = c.AUTOCOMBO_TIME_TOLLERANCE;
-        c.lastAttackId = c.currentAttackId;
-        c.endedAttackThisExecution = true;
-        c.canMove = true;
+        creator.autoComboTimer = creator.AUTOCOMBO_TIME_TOLLERANCE;
+        creator.lastAttackId = creator.currentAttackId;
+        creator.endedAttackThisExecution = true;
+        creator.canMove = true;
         //System.out.println("hitEnd"); //debug
-        c.currentAttackId = Character.ATTACK_NONE;
+        creator.currentAttackId = Character.ATTACK_NONE;
         frameCounter = 0;
         haveHitted = false;
 
@@ -651,12 +676,12 @@ public abstract class Attack {
         createdColliders = new Vector<>();
     }
     public void attackMissEnd(){
-        c.autoComboTimer = c.AUTOCOMBO_TIME_TOLLERANCE;
-        c.lastAttackId = c.currentAttackId;
-        c.endedAttackThisExecution = true;
-        c.canMove = true;
+        creator.autoComboTimer = creator.AUTOCOMBO_TIME_TOLLERANCE;
+        creator.lastAttackId = creator.currentAttackId;
+        creator.endedAttackThisExecution = true;
+        creator.canMove = true;
         //System.out.println("misEnd"); //debug
-        c.currentAttackId = Character.ATTACK_NONE;
+        creator.currentAttackId = Character.ATTACK_NONE;
         frameCounter = 0;
         haveHitted = false;
 
@@ -710,7 +735,7 @@ public abstract class Attack {
 
         if(c.guarding && c.currentGuardAmount == 0){//se ho rotto la guardia
             c.currentStunFrames = Character.GUARD_BREAKE_STUNN_FRAMES;
-            c.currentXForce = this.c.facingDirection * Character.GUARD_BREAKE_X_CNOCKBACK;
+            c.currentXForce = this.creator.facingDirection * Character.GUARD_BREAKE_X_CNOCKBACK;
             c.guarding = false;
             c.guardRegenerationFramesCounter = 0;
             c.guardRegenerationRateoFramesCounter = 0;
@@ -718,12 +743,12 @@ public abstract class Attack {
 
     }
     public void applyKnockBack(Character c){
-        c.currentXForce = this.c.facingDirection * knockback.x;
+        c.currentXForce = this.creator.facingDirection * knockback.x;
         c.currentYForce = knockback.y;
     }
     public void interrupt(){
         removeAllColliders();
-        c.currentAttackState = 0;
+        creator.currentAttackState = 0;
         frameCounter = 0;
         haveHitted = false;
 
@@ -732,4 +757,33 @@ public abstract class Attack {
 
 
 
+
+    //metodi interfacce
+    public void collision(Collider2D myCollider, Collider2D otherCollider) {
+        //creator.collision(myCollider, otherCollider);
+    }
+    public Point2D.Float get2DPosition() {
+        Point2D.Float posTmp = creator.get2DPosition();
+        return new Point2D.Float(posTmp.x + this.position.x, posTmp.y + this.position.y);
+    }
+    public void setX2DPosition(float x) {
+        this.position.x = x;
+
+    }
+    public void setY2DPosition(float y) {
+        this.position.y = y;
+
+    }
+    public void set2DPosition(Point.Float p) {
+        this.position = p;
+
+    }
+    public String getTag() {
+        return tag;
+
+    }
+    public void setTag(String tag) {
+        this.tag = tag;
+
+    }
 }

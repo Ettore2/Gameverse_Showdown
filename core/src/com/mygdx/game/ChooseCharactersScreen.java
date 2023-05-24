@@ -146,10 +146,10 @@ public class ChooseCharactersScreen extends GameState{
         statsBar2 = new ProgressBar[4];
 
         for(int i = 0; i < 4; i++){
-            statsBar1[i] = new ProgressBar(0f, 5f, 1f, false, skinRed);
+            statsBar1[i] = new ProgressBar(0f, Character.MAX_STATS, 1f, false, skinRed);
             statsBar1[i].setSize(GameConstants.screenWidth * 0.104f, GameConstants.screenHeight * 0.009f);
 
-            statsBar2[i] = new ProgressBar(0f, 5f, 1f, false, skinBlue);
+            statsBar2[i] = new ProgressBar(0f, Character.MAX_STATS, 1f, false, skinBlue);
             statsBar2[i].setSize(GameConstants.screenWidth * 0.104f, GameConstants.screenHeight * 0.009f);
         }
 
