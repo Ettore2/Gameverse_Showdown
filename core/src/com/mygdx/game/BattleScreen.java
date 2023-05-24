@@ -414,7 +414,7 @@ public class BattleScreen extends GameState {
 
     @Override
     public void dispose() {
-        stageBackGround.dispose();
+        //stageBackGround.dispose();
     }
 
 

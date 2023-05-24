@@ -104,7 +104,7 @@ public abstract class Attack {
     }//testata (guard breaker)
     static class Attack_mario_grounded_b_0 extends Attack{
         Attack_mario_grounded_b_0(Character c) {
-            super(c,"c02attackhi3",2f,7,5,7,16,10,10,23,27);
+            super(c,"c02attackhi3",2f,6,5,10,16,10,17,26,24);
             setknockback(0.05f,0.18f);
         }
         public void firstActiveFrame() {
@@ -208,7 +208,7 @@ public abstract class Attack {
     //BONKEY KONG
     static class Attack_donkeyKong_grounded_x_0 extends Attack{
         Attack_donkeyKong_grounded_x_0(Character c) {
-            super(c,"c00attack11",1.6f,13,15,10,20,16,21,30,26);
+            super(c,"c00attack11",1.6f,13,15,7,20,16,21,27,26);
             setknockback(0.028f,0);
         }
 
@@ -224,7 +224,7 @@ public abstract class Attack {
     }//pugno 1 (combo 0)
     static class Attack_donkeyKong_grounded_x_1 extends Attack{
         Attack_donkeyKong_grounded_x_1(Character c) {
-            super(c,"c00attack12",1.7f,19,50,15,30,32,36,39,36);
+            super(c,"c00attack12",1.7f,19,50,11,30,32,36,39,36);
             setknockback(0.175f,0.19f);
         }
         public void activeFrames(int nFrame) {
@@ -242,7 +242,7 @@ public abstract class Attack {
     }//pugno 2 (combo 1) (guard breaker)
     static class Attack_donkeyKong_grounded_y_0 extends Attack{
         Attack_donkeyKong_grounded_y_0(Character c) {
-            super(c,"c01attacks3hi",2.5f,6,4,2,26,13,21,28,21);
+            super(c,"c01attacks3hi",2.5f,6,4,2,26,13,21,23,21);
             setknockback(0.089f,0);
         }
         public void activeFrames(int nFrame){
@@ -262,7 +262,7 @@ public abstract class Attack {
     }//schiaffo orizzontale (ranged poke)
     static class Attack_donkeyKong_grounded_b_0 extends Attack{
         Attack_donkeyKong_grounded_b_0(Character c) {
-            super(c,"c02attackhi3",2f,9,14,9,17,13,17,30,27);
+            super(c,"c02attackhi3",2f,9,14,7,17,13,17,20,27);
             setknockback(0.14f,0.14f);
         }
 
@@ -311,7 +311,7 @@ public abstract class Attack {
     }//manata alta
     static class Attack_donkeyKong_aerial_x_0 extends Attack{
         Attack_donkeyKong_aerial_x_0(Character c) {
-            super(c,"c05attackairn",2f,7,12,3,30,10,15,21,10);
+            super(c,"c05attackairn",2f,7,12,3,30,10,15,19,10);
             //c05attackairn
             setknockback(0.13f,0.08f);
             this.setAllowMovementDuringActiveFrames(true);
@@ -373,15 +373,16 @@ public abstract class Attack {
             }
             if(nFrame == 26){
                 createdColliders.get(0).set2DPosition(new Point2D.Float(c.facingDirection * -0.17f,-2.35f));
+                ((CircularCollider)createdColliders.get(0)).radius = 0.225f;
             }
-            if(nFrame == 28){
+            if(nFrame == 30){
                 removeAllColliders();
             }
         }
     }//pugno basso aereo
     static class Attack_donkeyKong_aerial_y_0 extends Attack{
         Attack_donkeyKong_aerial_y_0(Character c) {
-            super(c,"c05attackairhi",2f,8,9,5,68,14,18,20,21);
+            super(c,"c05attackairhi",2f,8,9,3,68,14,18,20,21);
             setknockback(0.15f,0);
             this.setAllowMovementDuringActiveFrames(true);
         }

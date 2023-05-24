@@ -2,7 +2,6 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -726,11 +725,15 @@ public class ChooseCharactersScreen extends GameState{
             lblCharacters[c2_positionIsTakenY][c2_positionIsTakenX].isTaken = false;
             c2_positionIsTakenX = -1;
             c2_positionIsTakenY = -1;
+
             updateC2(lblCharacters[c2_positionY][c2_positionX].id);
-            lblCharacters[c1_positionY][c1_positionX].isOver = false;
-            lblCharacters[c1_positionIsTakenY][c1_positionIsTakenX].isOver = true;
-            c1_positionY = c1_positionIsTakenY;
-            c1_positionX = c1_positionIsTakenX;
+
+            if(c1_positionIsTakenY != -1 && c1_positionIsTakenX != -1 ) {
+                lblCharacters[c1_positionY][c1_positionX].isOver = false;
+                lblCharacters[c1_positionIsTakenY][c1_positionIsTakenX].isOver = true;
+                c1_positionY = c1_positionIsTakenY;
+                c1_positionX = c1_positionIsTakenX;
+            }
         }
     }
 
