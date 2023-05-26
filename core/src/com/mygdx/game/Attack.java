@@ -211,7 +211,7 @@ public abstract class Attack implements GameObject{
 
     static class Attack_mario_projectile_prove extends Attack{
         Attack_mario_projectile_prove(Character c) {
-            super(c,"c05attackairhi",1.4f,7,7,18,1,17,17,17,0);
+            super(c,"c05attackairhi",1f,7,7,18,1,17,17,17,0);
             this.setAllowMovementDuringActiveFrames(false);
         }
         public void firstActiveFrame() {

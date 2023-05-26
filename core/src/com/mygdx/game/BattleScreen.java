@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -281,18 +280,20 @@ public class BattleScreen extends GameState {
         //disegno grafica 3D
         modelBatch.begin(camera3D);
         modelBatch.render(instances, environment);
+        System.out.println(Character.AVAILABLE_PROJECTILE_MODELS[0].size());
         if(personaggio1 != null){
             for(Projectile projectile : personaggio1.existingCharacterProjectiles){
-                projectile.model.transform.setTranslation(projectile.get2DPosition().x+projectile.modelRelativePosition.x,projectile.get2DPosition().y+projectile.modelRelativePosition.y,0);
-                System.out.println(projectile.get2DPosition().x+"    "+projectile.get2DPosition().y);
-                System.out.println(projectile.model.transform.getTranslation(new Vector3()).x+"   "+(projectile.model.transform.getTranslation(new Vector3()).y+"   "+(projectile.model.transform.getTranslation(new Vector3()).z)));
-                System.out.println(personaggio1.transform.getTranslation(new Vector3()).x+"   "+(personaggio1.transform.getTranslation(new Vector3()).y+"   "+(personaggio1.transform.getTranslation(new Vector3()).z)));
-                modelBatch.render(projectile.model, environment);
+                if(projectile.model != null){
+                    modelBatch.render(projectile.model, environment);
+                }
+
             }
         }
         if(personaggio2 != null){
             for(Projectile projectile : personaggio2.existingCharacterProjectiles){
-                modelBatch.render(projectile.model, environment);
+                if(projectile.model != null){
+                    modelBatch.render(projectile.model, environment);
+                }
             }
         }
         modelBatch.end();

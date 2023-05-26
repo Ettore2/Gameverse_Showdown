@@ -40,6 +40,9 @@ public class Character extends ModelInstance implements GameObject{
     final static float AUTOCOMBO_TIME_TOLLERANCE = 0.25f;
     public static final int MARIO_ID = 0, DONKEY_ID = 1;
 
+    static final Vector<ModelInstance>[] AVAILABLE_PROJECTILE_MODELS = new Vector[1];
+    public static final int MARIO_PROVE_PROJECTILE = 0;
+
     //cose "logiche"
     public boolean puppet;
     public final int id;
@@ -63,7 +66,7 @@ public class Character extends ModelInstance implements GameObject{
     boolean tryingToGuard;
     int guardStartFramesCounter, guardExitFramesCounter;
     int guardRegenerationFramesCounter, guardRegenerationRateoFramesCounter;
-    boolean grounded, collidingWithOtherPlayer,canMove, guarding, haveArmor;// haveArmor ti rende impossibile de stunnare
+    boolean grounded,canMove, guarding, haveArmor;// haveArmor ti rende impossibile de stunnare
     int currentStunFrames;
     boolean crouching;
     boolean jump;
@@ -71,7 +74,6 @@ public class Character extends ModelInstance implements GameObject{
     int currentAttackId, lastAttackId, currentAttackState;
     boolean attackedLastFrame;
     float autoComboTimer;
-    Vector<ModelInstance> projectilesModels;
     boolean endedAttackThisExecution; //per evitare di avere un pixel di animazione camminata facendo auto combo
     float jumpTimer;
     boolean jumpedThisExecution; //per evitare che resetti i jump a 2 prima di staccarsi dal terreno
@@ -176,6 +178,15 @@ public class Character extends ModelInstance implements GameObject{
         transform.setToRotation(0,1,0,yRotation);
         transform.setTranslation(xPos, yPos, zPos);
     }
+
+    public static ModelInstance getProjectile(int projectileId) {
+        if(projectileId >= 0 && AVAILABLE_PROJECTILE_MODELS.length > projectileId && AVAILABLE_PROJECTILE_MODELS[projectileId]!=null && AVAILABLE_PROJECTILE_MODELS[projectileId].size() > 0){
+            return AVAILABLE_PROJECTILE_MODELS[projectileId].remove(0);
+        }
+        System.out.println(false);
+        return null;
+    }
+
     private void new_Mario(){
         //debug proiettili
 
@@ -206,6 +217,14 @@ public class Character extends ModelInstance implements GameObject{
         normalHitAnimationSpeed = 1;
         guardHitAnimationSpeed = 1;
         airHitAnimationSpeed = 1;
+
+
+        if(AVAILABLE_PROJECTILE_MODELS[MARIO_PROVE_PROJECTILE] == null){
+            AVAILABLE_PROJECTILE_MODELS[MARIO_PROVE_PROJECTILE] = new Vector<>();
+        }
+        for(int i = 0; i < 4; i++){
+            AVAILABLE_PROJECTILE_MODELS[MARIO_PROVE_PROJECTILE].add( new ModelInstance(new G3dModelLoader(new JsonReader()).loadModel(Gdx.files.internal(Character.CHARACTERS_MODELS_DIRECTORY + Character.CHARACTERS_MODELS_FIlE[0]))));
+        }
 
         attacks[ATTACK_1_GROUNDED]=new Attack[3];
         attacks[ATTACK_1_GROUNDED][0] = Attack.getAttack(this,ATTACK_1_GROUNDED,0);
