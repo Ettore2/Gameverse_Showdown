@@ -50,7 +50,6 @@ public class Character extends ModelInstance implements GameObject{
     private float attackStat, defenseStat, agilityStat, healthStat;
     //attackPerfectStatsVal, defensePerfectStatsVal servono a porporzionare la barra delle statistiche:
     // se un personaggio ha attackPerfectStatsVal vita avrà nelle statistiche la vita al massimo
-    public BattleStage battleStage;
     public Character enemy;
     int numberOfJumps, availableJumps;
     int maxLife, currentLife;
@@ -81,7 +80,7 @@ public class Character extends ModelInstance implements GameObject{
 
 
 
-    PerspectiveCamera camera3D;
+    PerspectiveCamera camera3D;//per aggiustare prospettiva
 
     BoxCollider bodyCol;
     CircularCollider headCol;
@@ -113,7 +112,6 @@ public class Character extends ModelInstance implements GameObject{
         id = characterId;
         this.camera3D = camera3D;
         this.tag = PLAYER_TAG;
-        battleStage = null;
         transform.setToRotation(axesX,axesY,axesZ,degrees);//impostante che sia prima di posizione
         transform.setTranslation(xPos,yPos,zPos);
         controller = new AnimationController(this);
@@ -178,6 +176,11 @@ public class Character extends ModelInstance implements GameObject{
         transform.setToRotation(0,1,0,yRotation);
         transform.setTranslation(xPos, yPos, zPos);
     }
+    public Character(PerspectiveCamera camera3D, int characterId, float xPos, float yPos, float zPos, float yRotation,Vector<Collider2D> existingColliders){
+        this(camera3D, characterId, xPos, yPos, zPos, 0, 0, 0, 0, existingColliders);
+        transform.setToRotation(0,1,0,yRotation);
+        transform.setTranslation(xPos, yPos, zPos);
+    }
 
     public static ModelInstance getProjectile(int projectileId) {
         if(projectileId >= 0 && AVAILABLE_PROJECTILE_MODELS.length > projectileId && AVAILABLE_PROJECTILE_MODELS[projectileId]!=null && AVAILABLE_PROJECTILE_MODELS[projectileId].size() > 0){
@@ -218,13 +221,6 @@ public class Character extends ModelInstance implements GameObject{
         guardHitAnimationSpeed = 1;
         airHitAnimationSpeed = 1;
 
-
-        if(AVAILABLE_PROJECTILE_MODELS[MARIO_PROVE_PROJECTILE] == null){
-            AVAILABLE_PROJECTILE_MODELS[MARIO_PROVE_PROJECTILE] = new Vector<>();
-        }
-        for(int i = 0; i < 4; i++){
-            AVAILABLE_PROJECTILE_MODELS[MARIO_PROVE_PROJECTILE].add( new ModelInstance(new G3dModelLoader(new JsonReader()).loadModel(Gdx.files.internal(Character.CHARACTERS_MODELS_DIRECTORY + Character.CHARACTERS_MODELS_FIlE[0]))));
-        }
 
         attacks[ATTACK_1_GROUNDED]=new Attack[3];
         attacks[ATTACK_1_GROUNDED][0] = Attack.getAttack(this,ATTACK_1_GROUNDED,0);
@@ -342,6 +338,20 @@ public class Character extends ModelInstance implements GameObject{
     }
 
 
+    public void lodProjectiles(){
+        if(id == MARIO_ID){
+            if(AVAILABLE_PROJECTILE_MODELS[MARIO_PROVE_PROJECTILE] == null){
+                AVAILABLE_PROJECTILE_MODELS[MARIO_PROVE_PROJECTILE] = new Vector<>();
+            }
+            for(int i = 0; i < 4; i++){
+                AVAILABLE_PROJECTILE_MODELS[MARIO_PROVE_PROJECTILE].add( new ModelInstance(new G3dModelLoader(new JsonReader()).loadModel(Gdx.files.internal(Character.CHARACTERS_MODELS_DIRECTORY + Character.CHARACTERS_MODELS_FIlE[0]))));
+            }
+        }
+
+
+
+    }
+
     public void executeInputs(){
         /*
         Vector3 positionTmp = new Vector3();
@@ -352,7 +362,7 @@ public class Character extends ModelInstance implements GameObject{
         non posso usare transform.translate();
          */
 
-        if(battleStage != null && !puppet){//se sono in un campo di battaglia
+        if(!puppet){//se sono in un campo di battaglia
             //consumazione inputs a fine metodo
 
             //se setto la stessa animazione con stessi loop l'animazione non cambia (non interrompo fluidità)

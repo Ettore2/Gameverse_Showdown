@@ -15,12 +15,13 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		showSplashScreen();
 
+
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(60);
 		config.setTitle("Gameverse Showdown");
 		config.setMaximized(true);
+
 		new Lwjgl3Application(new Main(), config);
-		//Gdx.graphics.setContinuousRendering(true);
 	}
 
 	private static void showSplashScreen() {

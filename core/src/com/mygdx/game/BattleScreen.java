@@ -1,16 +1,20 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -19,7 +23,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.JsonReader;
 
+import java.awt.*;
 import java.util.Vector;
 
 import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled;
@@ -45,6 +51,7 @@ public class BattleScreen extends GameState {
     int currentState;
     int framesPassedByLastStartPress;
     float secondsToMatchEnd;
+    private int idC1, idC2;
     private ProgressBar health1;
     private ProgressBar health2;
     private ProgressBar stamina1;
@@ -57,7 +64,7 @@ public class BattleScreen extends GameState {
 
 
     private Environment environment;
-    private PerspectiveCamera camera3D; //(camera2D è gia presente in classe stage)
+    public PerspectiveCamera camera3D; //(camera2D è gia presente in classe stage)
     private ModelBatch modelBatch;
     private Array<ModelInstance> instances;
     private CameraInputController cameraController;
@@ -78,10 +85,14 @@ public class BattleScreen extends GameState {
 
 
 
-
-
+    //costruttore
     BattleScreen(final Main game,int idBattleStage, int idC1, int idC2, float matchTime){
         super(game);
+
+
+        this.idC1 = idC1;
+        this.idC2 = idC2;
+
         setInputsDelay(0);
         this.secondsToMatchEnd = matchTime;
         USE_DEBUG_FOR_P1 = CAN_USE_DEBUG_FOR_P1;//debug frame per frame
@@ -114,80 +125,22 @@ public class BattleScreen extends GameState {
         camera3D.far = 300f;
         camera3D.update();
 
-        instances = new Array<>();
-        //instances.add(new ModelInstance(new G3dModelLoader(new JsonReader()).loadModel(Gdx.files.internal("BattleFields/Stage1/fighting_polygon_stage.g3dj"))));
-
-        //cameraController = new CameraInputController(camera3D);
-        //cameraController.forwardKey= Input.Keys.G;
-        //cameraController.backwardKey= Input.Keys.V;
-        //cameraController.rotateLeftKey= Input.Keys.C;
-        //cameraController.rotateRightKey= Input.Keys.B;
-        //Gdx.input.setInputProcessor(cameraController);
-
-
+        //stage
         Character.groundHeight = 0.086f;
-        battleStage = new BattleStage(camera3D, idBattleStage,idC1,idC2, existingColliders);
+        battleStage = new BattleStage(idBattleStage, existingColliders);
         stageBackGround.addActor(battleStage);
 
-        instances.add(battleStage.c1);
-        instances.add(battleStage.c2);
-        personaggio1 = battleStage.c1;
-        personaggio2 = battleStage.c2;
+        //personaggi //cancellare commento
+        instances = new Array<>();
 
-        healthSkin = new Skin(Gdx.files.internal(GameConstants.SKIN_PROGRESSBAR));
-        staminaSkin = new Skin(Gdx.files.internal(GameConstants.SKIN_PROGRESSBAR));
-        health1 = new ProgressBar(0f, personaggio1.maxLife, 1f, false, healthSkin, "horizontal-lifeC1");
-        health1.setSize(GameConstants.screenWidth * 0.3f, GameConstants.screenHeight * 0.009f);
-        health1.setPosition(GameConstants.screenWidth * 0.1f, GameConstants.screenHeight * 0.89f);
-
-        health2 = new ProgressBar(0f, personaggio2.maxLife, 1f, false, healthSkin, "horizontal-lifeC2");
-        health2.setSize(GameConstants.screenWidth*0.3f, GameConstants.screenHeight*0.009f);
-        health2.setPosition(GameConstants.screenWidth * 0.6f, health1.getY());
-
-        stamina1 = new ProgressBar(0f, personaggio1.maxGuardAmount, 1f, false, staminaSkin, "horizontal-StaminaC1");
-        stamina1.setSize(GameConstants.screenWidth*0.3f, GameConstants.screenHeight*0.009f);
-        stamina1.setPosition(health1.getX(), health1.getY()*0.95f);
-
-        stamina2 = new ProgressBar(0f, personaggio2.maxGuardAmount,1f, false, staminaSkin, "horizontal-StaminaC2");
-        stamina2.setSize(GameConstants.screenWidth*0.3f, GameConstants.screenHeight*0.009f);
-        stamina2.setPosition(health2.getX(), stamina1.getY());
-
-        pg1Icn = new Image(new Texture("Img/Characters/" + personaggio1.CHARACTERS_NAMES[personaggio1.id] + "/" + personaggio1.CHARACTERS_NAMES[personaggio1.id] + ".png"));
-        pg1Icn.setSize(GameConstants.screenWidth*0.088f, GameConstants.screenHeight*0.168f);
-
-        pg2Icn = new Image(new Texture("Img/Characters/" + personaggio2.CHARACTERS_NAMES[personaggio2.id] + "/" + personaggio2.CHARACTERS_NAMES[personaggio2.id] + "_isOverC2.png"));
-        pg2Icn.setSize(GameConstants.screenWidth * 0.088f, GameConstants.screenHeight*0.168f);
-        pg2Icn.setScale(-1,1);
-
-        pg1Icn.setPosition(GameConstants.screenWidth*0.005f, GameConstants.screenHeight*0.822f);
-        pg2Icn.setPosition(GameConstants.screenWidth - pg1Icn.getX() , pg1Icn.getY());
-
-        pg1Name = new Image(new Texture("Img/CharaName/" + personaggio1.CHARACTERS_NAMES[personaggio1.id] + ".png"));
-        pg1Name.setScale(0.4f);
-        pg1Name.setPosition(GameConstants.screenWidth * 0.098f, GameConstants.screenHeight * 0.915f);
-
-        pg2Name = new Image(new Texture("Img/CharaName/" + personaggio2.CHARACTERS_NAMES[personaggio2.id] + ".png"));
-        pg2Name.setScale(0.4f);
-        pg2Name.setPosition(GameConstants.screenWidth - GameConstants.screenWidth * 0.098f - (pg2Name.getWidth()*pg2Name.getScaleX()), GameConstants.screenHeight * 0.915f);
-
-
-
-        stageBackGround.addActor(health1);
-        stageBackGround.addActor(health2);
-        stageBackGround.addActor(stamina1);
-        stageBackGround.addActor(stamina2);
-        stageBackGround.addActor(pg1Icn);
-        stageBackGround.addActor(pg2Icn);
-        stageBackGround.addActor(pg1Name);
-        stageBackGround.addActor(pg2Name);
-
-        //immagini
+        //dichiarazione immagini
         imgPause = new Image(new Texture("Img/battleScreen/Pause.png"));
         imgP1Win = new Image(new Texture("Img/battleScreen/P1WINS.png"));
         imgP2Win = new Image(new Texture("Img/battleScreen/P2WINS.png"));
         imgDraw = new Image(new Texture("Img/battleScreen/Draw.png"));
         imgResume = new Image(new Texture("Img/battleScreen/Resume.png"));
 
+        //"setBounds" immagini
         imgPause.setPosition(stageBackGround.getCamera().position.x - (imgPause.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y - GameConstants.screenHeight * 0.252f);
         imgP1Win.setPosition(stageBackGround.getCamera().position.x - (imgP1Win.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y + GameConstants.screenHeight * 0.05f);
         imgP2Win.setPosition(stageBackGround.getCamera().position.x - (imgP2Win.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y + GameConstants.screenHeight * 0.05f);
@@ -204,174 +157,279 @@ public class BattleScreen extends GameState {
         lblTimer.setPosition((Gdx.graphics.getWidth() - lblTimer.getWidth())/2,(Gdx.graphics.getHeight() - lblTimer.getHeight())/2 + lblTimerHeight);
 
 
+        //"inizializzo" schermata di render
     }//creo componenti (costruttore)
 
 
-    @Override
-    public void show() {
-
-    }
-
-    @Override
+    //metodi GameState
     public void render(float delta) {
         // Clear the stuff that is left over from the previous render cycle
         Gdx.gl.glClearColor(1, 1, 1, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         //cameraController.update();
 
-        super.render(delta);//triggera metodi di input controller
+        super.render(delta);//triggera metodi di input controller e normalExecution e loadingExecution
+    }
 
-        //if(true){
-        if(!USE_DEBUG_FOR_P1 || (!personaggio1.isAttacking() || (((Gdx.input.isKeyPressed(Input.Keys.Z) && DEBUG_FRAME_TIMER == DEBUG_SNSIBILITY_DELAY))))){//debug
-        if (currentState == STATE_BATTLE) {
+    @Override
+    public void normalExecution(Float delta) {
+        super.normalExecution(delta);
 
-            //controllo collisioni (Collider2D posseduto da Attack posseduto da Character)
-            for (int i = 0; i < existingColliders.size() - 1; i++) {
-                for (int j = i + 1; j < existingColliders.size(); j++) {
-                    //i tutti e 2 i collider sono attivi
-                    if (existingColliders.get(i).absoluteOwner != existingColliders.get(j).absoluteOwner && existingColliders.get(i).isActive && existingColliders.get(j).isActive) {
-                        if (existingColliders.get(i).isColliding(existingColliders.get(j))) {
-                            existingColliders.get(i).collision(existingColliders.get(j));
-                            existingColliders.get(j).collision(existingColliders.get(i));
+        if (!USE_DEBUG_FOR_P1 || (!personaggio1.isAttacking() || (((Gdx.input.isKeyPressed(Input.Keys.Z) && DEBUG_FRAME_TIMER == DEBUG_SNSIBILITY_DELAY))))) {//debug
+            if (currentState == STATE_BATTLE) {
+
+                //controllo collisioni (Collider2D posseduto da Attack posseduto da Character)
+                for (int i = 0; i < existingColliders.size() - 1; i++) {
+                    for (int j = i + 1; j < existingColliders.size(); j++) {
+                        //i tutti e 2 i collider sono attivi
+                        if (existingColliders.get(i).absoluteOwner != existingColliders.get(j).absoluteOwner && existingColliders.get(i).isActive && existingColliders.get(j).isActive) {
+                            if (existingColliders.get(i).isColliding(existingColliders.get(j))) {
+                                existingColliders.get(i).collision(existingColliders.get(j));
+                                existingColliders.get(j).collision(existingColliders.get(i));
+                            }
                         }
                     }
                 }
-            }
 
 
-            //eseguo input su personaggi
-            if (personaggio1 != null) {//per precauzione
-                personaggio1.controller.update(Gdx.graphics.getDeltaTime());
-                personaggio1.executeInputs();
-            }
-            if (personaggio2 != null) {//per precauzione
-                personaggio2.controller.update(Gdx.graphics.getDeltaTime());
-                personaggio2.executeInputs();
-            }
+                //eseguo input su personaggi
+                if (personaggio1 != null) {//per precauzione
+                    personaggio1.controller.update(Gdx.graphics.getDeltaTime());
+                    personaggio1.executeInputs();
+                }
+                if (personaggio2 != null) {//per precauzione
+                    personaggio2.controller.update(Gdx.graphics.getDeltaTime());
+                    personaggio2.executeInputs();
+                }
 
-            //prima registro hit, poi le eseguo -> se i player si hittano in contemporanea entrambi si interrompono
-            if (personaggio1 != null) {//per precauzione
-                personaggio1.resolveHits();
-                health1.setValue(health1.getMaxValue()*personaggio1.currentLife/personaggio1.maxLife);
-                stamina1.setValue(health1.getMaxValue()*personaggio1.currentGuardAmount/personaggio1.maxLife);
-            }
-            if (personaggio2 != null) {//per precauzione
-                personaggio2.resolveHits();
-                health2.setValue(health2.getMaxValue()-health2.getMaxValue()*personaggio2.currentLife/personaggio2.maxLife);
-                stamina2.setValue(stamina2.getMaxValue()-stamina2.getMaxValue()*personaggio2.currentGuardAmount/personaggio2.maxGuardAmount);
-            }
+                //prima registro hit, poi le eseguo -> se i player si hittano in contemporanea entrambi si interrompono
+                if (personaggio1 != null) {//per precauzione
+                    personaggio1.resolveHits();
+                    health1.setValue(health1.getMaxValue() * personaggio1.currentLife / personaggio1.maxLife);
+                    stamina1.setValue(health1.getMaxValue() * personaggio1.currentGuardAmount / personaggio1.maxLife);
+                }
+                if (personaggio2 != null) {//per precauzione
+                    personaggio2.resolveHits();
+                    health2.setValue(health2.getMaxValue() - health2.getMaxValue() * personaggio2.currentLife / personaggio2.maxLife);
+                    stamina2.setValue(stamina2.getMaxValue() - stamina2.getMaxValue() * personaggio2.currentGuardAmount / personaggio2.maxGuardAmount);
+                }
 
-            stageBackGround.act(Gdx.graphics.getDeltaTime());//esegue gli inputs di cose in stage
-        }//funzionamento battaglia
+                stageBackGround.act(Gdx.graphics.getDeltaTime());//esegue gli inputs di cose in stage
+            }//funzionamento battaglia
             DEBUG_FRAME_TIMER = 0;
         }
 
-        if(CAN_USE_DEBUG_FOR_P1 && DEBUG_FRAME_TIMER < DEBUG_SNSIBILITY_DELAY){
+        if (CAN_USE_DEBUG_FOR_P1 && DEBUG_FRAME_TIMER < DEBUG_SNSIBILITY_DELAY) {
             DEBUG_FRAME_TIMER++;
-        }//debug
-        if(CAN_USE_DEBUG_FOR_P1 && DEBUG_ACTIVATION_FRAME_TIMER < DEBUG_SNSIBILITY_DELAY){
+        }//debug frames
+        if (CAN_USE_DEBUG_FOR_P1 && DEBUG_ACTIVATION_FRAME_TIMER < DEBUG_SNSIBILITY_DELAY) {
             DEBUG_ACTIVATION_FRAME_TIMER++;
-        }//debug
+        }//debug frames
 
 
         //disegno grafica 2D
         stageBackGround.draw();
 
         //disegno grafica 3D
-        modelBatch.begin(camera3D);
+        modelBatch.begin(camera3D);//begin
         modelBatch.render(instances, environment);
-        System.out.println(Character.AVAILABLE_PROJECTILE_MODELS[0].size());
-        if(personaggio1 != null){
-            for(Projectile projectile : personaggio1.existingCharacterProjectiles){
-                if(projectile.model != null){
+        //System.out.println(Character.AVAILABLE_PROJECTILE_MODELS[0].size());
+        if (personaggio1 != null) {
+            for (Projectile projectile : personaggio1.existingCharacterProjectiles) {
+                if (projectile.model != null) {
                     modelBatch.render(projectile.model, environment);
                 }
 
             }
         }
-        if(personaggio2 != null){
-            for(Projectile projectile : personaggio2.existingCharacterProjectiles){
-                if(projectile.model != null){
+        if (personaggio2 != null) {
+            for (Projectile projectile : personaggio2.existingCharacterProjectiles) {
+                if (projectile.model != null) {
                     modelBatch.render(projectile.model, environment);
                 }
             }
         }
-        modelBatch.end();
+        modelBatch.end();//end
 
 
         //disegno colliders (se settati a visibili)
         ShapeRenderer r = new ShapeRenderer();
         r.setAutoShapeType(true);
-        r.begin(Filled);
-
+        r.begin(Filled);//begin
         r.setColor(Collider2D.colorColliders);
-        for( Collider2D col : existingColliders){
+        for (Collider2D col : existingColliders) {
             col.draw(r);
         }
-
-        r.end();
-
+        r.end();//end
 
 
         //logica cambio stati
-        if(personaggio1.currentLife == 0){
+        if (personaggio1.currentLife == 0) {
             currentState = STATE_WIN_P2;
         }//vittoria p2
-        if(personaggio2.currentLife == 0){
+        if (personaggio2.currentLife == 0) {
             currentState = STATE_WIN_P1;
         }//vittoria p1
-        if(secondsToMatchEnd <= 0){
+        if (secondsToMatchEnd <= 0) {
             currentState = STATE_DAW;
         }//pareggio
 
 
-
         //grafica stati
-
-        stageBackGroundBatch.begin();
-        if(currentState == STATE_PAUSE){
+        stageBackGroundBatch.begin();//begin
+        if (currentState == STATE_PAUSE) {
             //System.out.println("stato pausa");
-            imgPause.draw(stageBackGroundBatch,1);
-            imgResume.draw(stageBackGroundBatch,0.5f + (float)((Math.cos(imgResumeAlphaValTimer) + 1)/2*0.5f));
+            imgPause.draw(stageBackGroundBatch, 1);
+            imgResume.draw(stageBackGroundBatch, 0.5f + (float) ((Math.cos(imgResumeAlphaValTimer) + 1) / 2 * 0.5f));
 
-            imgResumeAlphaValTimer = (float)((imgResumeAlphaValTimer + delta * imgResumeAlphaValMultiplier)%(2*Math.PI));
+            imgResumeAlphaValTimer = (float) ((imgResumeAlphaValTimer + delta * imgResumeAlphaValMultiplier) % (2 * Math.PI));
         }
-        if(currentState == STATE_DAW){
+        if (currentState == STATE_DAW) {
             //System.out.println("stato pareggio");
-            imgDraw.draw(stageBackGroundBatch,1);
+            imgDraw.draw(stageBackGroundBatch, 1);
         }
-        if(currentState == STATE_WIN_P1){
+        if (currentState == STATE_WIN_P1) {
             //System.out.println("stato vittoria");
-            imgP1Win.draw(stageBackGroundBatch,1);
+            imgP1Win.draw(stageBackGroundBatch, 1);
 
         }
-        if(currentState == STATE_WIN_P2){
+        if (currentState == STATE_WIN_P2) {
             //System.out.println("stato vittoria");
-            imgP2Win.draw(stageBackGroundBatch,1);
+            imgP2Win.draw(stageBackGroundBatch, 1);
 
         }
-        if(currentState == STATE_BATTLE){
+        if (currentState == STATE_BATTLE) {
 
             secondsToMatchEnd -= delta;
 
-            if(secondsToMatchEnd < 0){
+            if (secondsToMatchEnd < 0) {
                 secondsToMatchEnd = 0;
             }
+
+            //aggiorno label timer
+            lblTimer.setText("" + (int) secondsToMatchEnd);
+            lblTimer.setSize(lblTimer.getPrefWidth(), lblTimer.getPrefHeight());
+            lblTimer.setPosition((Gdx.graphics.getWidth() - lblTimer.getWidth()) / 2, (Gdx.graphics.getHeight() - lblTimer.getHeight()) / 2 + lblTimerHeight);
+
         }
-        lblTimer.setText(""+(int)secondsToMatchEnd);
-        lblTimer.setSize(lblTimer.getPrefWidth(),lblTimer.getPrefHeight());
-        lblTimer.setPosition((Gdx.graphics.getWidth() - lblTimer.getWidth())/2,(Gdx.graphics.getHeight() - lblTimer.getHeight())/2 + lblTimerHeight);
-        lblTimer.draw(stageBackGroundBatch, 1);
-        stageBackGroundBatch.end();
+        lblTimer.draw(stageBackGroundBatch, 1);//disegno timer
+        stageBackGroundBatch.end();//end
 
-        if(framesPassedByLastStartPress < START_BUTTON_DELAY){
+
+        //aumento contatore per delay start
+        if (framesPassedByLastStartPress < START_BUTTON_DELAY) {
             framesPassedByLastStartPress++;
-        }//aumento contatore per delay start
-
-
+        }
 
     }
+    public void loadingExecution(Float delta){
 
+        switch (loadingCounter){
+            case 0:
+                loadingProgressBar.setValue(0);
+                break;
+            case 1:
+                personaggio1 = new Character(camera3D, idC1, 0, 0, 0, 90, existingColliders);
+                personaggio1.set2DPosition(battleStage.getC1spawnPoint());
+                loadingProgressBar.setValue(25);
+
+                break;
+            case 2:
+                personaggio2 = new Character(camera3D, idC2, 0, 0, 0, -90, existingColliders);
+                personaggio2.set2DPosition(battleStage.getC2spawnPoint());
+                loadingProgressBar.setValue(50);
+
+                break;
+            case 3:
+                personaggio1.lodProjectiles();
+                loadingProgressBar.setValue(75);
+
+                break;
+            case 4:
+                personaggio1.enemy = personaggio2;
+                personaggio2.enemy = personaggio1;
+                addInstance(personaggio1);
+                addInstance(personaggio2);
+
+
+                //grafica statistiche personaggi
+                if(true) {
+                    healthSkin = new Skin(Gdx.files.internal(GameConstants.SKIN_PROGRESSBAR));
+                    staminaSkin = new Skin(Gdx.files.internal(GameConstants.SKIN_PROGRESSBAR));
+                    health1 = new ProgressBar(0f, personaggio1.maxLife, 1f, false, healthSkin, "horizontal-lifeC1");
+                    health1.setSize(GameConstants.screenWidth * 0.3f, GameConstants.screenHeight * 0.009f);
+                    health1.setPosition(GameConstants.screenWidth * 0.1f, GameConstants.screenHeight * 0.89f);
+
+                    health2 = new ProgressBar(0f, personaggio2.maxLife, 1f, false, healthSkin, "horizontal-lifeC2");
+                    health2.setSize(GameConstants.screenWidth * 0.3f, GameConstants.screenHeight * 0.009f);
+                    health2.setPosition(GameConstants.screenWidth * 0.6f, health1.getY());
+
+                    stamina1 = new ProgressBar(0f, personaggio1.maxGuardAmount, 1f, false, staminaSkin, "horizontal-StaminaC1");
+                    stamina1.setSize(GameConstants.screenWidth * 0.3f, GameConstants.screenHeight * 0.009f);
+                    stamina1.setPosition(health1.getX(), health1.getY() * 0.95f);
+
+                    stamina2 = new ProgressBar(0f, personaggio2.maxGuardAmount, 1f, false, staminaSkin, "horizontal-StaminaC2");
+                    stamina2.setSize(GameConstants.screenWidth * 0.3f, GameConstants.screenHeight * 0.009f);
+                    stamina2.setPosition(health2.getX(), stamina1.getY());
+
+                    pg1Icn = new Image(new Texture("Img/Characters/" + personaggio1.CHARACTERS_NAMES[personaggio1.id] + "/" + personaggio1.CHARACTERS_NAMES[personaggio1.id] + ".png"));
+                    pg1Icn.setSize(GameConstants.screenWidth * 0.088f, GameConstants.screenHeight * 0.168f);
+
+                    pg2Icn = new Image(new Texture("Img/Characters/" + personaggio2.CHARACTERS_NAMES[personaggio2.id] + "/" + personaggio2.CHARACTERS_NAMES[personaggio2.id] + "_isOverC2.png"));
+                    pg2Icn.setSize(GameConstants.screenWidth * 0.088f, GameConstants.screenHeight * 0.168f);
+                    pg2Icn.setScale(-1, 1);
+
+                    pg1Icn.setPosition(GameConstants.screenWidth * 0.005f, GameConstants.screenHeight * 0.822f);
+                    pg2Icn.setPosition(GameConstants.screenWidth - pg1Icn.getX(), pg1Icn.getY());
+
+                    pg1Name = new Image(new Texture("Img/CharaName/" + personaggio1.CHARACTERS_NAMES[personaggio1.id] + ".png"));
+                    pg1Name.setScale(0.4f);
+                    pg1Name.setPosition(GameConstants.screenWidth * 0.098f, GameConstants.screenHeight * 0.915f);
+
+                    pg2Name = new Image(new Texture("Img/CharaName/" + personaggio2.CHARACTERS_NAMES[personaggio2.id] + ".png"));
+                    pg2Name.setScale(0.4f);
+                    pg2Name.setPosition(GameConstants.screenWidth - GameConstants.screenWidth * 0.098f - (pg2Name.getWidth() * pg2Name.getScaleX()), GameConstants.screenHeight * 0.915f);
+                }
+
+
+                //aggiungo cose di grafica statistiche personaggi a stage
+                stageBackGround.addActor(health1);
+                stageBackGround.addActor(health2);
+                stageBackGround.addActor(stamina1);
+                stageBackGround.addActor(stamina2);
+                stageBackGround.addActor(pg1Icn);
+                stageBackGround.addActor(pg2Icn);
+                stageBackGround.addActor(pg1Name);
+                stageBackGround.addActor(pg2Name);
+
+                loadingProgressBar.setValue(100);
+                break;
+            default:
+                haveLoadedAssets = true;
+
+        }
+
+        stageBackGroundBatch.begin();
+        loadingProgressBar.draw(stageBackGroundBatch,1);
+        stageBackGroundBatch.end();
+
+        System.out.println(loadingCounter);
+
+        loadingCounter++;
+    }
+
+    public void resize(int width, int height) {
+        //3D
+        camera3D.viewportWidth=width;
+        camera3D.viewportHeight=height;
+        camera3D.update();
+    }
+
+    //altri metodi
+    public void addInstance(ModelInstance modelInstance){
+        instances.add(modelInstance);
+
+    }
     private void PressStart(){
         if(framesPassedByLastStartPress == START_BUTTON_DELAY){
 
@@ -392,49 +450,15 @@ public class BattleScreen extends GameState {
         }
     }
 
-    @Override
-    public void resize(int width, int height) {
-
-        //2D  al momento la camera rimane sempre invariata -> mostra sempre tutto, non rispetta proporzioni
-        //stage.getCamera().position.set((float) width/2,(float) height/2,0);
-        //stage.getCamera().update();
-
-
-        //3D
-        camera3D.viewportWidth=width;
-        camera3D.viewportHeight=height;
-        camera3D.update();
 
 
 
-        //System.out.println("viewport screen size "+viewPort.getScreenWidth()+"    "+viewPort.getScreenHeight());
-        //System.out.println("viewport world size "+viewPort.getWorldWidth()+"    "+viewPort.getWorldHeight());
-        //System.out.println("camera position"+viewPort.getCamera().position.toString());
-        //System.out.println("viewport camera size "+viewPort.getCamera().viewportWidth+"    "+viewPort.getCamera().viewportHeight);
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-        //stageBackGround.dispose();
-    }
 
 
 
+
+
+    //--------------metodi inputs pulsanti-----------------------------
     @Override
     public void c1_buttonDpadRight() {
         if(currentState == STATE_BATTLE){
@@ -511,14 +535,8 @@ public class BattleScreen extends GameState {
         }
 
     }
-    public void c1_buttonLeftStick() {
-        //System.out.println("buttonLStick");
-
-    }
-    public void c1_buttonRightStick() {
-        //System.out.println("buttonRStick");
-
-    }
+    public void c1_buttonLeftStick() {}
+    public void c1_buttonRightStick() {}
     public void c1_axisLeftX(float val) {
         if(currentState == STATE_BATTLE) {
             if (val > 0) {
@@ -529,10 +547,7 @@ public class BattleScreen extends GameState {
         }
 
     }
-    public void c1_axisRightX(float val) {
-        //System.out.println("axisRightX");
-
-    }
+    public void c1_axisRightX(float val) {}
     public void c1_axisLeftY(float val) {
         if(currentState == STATE_BATTLE) {
             if (val > 0) {
@@ -543,10 +558,7 @@ public class BattleScreen extends GameState {
         }
 
     }
-    public void c1_axisRightY(float val) {
-        //System.out.println("axisRightY");
-
-    }
+    public void c1_axisRightY(float val) {}
 
 
     public void c2_buttonDpadRight() {
@@ -562,9 +574,7 @@ public class BattleScreen extends GameState {
 
 
     }
-    public void c2_buttonDpadUp() {
-
-    }
+    public void c2_buttonDpadUp() {}
     public void c2_buttonDpadDown() {
         if(currentState == STATE_BATTLE){
             personaggio2.crouching=true;
@@ -625,12 +635,8 @@ public class BattleScreen extends GameState {
 
 
     }
-    public void c2_buttonLeftStick() {
-
-    }
-    public void c2_buttonRightStick() {
-
-    }
+    public void c2_buttonLeftStick() {}
+    public void c2_buttonRightStick() {}
     public void c2_axisLeftX(float val) {
         //System.out.println("axisLeftX");
         if(currentState == STATE_BATTLE){
@@ -643,15 +649,22 @@ public class BattleScreen extends GameState {
 
 
     }
-    public void c2_axisRightX(float val) {
+    public void c2_axisRightX(float val) {}
+    public void c2_axisLeftY(float val) {}
+    public void c2_axisRightY(float val) {}
 
-    }
-    public void c2_axisLeftY(float val) {
 
-    }
-    public void c2_axisRightY(float val) {
 
-    }
+    //----------------metodi GameState non usati--------------------
+
+    public void pause() {}
+    public void resume() {}
+    public void hide() {}
+    public void dispose() {}
+    public void show() {}
+
+
+
 
 }
 

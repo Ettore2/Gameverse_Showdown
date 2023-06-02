@@ -123,6 +123,12 @@ public class Main extends Game {
         this.musicVolume = musicVolume;
         return musicVolume;
     }
+    public void stopMusic(){
+        bgm.stop();
+    }
+    public void resumeMusic(){
+        bgm.play();
+    }
 
     public String[] getPathMusic() {
         return pathMusic;

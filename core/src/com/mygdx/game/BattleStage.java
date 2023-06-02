@@ -1,7 +1,6 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -25,41 +24,26 @@ public class BattleStage extends GenericGameObject{
 
     String tag;
     final int stageId;
-    Character c1, c2;
     BoxCollider groundCollider,leftCollider,rightCollider;
     Image img;
     Vector<Collider2D> existingColliders;
 
 
-    BattleStage(int stageId, Character c1, Character c2, Vector<Collider2D> existingColliders){
+    BattleStage(int stageId, Vector<Collider2D> existingColliders){
         super(0,0,"");
         this.stageId = stageId;
         this.existingColliders = existingColliders;
-        this.c1 = c1;
-        this.c2 = c2;
 
         constructor();
 
     }
-    BattleStage(PerspectiveCamera camera3D, int stageId, int idC1, int idC2, Vector<Collider2D> existingColliders){
-        super(0,0,"");
-        this.existingColliders = existingColliders;
-        this.stageId = stageId;
-        this.c1 = new Character(camera3D, idC1, STAGES_C1_SPAWNS[stageId].x, STAGES_C1_SPAWNS[stageId].y, 0, 0, 1, 0, 90, existingColliders);
-        this.c2 = new Character(camera3D, idC2, STAGES_C2_SPAWNS[stageId].x, STAGES_C2_SPAWNS[stageId].y, 0, 0, -1, 0, 90, existingColliders);
 
-        constructor();
-
-    }
 
     private void constructor(){
-        c1.battleStage = this;
-        c2.battleStage = this;
-        c1.enemy = c2;
-        c2.enemy = c1;
         this.tag=STAGE_TAG;
         img = new Image(new Texture(Gdx.files.internal(STAGES_PHOTOS_DIRECTORY + STAGES_PHOTOS[stageId])));
         img.setPosition(0, -120);
+
 
         //setto colliders stages
         groundCollider = new BoxCollider(this,0,STAGES_HEIGHTS[stageId]-BOUNDS_SIZE/2,Gdx.graphics.getWidth(),BOUNDS_SIZE);
@@ -88,6 +72,14 @@ public class BattleStage extends GenericGameObject{
     public void draw(Batch batch, float parentAlfa){
         img.draw(batch, parentAlfa);
 
+
+    }
+    public Point2D.Float getC1spawnPoint(){
+        return STAGES_C1_SPAWNS[this.stageId];
+
+    }
+    public Point2D.Float getC2spawnPoint(){
+        return STAGES_C2_SPAWNS[this.stageId];
 
     }
 

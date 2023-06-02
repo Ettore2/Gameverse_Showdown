@@ -3,10 +3,12 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import java.util.Arrays;
 
-public abstract class GameState implements Screen {
+public abstract class GameState implements Screen{
     private static final float SOGLIA_LETTURA_ASSI=0.6f;
 
     public static final int MENU = 0;//LAUNCHER
@@ -15,6 +17,10 @@ public abstract class GameState implements Screen {
     public static final int EXIT = 3;//BTN EXIT
     public static final int BATTLESCREEN = 4;
     final Main game;
+    int loadingCounter;
+    boolean haveLoadedAssets;
+    ProgressBar loadingProgressBar;
+
 
     float[] buttonsDelays; //memorizza i valori a cui settate i timers quando si preme un tasto
     float[] c1ButtonsTimers; //memorizza i valori dei timers dei tasti del controller 1
@@ -30,6 +36,14 @@ public abstract class GameState implements Screen {
 
     public GameState(Main game){
         this.game=game;
+
+        game.stopMusic();
+        haveLoadedAssets = false;
+        loadingCounter = 0;
+        loadingProgressBar = new ProgressBar(0,100,1,false,new Skin(Gdx.files.internal(GameConstants.SKIN_PROGRESSBAR)));
+        loadingProgressBar.setSize(Gdx.graphics.getWidth()/2f,Gdx.graphics.getWidth()/20f);
+        loadingProgressBar.setPosition((Gdx.graphics.getWidth()-loadingProgressBar.getWidth())/2f,(Gdx.graphics.getHeight()-loadingProgressBar.getHeight())/2f);
+
 
         buttonsDelays = new float[16];
         c1ButtonsTimers = new float[16];
@@ -122,7 +136,6 @@ public abstract class GameState implements Screen {
         buttonsDelays[10] = actionsButtonsDelayTime;//R3 (pressione analogico R)
 
     }
-
 
     @Override
     public void render(float delta) {
@@ -484,12 +497,27 @@ public abstract class GameState implements Screen {
             }
         }
 
-        //per tasto ps
-        /*
-        if(c1.getButton(5)){
-            System.out.println("buttonPS");
+        //per tasto ps: c1.getButton(5)
+
+
+        if(haveLoadedAssets){
+            normalExecution(delta);
+        }else{
+            loadingExecution(delta);
+
+            if(haveLoadedAssets){
+                game.resumeMusic();
+            }
         }
-         */
+
+
+    }
+    public void normalExecution(Float delta){
+
+    }
+    public void loadingExecution(Float delta){
+        haveLoadedAssets = true;
+
     }
 
     public abstract void c1_buttonDpadRight();
