@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.JsonReader;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.geom.Point2D;
 import java.util.Vector;
@@ -82,9 +83,10 @@ public class Character extends ModelInstance implements GameObject{
 
     PerspectiveCamera camera3D;//per aggiustare prospettiva
 
-    BoxCollider bodyCol;
-    CircularCollider headCol;
-    private float originalBodyColliderRelativeX, originalHeadColliderRelativeX;
+    BoxCollider idleBodyCol, firstJumpBodyCol, secondJumpBodyCol;
+    CircularCollider idleHeadCol, firstJumpHeadCol, secondJumpHeadCol;
+    BoxCollider currentBodyColliderInfo, currentBodyCollider;
+    CircularCollider currentHeadColliderInfo, currentHeadCollider;
     private Vector<Collider2D> personalColliders;
     private Vector<Collider2D> existingColliders;
 
@@ -152,14 +154,10 @@ public class Character extends ModelInstance implements GameObject{
         currentXForce = 0;
         currentYForce = 0;
 
-        bodyCol = new BoxCollider(this, new Point2D.Float(0, 0),0,0);
-        bodyCol.useRelativePosition = true;
-        bodyCol.setTag(BODY_COLLIDER_TAG);
-        existingColliders.add(bodyCol);
-        headCol = new CircularCollider(this, new Point2D.Float(0, 0),0);
-        headCol.setTag(BODY_COLLIDER_TAG);
-        headCol.useRelativePosition = true;
-        existingColliders.add(headCol);
+        idleBodyCol = new BoxCollider(this, new Point2D.Float(0, 0),0,0);
+        idleBodyCol.setTag(BODY_COLLIDER_TAG);
+        idleHeadCol = new CircularCollider(this, new Point2D.Float(0, 0),0);
+        idleHeadCol.setTag(BODY_COLLIDER_TAG);
 
         existingCharacterProjectiles = new Vector<>();
 
@@ -175,8 +173,22 @@ public class Character extends ModelInstance implements GameObject{
                 break;
         }
 
-        originalBodyColliderRelativeX = this.bodyCol.center.x;
-        originalHeadColliderRelativeX = this.headCol.center.x;
+        currentBodyColliderInfo = idleBodyCol;
+        currentHeadColliderInfo = idleHeadCol;
+        if(firstJumpBodyCol == null){
+            firstJumpBodyCol = idleBodyCol;
+        }
+        if(firstJumpHeadCol == null){
+            firstJumpHeadCol = idleHeadCol;
+        }
+        if(secondJumpBodyCol == null){
+            secondJumpBodyCol = idleBodyCol;
+        }
+        if(secondJumpHeadCol == null){
+            secondJumpHeadCol = idleHeadCol;
+        }
+
+        setCollidersConfiguration(idleBodyCol, idleHeadCol);
 
     }
     public Character(PerspectiveCamera camera3D, int characterId, float xPos, float yPos, float zPos, float yRotation){
@@ -258,8 +270,8 @@ public class Character extends ModelInstance implements GameObject{
 
         Vector3 positionTmp = new Vector3();
         transform.getTranslation(positionTmp);
-        bodyCol.setDimensions(new Point2D.Float(0, -1.8f),0.35f,0.65f);
-        headCol.setDimensions(new Point2D.Float(0, -1.48f),0.175f);
+        idleBodyCol.setDimensions(new Point2D.Float(0, -1.8f),0.35f,0.65f);
+        idleHeadCol.setDimensions(new Point2D.Float(0, -1.48f),0.175f);
 
 
         //bodyCol.isVisible = false; //debug
@@ -318,15 +330,15 @@ public class Character extends ModelInstance implements GameObject{
 
         Vector3 positionTmp = new Vector3();
         transform.getTranslation(positionTmp);
-        bodyCol.setDimensions(new Point2D.Float(0, -1.6f),0.8f,1f);
-        headCol.setDimensions(new Point2D.Float(0.38f, -1.325f),0.27f);
+        idleBodyCol.setDimensions(new Point2D.Float(0, -1.6f),0.8f,1f);
+        idleHeadCol.setDimensions(new Point2D.Float(0.38f, -1.325f),0.27f);
 
 
         //bodyCol.isVisible = false; //debug
         //headCol.isVisible = false; //debug
     }
     private void new_Sonic(){
-        attackStat = 3;
+        attackStat = 2;
         defenseStat = 2;
         agilityStat = 5;
         healthStat = 2;
@@ -379,8 +391,8 @@ public class Character extends ModelInstance implements GameObject{
 
         Vector3 positionTmp = new Vector3();
         transform.getTranslation(positionTmp);
-        bodyCol.setDimensions(new Point2D.Float(0, -1.8f),0.35f,0.65f);
-        headCol.setDimensions(new Point2D.Float(0, -1.48f),0.175f);
+        idleBodyCol.setDimensions(new Point2D.Float(0, -1.8f),0.35f,0.65f);
+        idleHeadCol.setDimensions(new Point2D.Float(0, -1.48f),0.175f);
 
 
         //bodyCol.isVisible = false; //debug
@@ -406,6 +418,24 @@ public class Character extends ModelInstance implements GameObject{
 
     }
 
+    //altri metodi
+    public void setCollidersConfiguration(@NotNull BoxCollider bodyColliderInfo,@NotNull  CircularCollider headColliderInfo){
+        if(currentBodyCollider != null){
+            existingColliders.remove(currentBodyCollider);
+        }
+        if(currentHeadCollider != null){
+            existingColliders.remove(currentHeadCollider);
+        }
+
+        currentBodyColliderInfo = bodyColliderInfo;
+        currentHeadColliderInfo = headColliderInfo;
+
+        currentBodyCollider = new BoxCollider(bodyColliderInfo.owner, bodyColliderInfo.center.x * facingDirection, bodyColliderInfo.center.y, bodyColliderInfo.getTag(), bodyColliderInfo.width, bodyColliderInfo.height);
+        currentHeadCollider = new CircularCollider(headColliderInfo.owner, headColliderInfo.center.x * facingDirection, headColliderInfo.center.y, headColliderInfo.getTag(), headColliderInfo.radius);
+
+        existingColliders.add(currentBodyCollider);
+        existingColliders.add(currentHeadCollider);
+    }
 
     public void lodProjectiles(){
         if(id == MARIO_ID){
@@ -420,7 +450,6 @@ public class Character extends ModelInstance implements GameObject{
 
 
     }
-
     public void executeInputs(){
         /*
         Vector3 positionTmp = new Vector3();
@@ -740,8 +769,8 @@ public class Character extends ModelInstance implements GameObject{
             transform.getTranslation(positionTmp);
 
 
-            bodyCol.setX2DPosition(originalBodyColliderRelativeX * facingDirection);
-            headCol.setX2DPosition(originalHeadColliderRelativeX * facingDirection);
+            currentBodyCollider.setX2DPosition(currentBodyColliderInfo.center.x * facingDirection);
+            currentHeadCollider.setX2DPosition(currentHeadColliderInfo.center.x * facingDirection);
 
             //"consumo" input
             inputtedAttackIndex = ATTACK_NONE;
@@ -803,11 +832,11 @@ public class Character extends ModelInstance implements GameObject{
 
     }
     public void drawColliders(ShapeRenderer r){
-        if(bodyCol.isVisible){
-            r.rect((bodyCol.get2DPosition().x - bodyCol.width/2 + 4.85f)*Gdx.graphics.getWidth()/9.7f , (bodyCol.get2DPosition().y - bodyCol.height/2 + 2.7f)*Gdx.graphics.getHeight()/5.4f,bodyCol.width*Gdx.graphics.getWidth()/9.7f, bodyCol.height*Gdx.graphics.getHeight()/5.4f);
+        if(idleBodyCol.isVisible){
+            r.rect((idleBodyCol.get2DPosition().x - idleBodyCol.width/2 + 4.85f)*Gdx.graphics.getWidth()/9.7f , (idleBodyCol.get2DPosition().y - idleBodyCol.height/2 + 2.7f)*Gdx.graphics.getHeight()/5.4f, idleBodyCol.width*Gdx.graphics.getWidth()/9.7f, idleBodyCol.height*Gdx.graphics.getHeight()/5.4f);
         }
-        if(headCol.isVisible){
-            r.circle((headCol.get2DPosition().x + 4.85f)*Gdx.graphics.getWidth()/9.7f , (headCol.get2DPosition().y + 2.7f)*Gdx.graphics.getHeight()/5.4f,headCol.radius*Gdx.graphics.getWidth()/9.7f);
+        if(idleHeadCol.isVisible){
+            r.circle((idleHeadCol.get2DPosition().x + 4.85f)*Gdx.graphics.getWidth()/9.7f , (idleHeadCol.get2DPosition().y + 2.7f)*Gdx.graphics.getHeight()/5.4f, idleHeadCol.radius*Gdx.graphics.getWidth()/9.7f);
         }
 
         for(Collider2D col : personalColliders){
@@ -904,12 +933,10 @@ public class Character extends ModelInstance implements GameObject{
                     canMoveRight = false;
                     if(isStunned() || moveDirection == MOVE_DX){
                         //setta o.1f fuori da collisione
-                        if(headCol.radius + originalHeadColliderRelativeX * facingDirection > bodyCol.width / 2 + originalBodyColliderRelativeX * facingDirection){
-                            setX2DPosition(otherCollider.get2DPosition().x - ((BoxCollider)otherCollider).width/2 - headCol.radius - originalHeadColliderRelativeX * facingDirection + 0.01f);
-                            System.out.println(originalHeadColliderRelativeX * facingDirection);
+                        if(currentHeadColliderInfo.radius + currentHeadColliderInfo.center.x > currentBodyColliderInfo.width / 2 + currentBodyColliderInfo.center.x){
+                            setX2DPosition(otherCollider.get2DPosition().x - ((BoxCollider)otherCollider).width/2 - currentHeadCollider.radius - currentHeadCollider.center.x + 0.01f);
                         }else{
-                            setX2DPosition(otherCollider.get2DPosition().x - ((BoxCollider)otherCollider).width/2 - bodyCol.width/2 - originalBodyColliderRelativeX * facingDirection + 0.01f);
-                            System.out.println(originalBodyColliderRelativeX * facingDirection);
+                            setX2DPosition(otherCollider.get2DPosition().x - ((BoxCollider)otherCollider).width/2 - currentBodyCollider.width/2 - currentBodyCollider.center.x + 0.01f);
                         }
 
                     }
@@ -919,10 +946,10 @@ public class Character extends ModelInstance implements GameObject{
                     canMoveLeft = false;
                     if(isStunned() || moveDirection == MOVE_SX) {
                         //setta o.1f fuori da collisione
-                        if(headCol.radius + originalHeadColliderRelativeX * facingDirection > bodyCol.width / 2 + originalBodyColliderRelativeX * facingDirection){
-                            setX2DPosition(otherCollider.get2DPosition().x + ((BoxCollider)otherCollider).width/2 + headCol.radius + originalHeadColliderRelativeX * facingDirection - 0.1f);
+                        if(currentHeadColliderInfo.radius + currentHeadColliderInfo.center.x > currentBodyColliderInfo.width / 2 + currentBodyColliderInfo.center.x){
+                            setX2DPosition(otherCollider.get2DPosition().x + ((BoxCollider)otherCollider).width/2 + currentHeadColliderInfo.radius + currentHeadColliderInfo.center.x - 0.01f);
                         }else{
-                            setX2DPosition(otherCollider.get2DPosition().x + ((BoxCollider) otherCollider).width / 2 + bodyCol.width / 2 + originalBodyColliderRelativeX * facingDirection - 0.1f);
+                            setX2DPosition(otherCollider.get2DPosition().x + ((BoxCollider)otherCollider).width/2 + currentBodyColliderInfo.width/2 + currentBodyColliderInfo.center.x - 0.01f);
                         }
 
                     }
@@ -947,13 +974,13 @@ public class Character extends ModelInstance implements GameObject{
 
                     Vector3 positionTmp = new Vector3();
                     transform.getTranslation(positionTmp);
-                    transform.setTranslation(positionTmp.x,otherCollider.get2DPosition().y + ((BoxCollider)otherCollider).height / 2 - bodyCol.center.y + bodyCol.height / 2 - 0.01f,positionTmp.z);
+                    transform.setTranslation(positionTmp.x,otherCollider.get2DPosition().y + ((BoxCollider)otherCollider).height / 2 - currentBodyCollider.center.y + currentBodyCollider.height / 2 - 0.01f,positionTmp.z);
 
                 }else{
                     if(currentYForce < 0){
                         Vector3 positionTmp = new Vector3();
                         transform.getTranslation(positionTmp);
-                        transform.setTranslation(positionTmp.x,otherCollider.get2DPosition().y + ((BoxCollider)otherCollider).height / 2 - bodyCol.center.y + bodyCol.height / 2 + 0.01f,positionTmp.z);
+                        transform.setTranslation(positionTmp.x,otherCollider.get2DPosition().y + ((BoxCollider)otherCollider).height / 2 - currentBodyCollider.center.y + currentBodyCollider.height / 2 + 0.01f,positionTmp.z);
                         currentYForce = - currentYForce / 2;
                     }
                 }

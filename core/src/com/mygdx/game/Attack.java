@@ -573,17 +573,17 @@ public abstract class Attack implements GameObject{
             float posX,posY;
             if(this.frameCounter < startUpFrames + 15){
                 if(c.get2DPosition().x * creator.facingDirection > this.creator.get2DPosition().x * creator.facingDirection){
-                    posX = createdColliders.get(0).get2DPosition().x - c.bodyCol.center.x;
-                    posY = createdColliders.get(0).get2DPosition().y - c.bodyCol.center.y;
+                    posX = createdColliders.get(0).get2DPosition().x - c.idleBodyCol.center.x;
+                    posY = createdColliders.get(0).get2DPosition().y - c.idleBodyCol.center.y;
                     c.set2DPosition(new Point2D.Float(posX, posY));
                 }else{
-                    posX = createdColliders.get(1).get2DPosition().x - c.bodyCol.center.x;
-                    posY = createdColliders.get(1).get2DPosition().y - c.bodyCol.center.y;
+                    posX = createdColliders.get(1).get2DPosition().x - c.idleBodyCol.center.x;
+                    posY = createdColliders.get(1).get2DPosition().y - c.idleBodyCol.center.y;
                     c.set2DPosition(new Point2D.Float(posX, posY));
                 }
             }else{
-                posX = createdColliders.get(0).get2DPosition().x - c.bodyCol.center.x;
-                posY = createdColliders.get(0).get2DPosition().y - c.bodyCol.center.y;
+                posX = createdColliders.get(0).get2DPosition().x - c.idleBodyCol.center.x;
+                posY = createdColliders.get(0).get2DPosition().y - c.idleBodyCol.center.y;
                 c.set2DPosition(new Point2D.Float(posX, posY));
                 super.applyKnockBack(c);
             }
