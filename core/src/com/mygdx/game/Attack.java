@@ -13,6 +13,7 @@ public abstract class Attack implements GameObject{
     static final String ATTACK_COLLIDER_TAG = "attack collider";
     static final String ATTACK_OBJ_TAG = "attack obj";
     static final int KNOCKBACK_TYPE_NORMAL = 0,KNOCKBACK_TYPE_DIRECTIONAL = 1,KNOCKBACK_TYPE_ACTIVE_INPUT = 2;
+    static final int HITTED_NONE = 0,HITTED_LIFE = 1,HITTED_GUARD = 2;
     //settare absolute owner
 
     /*
@@ -493,8 +494,9 @@ public abstract class Attack implements GameObject{
     }//calci alti
     static class Attack_sonic_aerial_x_0 extends Attack{
         Attack_sonic_aerial_x_0(Character c) {
-            super(c,"smush_blender_import|smush_blender_import c05attackairn.nuanmb",2.2f,2,4,6,46,11,14,24,14);
-            setKnockBack(0.11f,0.03f,KNOCKBACK_TYPE_DIRECTIONAL);
+            super(c,"smush_blender_import|smush_blender_import c05attackairn.nuanmb",2.2f,1,3,6,46,11,14,24,14);
+            setKnockBack(0.025f,0.02f,KNOCKBACK_TYPE_DIRECTIONAL);
+            multipleHitsDelay = 8;
             this.setAllowMovementDuringActiveFrames(true);
         }
         public void firstActiveFrame() {
@@ -596,7 +598,7 @@ public abstract class Attack implements GameObject{
     String animationName;
     float animationSpeed;
     int lifeDamage, guardDamage;
-    Vector2 knockback;
+    Vector2 knockBack;
     int frameCounter;//tiene conto di per quanti frame l'attacco è stato eseguito
     int startUpFrames;//frames inizializzazione dell'attacco (vulnerabilità) (artificiale rispetto ad animazione)
     int activeFrames;//frame di durata dell'attacco (comparsa hitBoxes non coincide con frame 0 peré animazione ha già startup frames)
@@ -606,8 +608,9 @@ public abstract class Attack implements GameObject{
     int enemyRecoveryFrames;//frame di stun per nemico che viene colpito da questo attacco
     boolean currentlyEnableMovement, enableMovement;
     Vector<Collider2D> createdColliders;
-    boolean haveHitted, applyContinuousKnockBack;
-    int knockBackType;
+    boolean canHit, applyContinuousKnockBack;
+    int lastThingHitted;
+    int knockBackType,multipleHitsDelay, frameToNextHit;//fra quanti frame puoi hittare di nuovo (-1 = non puoi)
 
 
     //frame debug
@@ -633,12 +636,15 @@ public abstract class Attack implements GameObject{
         //parametri default
         currentlyEnableMovement = false;
         frameCounter = 0;
-        haveHitted = false;
+        canHit = false;
         createdColliders = new Vector<>();
-        knockback = new Vector2(0,0);
+        knockBack = new Vector2(0,0);
         knockBackType = KNOCKBACK_TYPE_NORMAL;
         applyContinuousKnockBack = false;
         this.setAllowMovementDuringActiveFrames(false);
+        multipleHitsDelay = -1;
+        frameToNextHit = 0;
+        lastThingHitted = HITTED_NONE;
     }
 
 
@@ -724,6 +730,12 @@ public abstract class Attack implements GameObject{
         //System.out.print("frame: "+frameCounter+" "); //debug
         creator.autoComboTimer=Character.AUTOCOMBO_TIME_TOLLERANCE;// valore temporaneo per non far cancellare lo stato
 
+        if(frameToNextHit > 0){
+            frameToNextHit--;
+        }
+        if(frameToNextHit == 0){
+            canHit = true;
+        }
 
         if(frameCounter == 0){
             attackStart();//avvio attacco
@@ -743,25 +755,30 @@ public abstract class Attack implements GameObject{
         }//active frames
 
         if(frameCounter >= startUpFrames+activeFrames){//recovery
-            if(haveHitted && frameCounter < startUpFrames+activeFrames+ lifeHitRecoveryFrames){
+            if(lastThingHitted == HITTED_LIFE && frameCounter < startUpFrames+activeFrames+ lifeHitRecoveryFrames){
                 hitRecoveryFrames(frameCounter-(startUpFrames+activeFrames));
             }
-            if(!haveHitted && frameCounter<startUpFrames+activeFrames+missRecoveryFrames){
+            if(lastThingHitted == HITTED_GUARD && frameCounter < startUpFrames+activeFrames+ guardHitRecoveryFrames){
+                hitRecoveryFrames(frameCounter-(startUpFrames+activeFrames));
+            }
+            if(lastThingHitted == HITTED_NONE && frameCounter<startUpFrames+activeFrames+missRecoveryFrames){
                 missRecoveryFrames(frameCounter-(startUpFrames+activeFrames));
             }
         }//recovery frames
 
-        if(haveHitted){
-            if(frameCounter == startUpFrames+activeFrames+ lifeHitRecoveryFrames){
-                attackHitEnd();//concludo attacco
-                creator.currentAttackId=Character.ATTACK_NONE;
-            }//fine hit
-        }else{
-            if(frameCounter == startUpFrames+activeFrames+missRecoveryFrames){
-                attackMissEnd();//concludo attacco
-                creator.currentAttackId=Character.ATTACK_NONE;
-            }//fine miss
-        }//cofice fine (1 volta a fine attacco)
+        //codice fine attacco (1 volta a fine attacco)
+        if(lastThingHitted == HITTED_LIFE && frameCounter == startUpFrames+activeFrames+ lifeHitRecoveryFrames){
+            attackHitEnd();//concludo attacco
+            creator.currentAttackId=Character.ATTACK_NONE;
+        }
+        if(lastThingHitted == HITTED_GUARD && frameCounter == startUpFrames+activeFrames+ guardHitRecoveryFrames){
+            attackHitEnd();//concludo attacco
+            creator.currentAttackId=Character.ATTACK_NONE;
+        }
+        if(lastThingHitted == HITTED_NONE && frameCounter == startUpFrames+activeFrames+missRecoveryFrames){
+            attackMissEnd();//concludo attacco
+            creator.currentAttackId=Character.ATTACK_NONE;
+        }
 
 
         frameCounter++;//commento per fare frame debug
@@ -785,7 +802,7 @@ public abstract class Attack implements GameObject{
         }
     }
     public void setKnockBack(Vector2 knockBack, int KnockBackType){
-        this.knockback = knockBack;
+        this.knockBack = knockBack;
         this.knockBackType = KnockBackType;
     }
     public void setKnockBack(Vector2 knockBack){
@@ -807,14 +824,15 @@ public abstract class Attack implements GameObject{
 
 
 
-    //metodi che si possono averrydare (chiamando super)
+    //metodi che si possono overrydare (chiamando super)
     public void attackStart(){
         creator.jump=false;//sovrascrivo inputs di salto
         creator.moveDirection = Character.MOVE_STOP;
         currentlyEnableMovement = false;
         creator.controller.setAnimation(creator.idleAnimation,-1);
 
-        this.haveHitted = false;
+        this.canHit = true;
+        lastThingHitted = HITTED_NONE;
         //System.out.println("start"); //debug
     }
     public void startupFrames(int nFrame){
@@ -872,10 +890,9 @@ public abstract class Attack implements GameObject{
         creator.lastAttackId = creator.currentAttackId;
         creator.endedAttackThisExecution = true;
         creator.canMove = true;
-        //System.out.println("hitEnd"); //debug
         creator.currentAttackId = Character.ATTACK_NONE;
         frameCounter = 0;
-        haveHitted = false;
+        canHit = true;
 
         removeAllColliders();
         createdColliders = new Vector<>();
@@ -888,7 +905,7 @@ public abstract class Attack implements GameObject{
         //System.out.println("misEnd"); //debug
         creator.currentAttackId = Character.ATTACK_NONE;
         frameCounter = 0;
-        haveHitted = false;
+        canHit = true;
 
         removeAllColliders();
         createdColliders = new Vector<>();
@@ -903,30 +920,32 @@ public abstract class Attack implements GameObject{
         }
 
         //continua a infliggere knocback -> combo costanti indipendentemente al frame in cui è avvenuta la hit
-        if(!c.guarding && (applyContinuousKnockBack || !haveHitted)){
+        if(!c.guarding && (applyContinuousKnockBack || canHit)){
             applyKnockBack(c);
         }
 
-        if(!haveHitted){//fa danno 1 volta
+        if(canHit){//fa danno 1 volta
             if(c.grounded){
                 if(c.guarding){
                     c.controller.setAnimation(c.guardHitAnimation,1);
                     c.controller.current.time = 0;
                     c.controller.current.speed = c.guardAnimationSpeed;
                     c.currentGuardAmount -= guardDamage;
+                    lastThingHitted = HITTED_GUARD;
                 }else{
                     c.controller.setAnimation(c.normalHitAnimation,1);
                     c.controller.current.time = 0;
                     c.controller.current.speed = c.normalHitAnimationSpeed;
                     c.currentLife -= lifeDamage;
+                    lastThingHitted = HITTED_LIFE;
 
-                    applyKnockBack(c);
                 }
             }else{
                 c.controller.setAnimation(c.airHitAnimation,1);
                 c.controller.current.time = 0;
                 c.controller.current.speed = c.airHitAnimationSpeed;
                 c.currentLife -= lifeDamage;
+                lastThingHitted = HITTED_LIFE;
 
             }
 
@@ -937,7 +956,8 @@ public abstract class Attack implements GameObject{
                 c.currentGuardAmount = 0;
             }
 
-            haveHitted = true;
+            canHit = false;
+            frameToNextHit = multipleHitsDelay;
 
             c.currentAttackState = 0;
             c.lastAttackId = Character.ATTACK_NONE;
@@ -955,24 +975,24 @@ public abstract class Attack implements GameObject{
     }
     public void applyKnockBack(Character c){
         if(knockBackType == KNOCKBACK_TYPE_NORMAL){
-            c.currentXForce = creator.facingDirection * knockback.x;
-            c.currentYForce = knockback.y;
+            c.currentXForce = creator.facingDirection * knockBack.x;
+            c.currentYForce = knockBack.y;
         }
         if(knockBackType == KNOCKBACK_TYPE_DIRECTIONAL){
-            c.currentYForce = knockback.y;
+            c.currentYForce = knockBack.y;
             if(c.get2DPosition().x * creator.facingDirection >= creator.get2DPosition().x * creator.facingDirection){
-                c.currentXForce = creator.facingDirection * knockback.x;
+                c.currentXForce = creator.facingDirection * knockBack.x;
             }else{
-                c.currentXForce = creator.facingDirection * knockback.x * -1;
+                c.currentXForce = creator.facingDirection * knockBack.x * -1;
             }
         }
         if(knockBackType == KNOCKBACK_TYPE_ACTIVE_INPUT){
             if(creator.moveDirection == Character.MOVE_STOP){
-                c.currentXForce = creator.facingDirection * knockback.x;
-                c.currentYForce = knockback.y;
+                c.currentXForce = creator.facingDirection * knockBack.x;
+                c.currentYForce = knockBack.y;
             }else{
-                c.currentXForce = creator.moveDirection * knockback.x;
-                c.currentYForce = knockback.y;
+                c.currentXForce = creator.moveDirection * knockBack.x;
+                c.currentYForce = knockBack.y;
             }
 
         }
@@ -982,7 +1002,7 @@ public abstract class Attack implements GameObject{
         removeAllColliders();
         creator.currentAttackState = 0;
         frameCounter = 0;
-        haveHitted = false;
+        canHit = true;
 
         createdColliders = new Vector<>();
     }
