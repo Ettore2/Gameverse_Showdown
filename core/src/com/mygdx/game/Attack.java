@@ -79,6 +79,34 @@ public abstract class Attack implements GameObject{
     }//calcio (combo 2)
     static class Attack_mario_grounded_y_0 extends Attack{
         Attack_mario_grounded_y_0(Character c) {
+            super(c,"c02attackhi3",2f,6,5,10,16,10,17,26,24);
+            setKnockBack(0.05f,0.18f);
+        }
+        public void firstActiveFrame() {
+            super.firstActiveFrame();
+            addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.17f,-1.5f, ATTACK_COLLIDER_TAG,0.12f));
+        }
+
+        public void activeFrames(int nFrame){
+            super.activeFrames(nFrame);
+
+            if(nFrame == 5){
+                createdColliders.get(0).setY2DPosition(-1.3f);
+            }
+            if(nFrame == 8){
+                createdColliders.get(0).setY2DPosition(-1f);
+            }
+            if(nFrame == 11){
+                createdColliders.get(0).setX2DPosition(creator.facingDirection * 0.10f);
+                ((CircularCollider) createdColliders.get(0)).radius=0.14f;
+            }
+            if(nFrame == 13){
+                createdColliders.get(0).setX2DPosition(creator.facingDirection * 0.04f);
+            }
+        }
+    }//montante
+    static class Attack_mario_grounded_b_0 extends Attack{
+        Attack_mario_grounded_b_0(Character c) {
             super(c,"c04attackhi4",2f,17,30,7,26,30,30,37,32);
             setKnockBack(0.1f,0);
         }
@@ -109,34 +137,6 @@ public abstract class Attack implements GameObject{
 
         }
     }//testata (guard breaker)
-    static class Attack_mario_grounded_b_0 extends Attack{
-        Attack_mario_grounded_b_0(Character c) {
-            super(c,"c02attackhi3",2f,6,5,10,16,10,17,26,24);
-            setKnockBack(0.05f,0.18f);
-        }
-        public void firstActiveFrame() {
-            super.firstActiveFrame();
-            addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.17f,-1.5f, ATTACK_COLLIDER_TAG,0.12f));
-        }
-
-        public void activeFrames(int nFrame){
-            super.activeFrames(nFrame);
-
-            if(nFrame == 5){
-                createdColliders.get(0).setY2DPosition(-1.3f);
-            }
-            if(nFrame == 8){
-                createdColliders.get(0).setY2DPosition(-1f);
-            }
-            if(nFrame == 11){
-                createdColliders.get(0).setX2DPosition(creator.facingDirection * 0.10f);
-                ((CircularCollider) createdColliders.get(0)).radius=0.14f;
-            }
-            if(nFrame == 13){
-                createdColliders.get(0).setX2DPosition(creator.facingDirection * 0.04f);
-            }
-        }
-    }//montante
     static class Attack_mario_aerial_x_0 extends Attack{
         Attack_mario_aerial_x_0(Character c) {
             super(c,"c05attackairn",4f,6,6,9,17,10,15,21,10);
@@ -262,26 +262,6 @@ public abstract class Attack implements GameObject{
     }//pugno 2 (combo 1) (guard breaker)
     static class Attack_donkeyKong_grounded_y_0 extends Attack{
         Attack_donkeyKong_grounded_y_0(Character c) {
-            super(c,"c01attacks3hi",2.5f,6,4,2,26,13,21,23,21);
-            setKnockBack(0.089f,0);
-        }
-        public void activeFrames(int nFrame){
-            super.activeFrames(nFrame);
-            if(nFrame == 4){
-                BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.3f,-1.65f, ATTACK_COLLIDER_TAG,0.65f,0.36f);
-                addCollider(colTmp);
-            }
-            if(nFrame > 4){
-                createdColliders.get(0).setX2DPosition((float) (creator.facingDirection *( 0.3f + 0.34 * (nFrame - 4))));
-            }
-            if(nFrame == 7){
-                removeAllColliders();
-            }
-
-        }
-    }//schiaffo orizzontale (ranged poke)
-    static class Attack_donkeyKong_grounded_b_0 extends Attack{
-        Attack_donkeyKong_grounded_b_0(Character c) {
             super(c,"c02attackhi3",2f,9,14,7,17,13,17,20,27);
             setKnockBack(0.14f,0.14f,KNOCKBACK_TYPE_DIRECTIONAL);
         }
@@ -321,6 +301,26 @@ public abstract class Attack implements GameObject{
 
         }
     }//manata alta
+    static class Attack_donkeyKong_grounded_b_0 extends Attack{
+        Attack_donkeyKong_grounded_b_0(Character c) {
+            super(c,"c01attacks3hi",2.5f,6,4,2,26,13,21,23,21);
+            setKnockBack(0.089f,0);
+        }
+        public void activeFrames(int nFrame){
+            super.activeFrames(nFrame);
+            if(nFrame == 4){
+                BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.3f,-1.65f, ATTACK_COLLIDER_TAG,0.65f,0.36f);
+                addCollider(colTmp);
+            }
+            if(nFrame > 4){
+                createdColliders.get(0).setX2DPosition((float) (creator.facingDirection *( 0.3f + 0.34 * (nFrame - 4))));
+            }
+            if(nFrame == 7){
+                removeAllColliders();
+            }
+
+        }
+    }//schiaffo orizzontale (ranged poke)
     static class Attack_donkeyKong_aerial_x_0 extends Attack{
         Attack_donkeyKong_aerial_x_0(Character c) {
             super(c,"c05attackairn",2f,7,12,3,30,10,15,19,10);
@@ -457,21 +457,6 @@ public abstract class Attack implements GameObject{
     }//calcio (combo 2)
     static class Attack_sonic_grounded_y_0 extends Attack{
         Attack_sonic_grounded_y_0(Character c) {
-            super(c,"smush_blender_import|smush_blender_import c01attacks3hi.nuanmb",2.4f,6,21,2,14,29, 22,37,33);
-            setKnockBack(0.1f,0.05f);
-        }
-        public void activeFrames(int nFrame){
-            super.activeFrames(nFrame);
-            if(nFrame == 8){
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.76f,-1.485f, ATTACK_COLLIDER_TAG,0.19f));
-            }
-            if(nFrame == 12){
-                ((CircularCollider)createdColliders.get(0)).radius = 0.15f;
-            }
-        }
-    }//calcio (guard breaker)
-    static class Attack_sonic_grounded_b_0 extends Attack{
-        Attack_sonic_grounded_b_0(Character c) {
             super(c,"smush_blender_import|smush_blender_import c02attackhi3.nuanmb",2f,5,7,6,18,40,42,44,28);
             setKnockBack(0.11f,0.18f);
         }
@@ -492,6 +477,21 @@ public abstract class Attack implements GameObject{
 
         }
     }//calci alti
+    static class Attack_sonic_grounded_b_0 extends Attack{
+        Attack_sonic_grounded_b_0(Character c) {
+            super(c,"smush_blender_import|smush_blender_import c01attacks3hi.nuanmb",2.4f,6,21,2,14,29, 22,37,33);
+            setKnockBack(0.1f,0.05f);
+        }
+        public void activeFrames(int nFrame){
+            super.activeFrames(nFrame);
+            if(nFrame == 8){
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.76f,-1.485f, ATTACK_COLLIDER_TAG,0.19f));
+            }
+            if(nFrame == 12){
+                ((CircularCollider)createdColliders.get(0)).radius = 0.15f;
+            }
+        }
+    }//calcio (guard breaker)
     static class Attack_sonic_aerial_x_0 extends Attack{
         Attack_sonic_aerial_x_0(Character c) {
             super(c,"smush_blender_import|smush_blender_import c05attackairn.nuanmb",2.2f,2,3,6,46,11,14,24,14);

@@ -12,7 +12,6 @@ public class Main extends Game {
     /*TODO
     implementing dynamic hurtBox
     implementing random character selection
-    implementing y axis knockBack bounce
 
      */
 

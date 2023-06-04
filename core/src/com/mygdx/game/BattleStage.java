@@ -15,7 +15,7 @@ public class BattleStage extends GenericGameObject{
     final float BOUNDS_SIZE = 3;
 
     final String[] STAGES_NAMES = {"stage mario"};
-    final float[] STAGES_HEIGHTS = {123};
+    final float[] STAGES_HEIGHTS = {-2.04f};
     final String[] STAGES_PHOTOS = {"Stage 1/sfondo 1 tot.png"};
     final Point2D.Float[] STAGES_C1_SPAWNS = {new Point2D.Float(-1.5f,1.4f)};
     final Point2D.Float[] STAGES_C2_SPAWNS = {new Point2D.Float(1.5f,1.4f)};
@@ -49,7 +49,7 @@ public class BattleStage extends GenericGameObject{
         groundCollider = new BoxCollider(this,0,STAGES_HEIGHTS[stageId]-BOUNDS_SIZE/2,Gdx.graphics.getWidth(),BOUNDS_SIZE);
         groundCollider.setTag(GROUND_TAG);
         groundCollider.useRelativePosition = false;
-        //groundCollider.isVisible = false;
+        groundCollider.isVisible = false;
         existingColliders.add(groundCollider);
 
         leftCollider = new BoxCollider(this,-9.7f/2-BOUNDS_SIZE/2,0,BOUNDS_SIZE,1000);

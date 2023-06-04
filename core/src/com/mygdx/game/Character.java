@@ -70,7 +70,7 @@ public class Character extends ModelInstance implements GameObject{
     boolean crouching;
     boolean jump;
     Attack[][] attacks;
-    int currentAttackId, lastAttackId, currentAttackState;
+    int inputtedAttackIndex, currentAttackId, lastAttackId, currentAttackState;
     boolean attackedLastFrame;
     float autoComboTimer;
     boolean endedAttackThisExecution; //per evitare di avere un pixel di animazione camminata facendo auto combo
@@ -135,6 +135,7 @@ public class Character extends ModelInstance implements GameObject{
         guarding = false;
         canMoveRight = true;
         canMoveLeft = true;
+        inputtedAttackIndex = ATTACK_NONE;
 
         projectileHitsToExecute = new Vector<>();
 
@@ -382,8 +383,8 @@ public class Character extends ModelInstance implements GameObject{
         headCol.setDimensions(new Point2D.Float(0, -1.48f),0.175f);
 
 
-        bodyCol.isVisible = false; //debug
-        headCol.isVisible = false; //debug
+        //bodyCol.isVisible = false; //debug
+        //headCol.isVisible = false; //debug
     }
 
 
@@ -435,11 +436,45 @@ public class Character extends ModelInstance implements GameObject{
 
             //se setto la stessa animazione con stessi loop l'animazione non cambia (non interrompo fluidità)
             //l'ordine del codice è importante
-
             float deltaTime = Gdx.graphics.getDeltaTime();//shortcut
 
             jumpedThisExecution = false;//se no prima di alzarsi da terra resetta i jump disponibili
             endedAttackThisExecution = false;//se no ho 1 frame di camminata in mezzo ad auto combo
+
+            if(inputtedAttackIndex != ATTACK_NONE){
+
+                boolean attackAccepted = false;
+                if(!isAttacking() && !isStunned() && !guarding && inputtedAttackIndex >=0 && inputtedAttackIndex <=2){//controllo anche chiamate errate
+                    if(grounded){
+                        if(lastAttackId != inputtedAttackIndex){
+                            currentAttackState = 0;
+                        }
+                        if(attacks[inputtedAttackIndex][currentAttackState] != null){//controllo per attacchi mancanti
+                            currentAttackId = inputtedAttackIndex;
+                            attackAccepted = true;
+                        }
+                    }else{
+                        if(lastAttackId != 3 + inputtedAttackIndex){
+                            currentAttackState = 0;
+                        }
+                        if(attacks[3+ inputtedAttackIndex][currentAttackState] != null){//controllo per attacchi mancanti
+                            currentAttackId = 3 + inputtedAttackIndex;
+                            attackAccepted = true;
+                        }
+                    }
+                }
+
+                //aumento stato attacco e setto tempo tolleranza auto combo
+                if(attackAccepted){
+                    if(lastAttackId == currentAttackId && attacks[currentAttackId].length>currentAttackState+1){
+                        currentAttackState++;
+                        autoComboTimer = AUTOCOMBO_TIME_TOLLERANCE;// valore temporaneo per non far cancellare lo stato
+                    }else{
+                        currentAttackState = 0;
+                    }
+
+                }
+            }
 
             //interpreto tasti di movimento e compilo moveDirection
             if((moveLeft && moveRight) || (!moveLeft && !moveRight)){//se premo tutte 2 le direzioni o nessuna
@@ -523,7 +558,7 @@ public class Character extends ModelInstance implements GameObject{
             }
 
             //knockback asse y
-            if(isStunned()){
+            if(isStunned() && !grounded){
                 Vector3 positionTmp = new Vector3();
                 transform.getTranslation(positionTmp);
                 transform.setTranslation(positionTmp.x,positionTmp.y + currentYForce,positionTmp.z);
@@ -703,22 +738,24 @@ public class Character extends ModelInstance implements GameObject{
             transform.getTranslation(positionTmp);
 
             //setto grounded
-            if(positionTmp.y > groundHeight){
-                grounded = false;
-            }else{
-                grounded = true;
-                if(!jumpedThisExecution){
-                    availableJumps = numberOfJumps;
-                    currentYForce = 0;
-                }
-                transform.setTranslation(positionTmp.x,groundHeight,positionTmp.z);
+            //if(positionTmp.y > groundHeight){
+            //    grounded = false;
+            //}else{
+            //    grounded = true;
+            //    if(!jumpedThisExecution){
+            //        availableJumps = numberOfJumps;
+            //        currentYForce = 0;
+            //    }
+            //    transform.setTranslation(positionTmp.x,groundHeight,positionTmp.z);
 
-            }
+            //}
 
             bodyCol.setX2DPosition(originalBodyColliderRelativeX * facingDirection);
             headCol.setX2DPosition(originalHeadColliderRelativeX * facingDirection);
 
             //"consumo" input
+            inputtedAttackIndex = ATTACK_NONE;
+            grounded = false;
             moveLeft = false;
             moveRight = false;
             tryingToGuard = false;
@@ -747,37 +784,7 @@ public class Character extends ModelInstance implements GameObject{
         return currentAttackId != ATTACK_NONE;
     }
     public void setAttack(int index){
-        boolean attackAccepted = false;
-        if(!isAttacking() && !isStunned() && !guarding && index>=0 && index<=2){//controllo anche chiamate errate
-            if(grounded){
-                if(lastAttackId != index){
-                    currentAttackState = 0;
-                }
-                if(attacks[index][currentAttackState] != null){//controllo per attacchi mancanti
-                    currentAttackId = index;
-                    attackAccepted = true;
-                }
-            }else{
-                if(lastAttackId != 3 + index){
-                    currentAttackState = 0;
-                }
-                if(attacks[3+index][currentAttackState] != null){//controllo per attacchi mancanti
-                    currentAttackId = 3 + index;
-                    attackAccepted = true;
-                }
-            }
-        }
-
-        //aumento stato attacco e setto tempo tolleranza auto combo
-        if(attackAccepted){
-            if(lastAttackId == currentAttackId && attacks[currentAttackId].length>currentAttackState+1){
-                currentAttackState++;
-                autoComboTimer = AUTOCOMBO_TIME_TOLLERANCE;// valore temporaneo per non far cancellare lo stato
-            }else{
-                currentAttackState = 0;
-            }
-
-        }
+        inputtedAttackIndex = index;
     }
     public Attack getCurrentAttack(){
         if(isAttacking()){
@@ -908,10 +915,10 @@ public class Character extends ModelInstance implements GameObject{
                     if(isStunned() || moveDirection == MOVE_DX){
                         //setta o.1f fuori da collisione
                         if(headCol.radius + originalHeadColliderRelativeX * facingDirection > bodyCol.width / 2 + originalBodyColliderRelativeX * facingDirection){
-                            setX2DPosition(otherCollider.get2DPosition().x - ((BoxCollider)otherCollider).width/2 - headCol.radius - originalHeadColliderRelativeX * facingDirection + 0.1f);
+                            setX2DPosition(otherCollider.get2DPosition().x - ((BoxCollider)otherCollider).width/2 - headCol.radius - originalHeadColliderRelativeX * facingDirection + 0.01f);
                             System.out.println(originalHeadColliderRelativeX * facingDirection);
                         }else{
-                            setX2DPosition(otherCollider.get2DPosition().x - ((BoxCollider)otherCollider).width/2 - bodyCol.width/2 - originalBodyColliderRelativeX * facingDirection + 0.1f);
+                            setX2DPosition(otherCollider.get2DPosition().x - ((BoxCollider)otherCollider).width/2 - bodyCol.width/2 - originalBodyColliderRelativeX * facingDirection + 0.01f);
                             System.out.println(originalBodyColliderRelativeX * facingDirection);
                         }
 
@@ -938,6 +945,27 @@ public class Character extends ModelInstance implements GameObject{
                 }else{
                     currentXForce *= -1;
                     System.out.println("inverto");
+                }
+            }
+            if(otherCollider.getTag().equals(BattleStage.GROUND_TAG)){
+                grounded = true;
+                if(!isStunned()){
+                    if(!jumpedThisExecution){
+                        availableJumps = numberOfJumps;
+                        currentYForce = 0;
+                    }
+
+                    Vector3 positionTmp = new Vector3();
+                    transform.getTranslation(positionTmp);
+                    transform.setTranslation(positionTmp.x,otherCollider.get2DPosition().y + ((BoxCollider)otherCollider).height / 2 - bodyCol.center.y + bodyCol.height / 2 - 0.01f,positionTmp.z);
+
+                }else{
+                    if(currentYForce < 0){
+                        Vector3 positionTmp = new Vector3();
+                        transform.getTranslation(positionTmp);
+                        transform.setTranslation(positionTmp.x,otherCollider.get2DPosition().y + ((BoxCollider)otherCollider).height / 2 - bodyCol.center.y + bodyCol.height / 2 + 0.01f,positionTmp.z);
+                        currentYForce = - currentYForce / 2;
+                    }
                 }
             }
             if(otherCollider.getTag().equals(Projectile.PROJECTILE_OLLIDER_TAG)){

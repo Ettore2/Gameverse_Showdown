@@ -31,7 +31,7 @@ import java.util.Vector;
 import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled;
 
 public class BattleScreen extends GameState {
-    private static final boolean CAN_USE_DEBUG_FOR_P1 = true;
+    private static final boolean CAN_USE_DEBUG_FOR_P1 = false;
     private static boolean USE_DEBUG_FOR_P1 = false;
     private static final int DEBUG_SNSIBILITY_DELAY = 20;
     private static int DEBUG_ACTIVATION_FRAME_TIMER = 0;
