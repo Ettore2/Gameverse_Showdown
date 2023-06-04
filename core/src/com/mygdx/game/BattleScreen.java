@@ -31,7 +31,7 @@ import java.util.Vector;
 import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled;
 
 public class BattleScreen extends GameState {
-    private static final boolean CAN_USE_DEBUG_FOR_P1 = false;
+    private static final boolean CAN_USE_DEBUG_FOR_P1 = true;
     private static boolean USE_DEBUG_FOR_P1 = false;
     private static final int DEBUG_SNSIBILITY_DELAY = 20;
     private static int DEBUG_ACTIVATION_FRAME_TIMER = 0;
@@ -42,6 +42,7 @@ public class BattleScreen extends GameState {
     public final int STATE_WIN_P2 = 2;
     public final int STATE_DAW = 3;//(pareggio)
     public final int STATE_PAUSE = 4;
+    public final int STATE_LOADING = 5;
 
     static final int START_BUTTON_DELAY = 15;//faccio un delay custom perché deve essere condiviso tra i 2 player
     private Stage stageBackGround;
@@ -99,7 +100,7 @@ public class BattleScreen extends GameState {
 
         this.stageBackGround = new Stage();
         this.stageBackGroundBatch = stageBackGround.getBatch();
-        this.currentState = STATE_BATTLE;
+        this.currentState = STATE_LOADING;
         this.framesPassedByLastStartPress = START_BUTTON_DELAY;
 
         stageBackGround.getCamera().viewportWidth = (float)Gdx.graphics.getWidth();
@@ -351,7 +352,6 @@ public class BattleScreen extends GameState {
                 addInstance(personaggio1);
                 addInstance(personaggio2);
 
-
                 //grafica statistiche personaggi
                 if(true) {
                     healthSkin = new Skin(Gdx.files.internal(GameConstants.SKIN_PROGRESSBAR));
@@ -406,6 +406,7 @@ public class BattleScreen extends GameState {
                 break;
             default:
                 haveLoadedAssets = true;
+                currentState = STATE_BATTLE;
 
         }
 

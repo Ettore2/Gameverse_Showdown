@@ -9,6 +9,13 @@ import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.controllers.Controllers;
 
 public class Main extends Game {
+    /*TODO
+    implementing dynamic hurtBox
+    implementing random character selection
+    implementing y axis knockBack bounce
+
+     */
+
     public static final boolean USE_CONTROLLERS = true;
     public static boolean EMULATING_CONTROLLER_1 = true;//per adesso tastiera sempre attiva
 
@@ -50,7 +57,7 @@ public class Main extends Game {
         bgm.setLooping(true);
 
         //this.setScreen(new ChooseCharactersScreen(this));
-        this.setScreen(new BattleScreen(this,0,0,0,180));
+        this.setScreen(new BattleScreen(this,0,2,0,999999));
         //this.setScreen(new MenuScreen(this));
         //System.out.println(GameConstants.screenWidth+"   "+GameConstants.screenHeight);
     }

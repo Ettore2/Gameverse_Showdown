@@ -40,10 +40,10 @@ public class BoxCollider extends Collider2D{
     //altri metodi
 
     public float getLeftLate(){
-            return this.get2DPosition().x+(this.width/2);
+            return this.get2DPosition().x-(this.width/2);
     }
     public float getRightLate(){
-            return this.get2DPosition().x-(this.width/2);
+            return this.get2DPosition().x+(this.width/2);
     }
     public float getUpLate(){
         return this.get2DPosition().y+(this.height/2);
@@ -74,6 +74,12 @@ public class BoxCollider extends Collider2D{
             return ((this.getLeftLate()-boxCol.getRightLate())*(this.getRightLate()-boxCol.getLeftLate())<0 && (this.getDownLate()-boxCol.getUpLate())*(this.getUpLate()-boxCol.getDownLate())<0);
         }
         if(col.type == CIRCLE){
+
+            //se il cerchio è dentro a il quadrato
+            if(getLeftLate() <= col.get2DPosition().x && getRightLate() >= col.get2DPosition().x && getDownLate() <= col.get2DPosition().y && getUpLate() >= col.get2DPosition().y){
+                return true;
+            }
+
             boolean greaterThanD1 = false,greaterThanD2 = false;
             float m,q;
 

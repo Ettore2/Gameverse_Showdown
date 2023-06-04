@@ -13,7 +13,7 @@ import java.awt.geom.Point2D;
 import java.util.Vector;
 
 public class Character extends ModelInstance implements GameObject{
-    public static final int AVILABLE_CHARACTERS = 2;
+    public static final int AVILABLE_CHARACTERS = 3;
 
     final static float JUMP_SPAM_BLOCKER = 0.33f;//per evitare spam accidentale
     public static final int GUARD_HIT_STUN_FRAMES = 20;
@@ -35,10 +35,10 @@ public class Character extends ModelInstance implements GameObject{
     public static final int ATTACK_NONE = -1, ATTACK_1_GROUNDED = 0, ATTACK_2_GROUNDED = 1, ATTACK_3_GROUNDED = 2, ATTACK_1_AIRBORN = 3, ATTACK_2_AIRBORN = 4, ATTACK_3_AIRBORN = 5;
     public static final int ATTACK_BUTTON_X = 0, ATTACK_BUTTON_Y = 2, ATTACK_BUTTON_B = 1;
     public static final String CHARACTERS_MODELS_DIRECTORY = "Characters3D/";
-    public static final String[] CHARACTERS_MODELS_FIlE = {"Mario/Mario.g3dj","Donkey Kong/DK.g3dj"};
-    public static final String[] CHARACTERS_NAMES = {"Mario","Donkey Kong"};
+    public static final String[] CHARACTERS_MODELS_FIlE = {"Mario/Mario.g3dj","Donkey Kong/DK.g3dj","Sonic/Sonic.g3dj"};
+    public static final String[] CHARACTERS_NAMES = {"Mario","Donkey Kong","Sonic"};
     final static float AUTOCOMBO_TIME_TOLLERANCE = 0.25f;
-    public static final int MARIO_ID = 0, DONKEY_ID = 1;
+    public static final int MARIO_ID = 0, DONKEY_ID = 1, SONIC_ID = 2;
 
     static final Vector<ModelInstance>[] AVAILABLE_PROJECTILE_MODELS = new Vector[1];
     public static final int MARIO_PROVE_PROJECTILE = 0;
@@ -84,10 +84,11 @@ public class Character extends ModelInstance implements GameObject{
 
     BoxCollider bodyCol;
     CircularCollider headCol;
+    private float originalBodyColliderRelativeX, originalHeadColliderRelativeX;
     private Vector<Collider2D> personalColliders;
     private Vector<Collider2D> existingColliders;
 
-    Attack melleHitsToExecute;
+    Attack meleeHitsToExecute;
     Vector<Projectile> projectileHitsToExecute;
 
 
@@ -168,7 +169,13 @@ public class Character extends ModelInstance implements GameObject{
             case DONKEY_ID:
                 new_Donkey();
                 break;
+            case SONIC_ID:
+                new_Sonic();
+                break;
         }
+
+        originalBodyColliderRelativeX = this.bodyCol.center.x;
+        originalHeadColliderRelativeX = this.headCol.center.x;
 
     }
     public Character(PerspectiveCamera camera3D, int characterId, float xPos, float yPos, float zPos, float yRotation){
@@ -232,7 +239,7 @@ public class Character extends ModelInstance implements GameObject{
         attacks[ATTACK_2_AIRBORN][0] = Attack.getAttack(this,ATTACK_2_AIRBORN,0);
         attacks[ATTACK_3_AIRBORN][0] = Attack.getAttack(this,ATTACK_3_AIRBORN,0);
 
-        attacks[ATTACK_2_GROUNDED][0] = new Attack.Attack_mario_projectile_prove(this);
+        //attacks[ATTACK_2_GROUNDED][0] = new Attack.Attack_mario_projectile_prove(this);
 
         controller.setAnimation(idleAnimation);//importante
 
@@ -316,6 +323,67 @@ public class Character extends ModelInstance implements GameObject{
 
         //bodyCol.isVisible = false; //debug
         //headCol.isVisible = false; //debug
+    }
+    private void new_Sonic(){
+        attackStat = 3;
+        defenseStat = 2;
+        agilityStat = 5;
+        healthStat = 2;
+
+        groundedMoveSpeed = 0.063f;
+        airborneMoveSpeed = 0.038f;
+        idleAnimation = "smush_blender_import|smush_blender_import a00wait1.nuanmb";
+        walkAnimation = "smush_blender_import|smush_blender_import SONICsmush_blender_import a01walkfastMODIF";
+        firstJumpAnimation = "smush_blender_import|smush_blender_import a03jumpb.nuanmb";
+        secondJumpAnimation = "smush_blender_import|smush_blender_import a03jumpaerialb.nuanmb";
+        fallingAnimation = "smush_blender_import|smush_blender_import a04fallaerial.nuanmb";
+        normalHitAnimation = "smush_blender_import|smush_blender_import f00damagehi1.nuanmb";
+        airHitAnimation = "smush_blender_import|smush_blender_import f01damageair1.nuanmb";
+        guardHitAnimation = "smush_blender_import|smush_blender_import b01guarddamage.nuanmb";
+        guardAnimation = "smush_blender_import|smush_blender_import b00guard.nuanmb";
+
+        idleAnimationSpeed = 1;
+        walkAnimationSpeed = 1.7f;
+        firstJumpAnimationSpeed = 1;
+        secondJumpAnimationSpeed = 4.6f;
+        fallingAnimationSpeed = 1;
+        guardAnimationSpeed = 6f;
+        normalHitAnimationSpeed = 1;
+        guardHitAnimationSpeed = 1;
+        airHitAnimationSpeed = 1;
+
+        attacks[ATTACK_1_GROUNDED]=new Attack[3];
+        attacks[ATTACK_1_GROUNDED][0] = Attack.getAttack(this,ATTACK_1_GROUNDED,0);
+        attacks[ATTACK_1_GROUNDED][1] = Attack.getAttack(this,ATTACK_1_GROUNDED,1);
+        attacks[ATTACK_1_GROUNDED][2] = Attack.getAttack(this,ATTACK_1_GROUNDED,2);
+        attacks[ATTACK_2_GROUNDED][0] = Attack.getAttack(this,ATTACK_2_GROUNDED,0);
+        attacks[ATTACK_3_GROUNDED][0] = Attack.getAttack(this,ATTACK_3_GROUNDED,0);
+        attacks[ATTACK_1_AIRBORN][0] = Attack.getAttack(this,ATTACK_1_AIRBORN,0);
+        attacks[ATTACK_2_AIRBORN][0] = Attack.getAttack(this,ATTACK_2_AIRBORN,0);
+        attacks[ATTACK_3_AIRBORN][0] = Attack.getAttack(this,ATTACK_3_AIRBORN,0);
+
+        controller.setAnimation(idleAnimation);//importante
+
+        maxLife = 170;
+        currentLife = maxLife;
+        maxGuardAmount = 20;
+        currentGuardAmount = maxGuardAmount;
+        numberOfJumps = 2;
+        availableJumps = numberOfJumps;
+        jumpForce = 0.162f;
+        jumpDeceleration = 0.0080f;
+        falAcceleration = 0.01f;
+        fastFallAcceleration = 0.0140f;
+        weight = 0.0045f;
+
+        Vector3 positionTmp = new Vector3();
+        transform.getTranslation(positionTmp);
+        bodyCol.setDimensions(new Point2D.Float(0, -1.8f),0.35f,0.65f);
+        headCol.setDimensions(new Point2D.Float(0, -1.48f),0.175f);
+
+
+        bodyCol.isVisible = false; //debug
+        headCol.isVisible = false; //debug
     }
 
 
@@ -647,8 +715,8 @@ public class Character extends ModelInstance implements GameObject{
 
             }
 
-            bodyCol.setX2DPosition(Math.abs(bodyCol.center.x) * facingDirection);
-            headCol.setX2DPosition(Math.abs(headCol.center.x) * facingDirection);
+            bodyCol.setX2DPosition(originalBodyColliderRelativeX * facingDirection);
+            headCol.setX2DPosition(originalHeadColliderRelativeX * facingDirection);
 
             //"consumo" input
             moveLeft = false;
@@ -761,9 +829,9 @@ public class Character extends ModelInstance implements GameObject{
         }
     }
     public void resolveHits(){//chiamato in ogni frame in cui collido con un attacco
-        if(melleHitsToExecute != null){
+        if(meleeHitsToExecute != null){
 
-            melleHitsToExecute.hit(this);
+            meleeHitsToExecute.hit(this);
 
             //se non ho armatura setto l'attacco a null
             if(!haveArmor && this.currentAttackId != ATTACK_NONE){
@@ -772,7 +840,7 @@ public class Character extends ModelInstance implements GameObject{
                 this.currentAttackId = ATTACK_NONE;
             }
 
-            melleHitsToExecute = null;// se l'attacco sta ancora hittando hit sara ancora diversa da nul nel prossimo frame
+            meleeHitsToExecute = null;// se l'attacco sta ancora hittando hit sara ancora diversa da nul nel prossimo frame
         }//attacchi fisici
 
         for(Projectile projectile: projectileHitsToExecute){
@@ -828,31 +896,48 @@ public class Character extends ModelInstance implements GameObject{
     }
     public void collision(Collider2D myCollider, Collider2D otherCollider) {
 
-        //se la collisione è avvenuta tra il mio corpo e un attacco
+        //se la collisione è avvenuta tra il mio corpo e qualcosa
         if(myCollider.getTag().equals(BODY_COLLIDER_TAG)){
             if(otherCollider.getTag().equals(Attack.ATTACK_COLLIDER_TAG)) {
-                melleHitsToExecute = (Attack)(otherCollider.owner);
+                meleeHitsToExecute = (Attack)(otherCollider.owner);
             }
             if(otherCollider.getTag().equals(BattleStage.RIGHT_BOUND_TAG) || otherCollider.getTag().equals(BattleStage.LEFT_BOUND_TAG)){
-                //if(false){
-                if(grounded){
-                    currentXForce = 0;
-                }else{
-                    currentXForce *= -1;
-                }
 
                 if(otherCollider.getTag().equals(BattleStage.RIGHT_BOUND_TAG)) {
                     canMoveRight = false;
-                    if(!isStunned() && moveDirection == MOVE_DX){
-                        setX2DPosition(otherCollider.get2DPosition().x - ((BoxCollider)otherCollider).width/2 - bodyCol.width/2 + 0.1f);
+                    if(isStunned() || moveDirection == MOVE_DX){
+                        //setta o.1f fuori da collisione
+                        if(headCol.radius + originalHeadColliderRelativeX * facingDirection > bodyCol.width / 2 + originalBodyColliderRelativeX * facingDirection){
+                            setX2DPosition(otherCollider.get2DPosition().x - ((BoxCollider)otherCollider).width/2 - headCol.radius - originalHeadColliderRelativeX * facingDirection + 0.1f);
+                            System.out.println(originalHeadColliderRelativeX * facingDirection);
+                        }else{
+                            setX2DPosition(otherCollider.get2DPosition().x - ((BoxCollider)otherCollider).width/2 - bodyCol.width/2 - originalBodyColliderRelativeX * facingDirection + 0.1f);
+                            System.out.println(originalBodyColliderRelativeX * facingDirection);
+                        }
+
                     }
 
                 }
                 if(otherCollider.getTag().equals(BattleStage.LEFT_BOUND_TAG)) {
                     canMoveLeft = false;
-                    if(!isStunned() && moveDirection == MOVE_SX) {
-                        setX2DPosition(otherCollider.get2DPosition().x + ((BoxCollider) otherCollider).width / 2 + bodyCol.width / 2 - 0.1f);
+                    if(isStunned() || moveDirection == MOVE_SX) {
+                        //setta o.1f fuori da collisione
+                        if(headCol.radius + originalHeadColliderRelativeX * facingDirection > bodyCol.width / 2 + originalBodyColliderRelativeX * facingDirection){
+                            setX2DPosition(otherCollider.get2DPosition().x + ((BoxCollider)otherCollider).width/2 + headCol.radius + originalHeadColliderRelativeX * facingDirection - 0.1f);
+                        }else{
+                            setX2DPosition(otherCollider.get2DPosition().x + ((BoxCollider) otherCollider).width / 2 + bodyCol.width / 2 + originalBodyColliderRelativeX * facingDirection - 0.1f);
+                        }
+
                     }
+                }
+
+                if(grounded){
+                    if((otherCollider.getTag().equals(BattleStage.RIGHT_BOUND_TAG) && currentXForce > 0) || (otherCollider.getTag().equals(BattleStage.LEFT_BOUND_TAG) && currentXForce < 0)){
+                        currentXForce = 0;
+                    }
+                }else{
+                    currentXForce *= -1;
+                    System.out.println("inverto");
                 }
             }
             if(otherCollider.getTag().equals(Projectile.PROJECTILE_OLLIDER_TAG)){

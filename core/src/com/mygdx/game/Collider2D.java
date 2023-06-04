@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.geom.Point2D;
 
 public abstract class Collider2D implements HaveTag, HavePosition2D{
-    public static boolean DEFAULT_VISIBILITY = false;
+    public static boolean DEFAULT_VISIBILITY = true;
     public static final int SQUARE = 0, CIRCLE = 1;
     public static final Color colorColliders = new Color(0f,1f,0f,1f);//trasparenza non funziona
 

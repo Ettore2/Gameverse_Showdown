@@ -12,6 +12,7 @@ public abstract class Attack implements GameObject{
     //usare metodi per settare attributi di attacchi
     static final String ATTACK_COLLIDER_TAG = "attack collider";
     static final String ATTACK_OBJ_TAG = "attack obj";
+    static final int KNOCKBACK_TYPE_NORMAL = 0,KNOCKBACK_TYPE_DIRECTIONAL = 1,KNOCKBACK_TYPE_ACTIVE_INPUT = 2;
     //settare absolute owner
 
     /*
@@ -28,7 +29,7 @@ public abstract class Attack implements GameObject{
     static class Attack_mario_grounded_x_0 extends Attack{
         Attack_mario_grounded_x_0(Character c) {
             super(c,"c00attack11",1.6f,8,10,7,20,16,17,25,20);
-            setknockback(0.025f,0);
+            setKnockBack(0.025f,0);
         }
         public void firstActiveFrame(){
             super.firstActiveFrame();
@@ -40,7 +41,7 @@ public abstract class Attack implements GameObject{
     static class Attack_mario_grounded_x_1 extends Attack{
         Attack_mario_grounded_x_1(Character c) {
             super(c,"c00attack12",1.6f,10,12,5,15,21,24,30,36);
-            setknockback(0.025f,0);
+            setKnockBack(0.025f,0);
         }
         public void firstActiveFrame(){
             super.firstActiveFrame();
@@ -52,7 +53,7 @@ public abstract class Attack implements GameObject{
     static class Attack_mario_grounded_x_2 extends Attack{
         Attack_mario_grounded_x_2(Character c) {
             super(c,"c00attack13",1.6f,13,15,7,25,6,8,18,30);
-            setknockback(0.132f,0.141f);
+            setKnockBack(0.132f,0.141f);
         }
         public void firstActiveFrame(){
             super.firstActiveFrame();
@@ -78,7 +79,7 @@ public abstract class Attack implements GameObject{
     static class Attack_mario_grounded_y_0 extends Attack{
         Attack_mario_grounded_y_0(Character c) {
             super(c,"c04attackhi4",2f,17,30,7,26,30,30,37,32);
-            setknockback(0.1f,0);
+            setKnockBack(0.1f,0);
         }
         public void activeFrames(int nFrame){
             super.activeFrames(nFrame);
@@ -110,7 +111,7 @@ public abstract class Attack implements GameObject{
     static class Attack_mario_grounded_b_0 extends Attack{
         Attack_mario_grounded_b_0(Character c) {
             super(c,"c02attackhi3",2f,6,5,10,16,10,17,26,24);
-            setknockback(0.05f,0.18f);
+            setKnockBack(0.05f,0.18f);
         }
         public void firstActiveFrame() {
             super.firstActiveFrame();
@@ -138,7 +139,7 @@ public abstract class Attack implements GameObject{
     static class Attack_mario_aerial_x_0 extends Attack{
         Attack_mario_aerial_x_0(Character c) {
             super(c,"c05attackairn",4f,6,6,9,17,10,15,21,10);
-            setknockback(0.13f,0.08f);
+            setKnockBack(0.13f,0.08f);
             this.setAllowMovementDuringActiveFrames(true);
         }
         public void firstActiveFrame() {
@@ -149,7 +150,7 @@ public abstract class Attack implements GameObject{
     static class Attack_mario_aerial_b_0 extends Attack{
         Attack_mario_aerial_b_0(Character c) {
             super(c,"c05attackairf",2.5f,12,19,11,31,18,22,25,16);
-            setknockback(0.09f,-0.16f);
+            setKnockBack(0.09f,-0.16f);
             this.setAllowMovementDuringActiveFrames(true);
         }
 
@@ -178,7 +179,7 @@ public abstract class Attack implements GameObject{
     static class Attack_mario_aerial_y_0 extends Attack{
         Attack_mario_aerial_y_0(Character c) {
             super(c,"c05attackairhi",1.4f,7,7,9,35,9,10,21,13);
-            setknockback(0,0.143f);
+            setKnockBack(0,0.143f);
             this.setAllowMovementDuringActiveFrames(true);
         }
         public void activeFrames(int nFrame) {
@@ -227,7 +228,7 @@ public abstract class Attack implements GameObject{
     static class Attack_donkeyKong_grounded_x_0 extends Attack{
         Attack_donkeyKong_grounded_x_0(Character c) {
             super(c,"c00attack11",1.6f,13,15,7,20,16,21,27,26);
-            setknockback(0.028f,0);
+            setKnockBack(0.028f,0);
         }
 
         public void activeFrames(int nFrame) {
@@ -243,7 +244,7 @@ public abstract class Attack implements GameObject{
     static class Attack_donkeyKong_grounded_x_1 extends Attack{
         Attack_donkeyKong_grounded_x_1(Character c) {
             super(c,"c00attack12",1.7f,19,50,11,30,32,36,39,36);
-            setknockback(0.175f,0.19f);
+            setKnockBack(0.175f,0.19f);
         }
         public void activeFrames(int nFrame) {
             super.activeFrames(nFrame);
@@ -261,7 +262,7 @@ public abstract class Attack implements GameObject{
     static class Attack_donkeyKong_grounded_y_0 extends Attack{
         Attack_donkeyKong_grounded_y_0(Character c) {
             super(c,"c01attacks3hi",2.5f,6,4,2,26,13,21,23,21);
-            setknockback(0.089f,0);
+            setKnockBack(0.089f,0);
         }
         public void activeFrames(int nFrame){
             super.activeFrames(nFrame);
@@ -281,7 +282,7 @@ public abstract class Attack implements GameObject{
     static class Attack_donkeyKong_grounded_b_0 extends Attack{
         Attack_donkeyKong_grounded_b_0(Character c) {
             super(c,"c02attackhi3",2f,9,14,7,17,13,17,20,27);
-            setknockback(0.14f,0.14f);
+            setKnockBack(0.14f,0.14f,KNOCKBACK_TYPE_DIRECTIONAL);
         }
 
         public void activeFrames(int nFrame){
@@ -318,20 +319,12 @@ public abstract class Attack implements GameObject{
             }
 
         }
-        public void applyKnockBack(Character c){
-            c.currentYForce = knockback.y;
-            if(c.get2DPosition().x * this.creator.facingDirection >= this.creator.get2DPosition().x * this.creator.facingDirection){
-                c.currentXForce = this.creator.facingDirection * knockback.x;
-            }else{
-                c.currentXForce = this.creator.facingDirection * knockback.x * -1;
-            }
-        }
     }//manata alta
     static class Attack_donkeyKong_aerial_x_0 extends Attack{
         Attack_donkeyKong_aerial_x_0(Character c) {
             super(c,"c05attackairn",2f,7,12,3,30,10,15,19,10);
             //c05attackairn
-            setknockback(0.13f,0.08f);
+            setKnockBack(0.13f,0.08f,KNOCKBACK_TYPE_DIRECTIONAL);
             this.setAllowMovementDuringActiveFrames(true);
         }
         public void activeFrames(int nFrame){
@@ -347,20 +340,11 @@ public abstract class Attack implements GameObject{
             }
 
         }
-
-        public void applyKnockBack(Character c){
-            c.currentYForce = knockback.y;
-            if(c.get2DPosition().x * this.creator.facingDirection >= this.creator.get2DPosition().x * this.creator.facingDirection){
-                c.currentXForce = this.creator.facingDirection * knockback.x;
-            }else{
-                c.currentXForce = this.creator.facingDirection * knockback.x * -1;
-            }
-        }
     }//tornado aereo
     static class Attack_donkeyKong_aerial_b_0 extends Attack{
         Attack_donkeyKong_aerial_b_0(Character c) {
             super(c,"c05attackairf",2.5f,13,23,3,38,19,21,25,16);
-            setknockback(0.06f,-0.2f);
+            setKnockBack(0.06f,-0.2f);
             this.setAllowMovementDuringActiveFrames(true);
         }
 
@@ -401,7 +385,7 @@ public abstract class Attack implements GameObject{
     static class Attack_donkeyKong_aerial_y_0 extends Attack{
         Attack_donkeyKong_aerial_y_0(Character c) {
             super(c,"c05attackairhi",2f,8,9,3,68,14,18,20,21);
-            setknockback(0.15f,0);
+            setKnockBack(0.15f,0);
             this.setAllowMovementDuringActiveFrames(true);
         }
         public void activeFrames(int nFrame) {
@@ -420,6 +404,192 @@ public abstract class Attack implements GameObject{
     }//testata aerea
 
 
+    //SONIC
+    static class Attack_sonic_grounded_x_0 extends Attack{
+        Attack_sonic_grounded_x_0(Character c) {
+            super(c,"smush_blender_import|smush_blender_import c00attack11.nuanmb",2f,4,6,4,7,20,22,24,32);
+            setKnockBack(0.01f,0);
+        }
+
+        @Override
+        public void activeFrames(int nFrame) {
+            super.activeFrames(nFrame);
+
+            if(nFrame == 3){
+                addCollider(new BoxCollider(this,creator.facingDirection * 0.63f,- 1.72f,ATTACK_COLLIDER_TAG,0.13f,0.13f));
+            }
+        }
+    }//pugno 1 (combo 0)
+    static class Attack_sonic_grounded_x_1 extends Attack{
+        Attack_sonic_grounded_x_1(Character c) {
+            super(c,"smush_blender_import|smush_blender_import c00attack12.nuanmb",2f,5,8,5,7,23,23,23,36);
+            setKnockBack(0.017f,0);
+        }
+
+        @Override
+        public void firstActiveFrame() {
+            super.firstActiveFrame();
+
+            addCollider(new BoxCollider(this,creator.facingDirection * 0.61f,- 1.72f,ATTACK_COLLIDER_TAG,0.16f,0.13f));
+        }
+    }//pugno 2 (combo 1)
+    static class Attack_sonic_grounded_x_2 extends Attack{
+        Attack_sonic_grounded_x_2(Character c) {
+            super(c,"smush_blender_import|smush_blender_import c00attack13.nuanmb",2f,11,16,7,15,27,30,33,31);
+            setKnockBack(0.10f,0);
+        }
+        public void activeFrames(int nFrame){
+            super.activeFrames(nFrame);
+
+            if(nFrame == 3){
+                addCollider(new BoxCollider(this, creator, creator.facingDirection * 0.283f,-2.06f, ATTACK_COLLIDER_TAG,0.18f,0.26f));
+            }
+            if(nFrame == 4){
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.76f,-1.65f));
+                ((BoxCollider)createdColliders.get(0)).width = 0.3f;
+            }
+            if(nFrame > 4 && nFrame < 9){
+                ((BoxCollider)createdColliders.get(0)).width = ((BoxCollider)createdColliders.get(0)).width * 0.9f;
+                ((BoxCollider)createdColliders.get(0)).height = ((BoxCollider)createdColliders.get(0)).height * 0.9f;
+            }
+        }
+    }//calcio (combo 2)
+    static class Attack_sonic_grounded_y_0 extends Attack{
+        Attack_sonic_grounded_y_0(Character c) {
+            super(c,"smush_blender_import|smush_blender_import c01attacks3hi.nuanmb",2.4f,6,21,2,14,29, 22,37,33);
+            setKnockBack(0.1f,0.05f);
+        }
+        public void activeFrames(int nFrame){
+            super.activeFrames(nFrame);
+            if(nFrame == 8){
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.76f,-1.485f, ATTACK_COLLIDER_TAG,0.19f));
+            }
+            if(nFrame == 12){
+                ((CircularCollider)createdColliders.get(0)).radius = 0.15f;
+            }
+        }
+    }//calcio (guard breaker)
+    static class Attack_sonic_grounded_b_0 extends Attack{
+        Attack_sonic_grounded_b_0(Character c) {
+            super(c,"smush_blender_import|smush_blender_import c02attackhi3.nuanmb",2f,5,7,6,18,40,42,44,28);
+            setKnockBack(0.11f,0.18f);
+        }
+
+        public void activeFrames(int nFrame){
+            super.activeFrames(nFrame);
+
+            if(nFrame == 8){
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.2f,-1.15f, ATTACK_COLLIDER_TAG,0.145f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.3f,-1f, ATTACK_COLLIDER_TAG,0.13f));
+            }
+
+            if(nFrame == 15){
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.178f,-1f));
+                createdColliders.get(1).set2DPosition(new Point2D.Float(creator.facingDirection * 0.13f,-0.83f));
+            }
+
+
+        }
+    }//calci alti
+    static class Attack_sonic_aerial_x_0 extends Attack{
+        Attack_sonic_aerial_x_0(Character c) {
+            super(c,"smush_blender_import|smush_blender_import c05attackairn.nuanmb",2.2f,2,4,6,46,11,14,24,14);
+            setKnockBack(0.11f,0.03f,KNOCKBACK_TYPE_DIRECTIONAL);
+            this.setAllowMovementDuringActiveFrames(true);
+        }
+        public void firstActiveFrame() {
+            super.firstActiveFrame();
+            addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.15f,-1.7f, ATTACK_COLLIDER_TAG,0.27f));
+        }
+    }//spin aereo //sistemare hurtBox
+    static class Attack_sonic_aerial_b_0 extends Attack{
+        Attack_sonic_aerial_b_0(Character c) {
+            super(c,"smush_blender_import|smush_blender_import c05attackairf.nuanmb",2.5f,5,11,5,31,18,24,28,22);
+            setKnockBack(0.10f,0);
+            this.setAllowMovementDuringActiveFrames(true);
+        }
+
+        public void activeFrames(int nFrame) {
+            super.activeFrames(nFrame);
+
+            if(nFrame == 5){
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.45f,-1.7f, ATTACK_COLLIDER_TAG,0.21f));
+            }
+            if(nFrame == 15){
+                removeAllColliders();
+            }
+        }
+    }//testata rotante aerea //sistemare hurtBox
+    static class Attack_sonic_aerial_y_0 extends Attack{
+        Attack_sonic_aerial_y_0(Character c) {
+            super(c,"smush_blender_import|smush_blender_import c05attackairhi.nuanmb",2.2f,4,5,9,33,9,10,21,13);
+            setKnockBack(0.11f,0.149f,KNOCKBACK_TYPE_ACTIVE_INPUT);
+            applyContinuousKnockBack = true;
+            this.setAllowMovementDuringActiveFrames(true);
+
+        }
+        public void activeFrames(int nFrame) {
+            super.activeFrames(nFrame);
+            if(nFrame == 5){
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.43f,-1.66f, ATTACK_COLLIDER_TAG,0.12f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * -0.41f,-1.66f, ATTACK_COLLIDER_TAG,0.12f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.55f,-1.66f, ATTACK_COLLIDER_TAG,0.09f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * -0.53f,-1.66f, ATTACK_COLLIDER_TAG,0.09f));
+            }
+
+            if(nFrame == 9){
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.41f,-1.64f));
+                createdColliders.get(1).set2DPosition(new Point2D.Float(creator.facingDirection * -0.40f,-1.64f));
+                createdColliders.get(2).set2DPosition(new Point2D.Float(creator.facingDirection * 0.52f,-1.58f));
+                createdColliders.get(3).set2DPosition(new Point2D.Float(creator.facingDirection * -0.51f,-1.58f));
+            }
+            if(nFrame == 13){
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.36f,-1.57f));
+                createdColliders.get(1).set2DPosition(new Point2D.Float(creator.facingDirection * -0.37f,-1.56f));
+                createdColliders.get(2).set2DPosition(new Point2D.Float(creator.facingDirection * 0.47f,-1.50f));
+                createdColliders.get(3).set2DPosition(new Point2D.Float(creator.facingDirection * -0.46f,-1.49f));
+            }
+            if(nFrame == 14){
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.20f,-1.37f));
+                createdColliders.get(1).set2DPosition(new Point2D.Float(creator.facingDirection * -0.20f,-1.36f));
+                createdColliders.get(2).set2DPosition(new Point2D.Float(creator.facingDirection * 0.30f,-1.27f));
+                createdColliders.get(3).set2DPosition(new Point2D.Float(creator.facingDirection * -0.30f,-1.26f));
+            }
+            if(nFrame == 15){
+                remoreCollider(createdColliders.get(0));
+                remoreCollider(createdColliders.get(0));
+                remoreCollider(createdColliders.get(0));
+                createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * -0.028f,-1.176f));
+                ((CircularCollider)createdColliders.get(0)).radius = 0.18f;
+            }
+
+
+        }
+
+        @Override
+        public void applyKnockBack(Character c) {
+            float posX,posY;
+            if(this.frameCounter < startUpFrames + 15){
+                if(c.get2DPosition().x * creator.facingDirection > this.creator.get2DPosition().x * creator.facingDirection){
+                    posX = createdColliders.get(0).get2DPosition().x - c.bodyCol.center.x;
+                    posY = createdColliders.get(0).get2DPosition().y - c.bodyCol.center.y;
+                    c.set2DPosition(new Point2D.Float(posX, posY));
+                }else{
+                    posX = createdColliders.get(1).get2DPosition().x - c.bodyCol.center.x;
+                    posY = createdColliders.get(1).get2DPosition().y - c.bodyCol.center.y;
+                    c.set2DPosition(new Point2D.Float(posX, posY));
+                }
+            }else{
+                posX = createdColliders.get(0).get2DPosition().x - c.bodyCol.center.x;
+                posY = createdColliders.get(0).get2DPosition().y - c.bodyCol.center.y;
+                c.set2DPosition(new Point2D.Float(posX, posY));
+                super.applyKnockBack(c);
+            }
+
+        }
+    }//sforbiciata alta aerea
+
+
     Character creator;
     String tag;
     Point2D.Float position;
@@ -436,7 +606,8 @@ public abstract class Attack implements GameObject{
     int enemyRecoveryFrames;//frame di stun per nemico che viene colpito da questo attacco
     boolean currentlyEnableMovement, enableMovement;
     Vector<Collider2D> createdColliders;
-    boolean haveHitted;
+    boolean haveHitted, applyContinuousKnockBack;
+    int knockBackType;
 
 
     //frame debug
@@ -465,6 +636,8 @@ public abstract class Attack implements GameObject{
         haveHitted = false;
         createdColliders = new Vector<>();
         knockback = new Vector2(0,0);
+        knockBackType = KNOCKBACK_TYPE_NORMAL;
+        applyContinuousKnockBack = false;
         this.setAllowMovementDuringActiveFrames(false);
     }
 
@@ -514,6 +687,30 @@ public abstract class Attack implements GameObject{
                     return new Attack_donkeyKong_aerial_b_0(c);
                 case Character.ATTACK_3_AIRBORN:
                     return new Attack_donkeyKong_aerial_y_0(c);
+            }
+        }
+
+        if(c.id == Character.SONIC_ID){
+            switch (attackId){
+                case Character.ATTACK_1_GROUNDED:
+                    switch (attackState){
+                        case 0:
+                            return new Attack_sonic_grounded_x_0(c);
+                        case 1:
+                            return new Attack_sonic_grounded_x_1(c);
+                        case 2:
+                            return new Attack_sonic_grounded_x_2(c);
+                    }
+                case Character.ATTACK_2_GROUNDED:
+                    return new Attack_sonic_grounded_b_0(c);
+                case Character.ATTACK_3_GROUNDED:
+                    return new Attack_sonic_grounded_y_0(c);
+                case Character.ATTACK_1_AIRBORN:
+                    return new Attack_sonic_aerial_x_0(c);
+                case Character.ATTACK_2_AIRBORN:
+                    return new Attack_sonic_aerial_b_0(c);
+                case Character.ATTACK_3_AIRBORN:
+                    return new Attack_sonic_aerial_y_0(c);
             }
         }
 
@@ -587,12 +784,20 @@ public abstract class Attack implements GameObject{
             creator.removeCollider(col);
         }
     }
-    public void setknockback(Vector2 knockback){
-        this.knockback = knockback;
+    public void setKnockBack(Vector2 knockBack, int KnockBackType){
+        this.knockback = knockBack;
+        this.knockBackType = KnockBackType;
+    }
+    public void setKnockBack(Vector2 knockBack){
+        setKnockBack(knockBack,0);
 
     }
-    public void setknockback(float xVal, float yVal){
-        setknockback(new Vector2(xVal, yVal));
+    public void setKnockBack(float xVal, float yVal){
+        setKnockBack(new Vector2(xVal, yVal));
+
+    }
+    public void setKnockBack(float xVal, float yVal, int KnockBackType){
+        setKnockBack(new Vector2(xVal, yVal), KnockBackType);
 
     }
     public void setAllowMovementDuringActiveFrames(boolean allowMovement){
@@ -689,6 +894,19 @@ public abstract class Attack implements GameObject{
         createdColliders = new Vector<>();
     }
     public void hit(Character c){
+
+        //continua a infliggere stun -> combo costanti indipendentemente al frame in cui è avvenuta la hit
+        if(c.guarding){
+            c.currentStunFrames = Character.GUARD_HIT_STUN_FRAMES;
+        }else{
+            c.currentStunFrames = this.enemyRecoveryFrames;
+        }
+
+        //continua a infliggere knocback -> combo costanti indipendentemente al frame in cui è avvenuta la hit
+        if(!c.guarding && (applyContinuousKnockBack || !haveHitted)){
+            applyKnockBack(c);
+        }
+
         if(!haveHitted){//fa danno 1 volta
             if(c.grounded){
                 if(c.guarding){
@@ -710,7 +928,6 @@ public abstract class Attack implements GameObject{
                 c.controller.current.speed = c.airHitAnimationSpeed;
                 c.currentLife -= lifeDamage;
 
-                applyKnockBack(c);
             }
 
             if(c.currentLife < 0){
@@ -726,12 +943,6 @@ public abstract class Attack implements GameObject{
             c.lastAttackId = Character.ATTACK_NONE;
         }//fatto 1 sola volta
 
-        //continua a infliggere stun -> combo costanti indipendentemente al frame in cui è avvenuta la hit
-        if(c.guarding){
-            c.currentStunFrames = Character.GUARD_HIT_STUN_FRAMES;
-        }else{
-            c.currentStunFrames = this.enemyRecoveryFrames;
-        }
 
         if(c.guarding && c.currentGuardAmount == 0){//se ho rotto la guardia
             c.currentStunFrames = Character.GUARD_BREAKE_STUNN_FRAMES;
@@ -743,8 +954,29 @@ public abstract class Attack implements GameObject{
 
     }
     public void applyKnockBack(Character c){
-        c.currentXForce = this.creator.facingDirection * knockback.x;
-        c.currentYForce = knockback.y;
+        if(knockBackType == KNOCKBACK_TYPE_NORMAL){
+            c.currentXForce = creator.facingDirection * knockback.x;
+            c.currentYForce = knockback.y;
+        }
+        if(knockBackType == KNOCKBACK_TYPE_DIRECTIONAL){
+            c.currentYForce = knockback.y;
+            if(c.get2DPosition().x * creator.facingDirection >= creator.get2DPosition().x * creator.facingDirection){
+                c.currentXForce = creator.facingDirection * knockback.x;
+            }else{
+                c.currentXForce = creator.facingDirection * knockback.x * -1;
+            }
+        }
+        if(knockBackType == KNOCKBACK_TYPE_ACTIVE_INPUT){
+            if(creator.moveDirection == Character.MOVE_STOP){
+                c.currentXForce = creator.facingDirection * knockback.x;
+                c.currentYForce = knockback.y;
+            }else{
+                c.currentXForce = creator.moveDirection * knockback.x;
+                c.currentYForce = knockback.y;
+            }
+
+        }
+
     }
     public void interrupt(){
         removeAllColliders();

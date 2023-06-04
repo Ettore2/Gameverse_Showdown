@@ -17,14 +17,14 @@ import java.util.Vector;
 
 public class ChooseCharactersScreen extends GameState{
 
-    private static final String[] pathCharacters = {"Img/Characters/Mario/Mario", "Img/Characters/Donkey Kong/Donkey Kong", "Img/Characters/QuestionMark/QuestionMark"};
+    private static final String[] pathCharacters = {"Img/Characters/Mario/Mario", "Img/Characters/Donkey Kong/Donkey Kong", "Img/Characters/Sonic/Sonic", "Img/Characters/QuestionMark/QuestionMark"};
     private int c1_positionX, c1_positionY, c1_positionBtnX, c1_tmpPosition;
     private int c1_positionIsTakenX, c1_positionIsTakenY;
     private int c2_positionX, c2_positionY;
     private int c2_positionIsTakenX, c2_positionIsTakenY;
     private boolean checkLblCharacters, checkBtnCustomsConfirms;
 
-    private String[] nameCharacter = {"Mario", "Donkey Kong"};
+    private String[] nameCharacter = {"Mario", "Donkey Kong","Sonic"};
     private Image backgroundImage;
     private Stage stage;
     private Camera camera;
@@ -96,14 +96,12 @@ public class ChooseCharactersScreen extends GameState{
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 6; j++) {
-                if(i == 0 && j >= 0 && j <= Character.AVILABLE_CHARACTERS){
-                    lblCharacters[i][j] = new ImageC(new Texture(pathCharacters[j] + ".png"), pathCharacters[j] + ".png", pathCharacters[j] + "_isOver.png", pathCharacters[j] + "_isOverC2.png",j);
-                    tableCharacters.add(lblCharacters[i][j]).pad(0, 0, 25, 25);
-                    //System.out.println(j);
+                if(i * 3 + j < Character.AVILABLE_CHARACTERS){
+                    lblCharacters[i][j] = new ImageC(new Texture(pathCharacters[i * 3 + j] + ".png"), pathCharacters[i * 3 + j] + ".png", pathCharacters[i * 3 + j] + "_isOver.png", pathCharacters[i * 3 + j] + "_isOverC2.png",i * 3 + j);
                 }else{
-                    lblCharacters[i][j] = new ImageC(new Texture(pathCharacters[2] + ".png"), pathCharacters[2] + ".png", pathCharacters[2] + "_isOver.png", pathCharacters[2] + "_isOverC2.png");
-                    tableCharacters.add(lblCharacters[i][j]).pad(0, 0, 25, 25);
+                    lblCharacters[i][j] = new ImageC(new Texture(pathCharacters[pathCharacters.length - 1] + ".png"), pathCharacters[pathCharacters.length - 1] + ".png", pathCharacters[pathCharacters.length - 1] + "_isOver.png", pathCharacters[pathCharacters.length - 1] + "_isOverC2.png",-1);
                 }
+                tableCharacters.add(lblCharacters[i][j]).pad(0, 0, 25, 25);
             }
             tableCharacters.row();
         }
