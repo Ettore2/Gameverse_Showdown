@@ -494,7 +494,7 @@ public abstract class Attack implements GameObject{
     }//calci alti
     static class Attack_sonic_aerial_x_0 extends Attack{
         Attack_sonic_aerial_x_0(Character c) {
-            super(c,"smush_blender_import|smush_blender_import c05attackairn.nuanmb",2.2f,1,3,6,46,11,14,24,14);
+            super(c,"smush_blender_import|smush_blender_import c05attackairn.nuanmb",2.2f,2,3,6,46,11,14,24,14);
             setKnockBack(0.025f,0.02f,KNOCKBACK_TYPE_DIRECTIONAL);
             multipleHitsDelay = 8;
             this.setAllowMovementDuringActiveFrames(true);
