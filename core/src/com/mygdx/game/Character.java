@@ -173,8 +173,7 @@ public class Character extends ModelInstance implements GameObject{
                 break;
         }
 
-        currentBodyColliderInfo = idleBodyCol;
-        currentHeadColliderInfo = idleHeadCol;
+
         if(firstJumpBodyCol == null){
             firstJumpBodyCol = idleBodyCol;
         }
@@ -393,6 +392,11 @@ public class Character extends ModelInstance implements GameObject{
         transform.getTranslation(positionTmp);
         idleBodyCol.setDimensions(new Point2D.Float(0, -1.8f),0.35f,0.65f);
         idleHeadCol.setDimensions(new Point2D.Float(0, -1.48f),0.175f);
+        firstJumpBodyCol = new BoxCollider(this,new Point2D.Float(0,-1.62f),BODY_COLLIDER_TAG,0,0);
+        firstJumpHeadCol = new CircularCollider(this,new Point2D.Float(0,-1.62f),BODY_COLLIDER_TAG,0.26f);
+        secondJumpBodyCol = firstJumpBodyCol;
+        secondJumpHeadCol = firstJumpHeadCol;
+
 
 
         //bodyCol.isVisible = false; //debug
@@ -420,21 +424,23 @@ public class Character extends ModelInstance implements GameObject{
 
     //altri metodi
     public void setCollidersConfiguration(@NotNull BoxCollider bodyColliderInfo,@NotNull  CircularCollider headColliderInfo){
-        if(currentBodyCollider != null){
-            existingColliders.remove(currentBodyCollider);
+        if(bodyColliderInfo != currentBodyColliderInfo || headColliderInfo != currentHeadColliderInfo){
+            if(currentBodyCollider != null){
+                existingColliders.remove(currentBodyCollider);
+            }
+            if(currentHeadCollider != null){
+                existingColliders.remove(currentHeadCollider);
+            }
+
+            currentBodyColliderInfo = bodyColliderInfo;
+            currentHeadColliderInfo = headColliderInfo;
+
+            currentBodyCollider = new BoxCollider(bodyColliderInfo.owner, bodyColliderInfo.center.x * facingDirection, bodyColliderInfo.center.y, bodyColliderInfo.getTag(), bodyColliderInfo.width, bodyColliderInfo.height);
+            currentHeadCollider = new CircularCollider(headColliderInfo.owner, headColliderInfo.center.x * facingDirection, headColliderInfo.center.y, headColliderInfo.getTag(), headColliderInfo.radius);
+
+            existingColliders.add(currentBodyCollider);
+            existingColliders.add(currentHeadCollider);
         }
-        if(currentHeadCollider != null){
-            existingColliders.remove(currentHeadCollider);
-        }
-
-        currentBodyColliderInfo = bodyColliderInfo;
-        currentHeadColliderInfo = headColliderInfo;
-
-        currentBodyCollider = new BoxCollider(bodyColliderInfo.owner, bodyColliderInfo.center.x * facingDirection, bodyColliderInfo.center.y, bodyColliderInfo.getTag(), bodyColliderInfo.width, bodyColliderInfo.height);
-        currentHeadCollider = new CircularCollider(headColliderInfo.owner, headColliderInfo.center.x * facingDirection, headColliderInfo.center.y, headColliderInfo.getTag(), headColliderInfo.radius);
-
-        existingColliders.add(currentBodyCollider);
-        existingColliders.add(currentHeadCollider);
     }
 
     public void lodProjectiles(){
@@ -518,6 +524,9 @@ public class Character extends ModelInstance implements GameObject{
             }
             //System.out.println(moveLeft+"\t"+moveRight); //debug
 
+            if(controller.current.animation.id.equals(idleAnimation) || controller.current.animation.id.equals(fallingAnimation)){
+                setCollidersConfiguration(idleBodyCol, idleHeadCol);
+            }//setto CollidersConfiguration (per sicurezza)
 
             //setto idle animation grounded
             if(!guarding && !isStunned() && grounded && (moveDirection == MOVE_STOP || controller.current.loopCount == 0 || (isAttacking() && controller.current.animation.id.equals(walkAnimation))) && (!isAttacking() || controller.current.loopCount == 0 || controller.current.animation.id.equals(walkAnimation))){
@@ -633,6 +642,10 @@ public class Character extends ModelInstance implements GameObject{
                 transform.getTranslation(positionTmp);
                 transform.setTranslation(positionTmp.x,positionTmp.y + currentYForce,positionTmp.z);
                 currentYForce -= falAcceleration;
+                if(controller.current.animation.id.equals(fallingAnimation)){
+                    setCollidersConfiguration(idleBodyCol, idleHeadCol);
+                }//setto CollidersConfiguration
+
             }
 
             //salto
@@ -653,10 +666,12 @@ public class Character extends ModelInstance implements GameObject{
                 if(availableJumps == 1 && !(controller.current.animation.id.equals(firstJumpAnimation)) && !isAttacking()){
                     controller.setAnimation(firstJumpAnimation);
                     controller.current.speed = firstJumpAnimationSpeed;
+                    setCollidersConfiguration(firstJumpBodyCol, firstJumpHeadCol);
                 }
                 if(availableJumps == 0 && !(controller.current.animation.id.equals(secondJumpAnimation)) && !isAttacking()){
                     controller.setAnimation(secondJumpAnimation);
                     controller.current.speed = secondJumpAnimationSpeed;
+                    setCollidersConfiguration(secondJumpBodyCol, secondJumpHeadCol);
 
                 }
             }//grafica di jump e spostamento
@@ -974,13 +989,22 @@ public class Character extends ModelInstance implements GameObject{
 
                     Vector3 positionTmp = new Vector3();
                     transform.getTranslation(positionTmp);
-                    transform.setTranslation(positionTmp.x,otherCollider.get2DPosition().y + ((BoxCollider)otherCollider).height / 2 - currentBodyCollider.center.y + currentBodyCollider.height / 2 - 0.01f,positionTmp.z);
+                    if(currentHeadColliderInfo.center.y - currentHeadColliderInfo.radius < currentBodyColliderInfo.center.y - currentBodyColliderInfo.height / 2){
 
+                        transform.setTranslation(positionTmp.x,otherCollider.get2DPosition().y + ((BoxCollider)otherCollider).height / 2 - currentHeadCollider.center.y + currentHeadCollider.radius - 0.01f,positionTmp.z);
+                    }else{
+                        transform.setTranslation(positionTmp.x,otherCollider.get2DPosition().y + ((BoxCollider)otherCollider).height / 2 - currentBodyCollider.center.y + currentBodyCollider.height / 2 - 0.01f,positionTmp.z);
+                    }
                 }else{
                     if(currentYForce < 0){
                         Vector3 positionTmp = new Vector3();
                         transform.getTranslation(positionTmp);
-                        transform.setTranslation(positionTmp.x,otherCollider.get2DPosition().y + ((BoxCollider)otherCollider).height / 2 - currentBodyCollider.center.y + currentBodyCollider.height / 2 + 0.01f,positionTmp.z);
+
+                        if(currentHeadColliderInfo.center.y - currentHeadColliderInfo.radius < currentBodyColliderInfo.center.y - currentBodyColliderInfo.height / 2) {
+                            transform.setTranslation(positionTmp.x, otherCollider.get2DPosition().y + ((BoxCollider) otherCollider).height / 2 - currentHeadCollider.center.y + currentHeadCollider.radius + 0.01f, positionTmp.z);
+                        }else{
+                            transform.setTranslation(positionTmp.x, otherCollider.get2DPosition().y + ((BoxCollider) otherCollider).height / 2 - currentBodyCollider.center.y + currentBodyCollider.height / 2 + 0.01f, positionTmp.z);
+                        }
                         currentYForce = - currentYForce / 2;
                     }
                 }

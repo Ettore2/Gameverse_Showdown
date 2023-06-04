@@ -482,6 +482,14 @@ public abstract class Attack implements GameObject{
             super(c,"smush_blender_import|smush_blender_import c01attacks3hi.nuanmb",2.4f,6,21,2,14,29, 22,37,33);
             setKnockBack(0.1f,0.05f);
         }
+
+        @Override
+        public void firstActiveFrame() {
+            super.firstActiveFrame();
+
+            creator.setCollidersConfiguration(new BoxCollider(creator,0.2f,-1.90f, Character.BODY_COLLIDER_TAG,0.6f,0.5f), new CircularCollider(creator,0.2f,-1.90f, Character.BODY_COLLIDER_TAG,0));
+        }
+
         public void activeFrames(int nFrame){
             super.activeFrames(nFrame);
             if(nFrame == 8){
@@ -502,6 +510,7 @@ public abstract class Attack implements GameObject{
         public void firstActiveFrame() {
             super.firstActiveFrame();
             addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.15f,-1.7f, ATTACK_COLLIDER_TAG,0.27f));
+            creator.setCollidersConfiguration(new BoxCollider(creator,0.15f,-1.7f,Character.BODY_COLLIDER_TAG,0,0), new CircularCollider(creator, 0.15f,-1.7f, Character.BODY_COLLIDER_TAG,0.27f));
         }
     }//spin aereo //sistemare hurtBox
     static class Attack_sonic_aerial_b_0 extends Attack{
@@ -516,6 +525,7 @@ public abstract class Attack implements GameObject{
 
             if(nFrame == 5){
                 addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.45f,-1.7f, ATTACK_COLLIDER_TAG,0.21f));
+                creator.setCollidersConfiguration(new BoxCollider(creator,0.2f,-1.7f, Character.BODY_COLLIDER_TAG,0.75f,0.265f), new CircularCollider(creator, 0.45f,-1.7f, Character.BODY_COLLIDER_TAG,0.21f));
             }
             if(nFrame == 15){
                 removeAllColliders();
@@ -860,6 +870,7 @@ public abstract class Attack implements GameObject{
     }
     public void firstRecoveryFrame(){
         removeAllColliders();
+        creator.setCollidersConfiguration(creator.idleBodyCol, creator.idleHeadCol);
         currentlyEnableMovement = false;
 
     }
