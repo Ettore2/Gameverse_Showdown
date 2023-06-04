@@ -53,15 +53,9 @@ public class BattleScreen extends GameState {
     int framesPassedByLastStartPress;
     float secondsToMatchEnd;
     private int idC1, idC2;
-    private ProgressBar health1;
-    private ProgressBar health2;
-    private ProgressBar stamina1;
-    private ProgressBar stamina2;
-    private Image pg1Icn;
-    private Image pg2Icn;
-    private Image pg1Name;
-    private Image pg2Name;
-
+    private ProgressBar health1, health2, stamina1, stamina2;
+    private Image pg1Name, pg2Name, pg1Icn, pg2Icn;
+    private Image pg1, pg2, vs;
 
 
     private Environment environment;
@@ -153,7 +147,7 @@ public class BattleScreen extends GameState {
 
         //timer
         lblTimerHeight = 450;
-        lblTimer = new Label(""+(int)secondsToMatchEnd,new Skin(Gdx.files.internal(GameConstants.SKIN_GLASSY_RED)));
+        lblTimer = new Label("" + (int)secondsToMatchEnd,new Skin(Gdx.files.internal(GameConstants.SKIN_GLASSY_RED)));
         lblTimer.setSize(lblTimer.getPrefWidth(),lblTimer.getPrefHeight());
         lblTimer.setPosition((Gdx.graphics.getWidth() - lblTimer.getWidth())/2,(Gdx.graphics.getHeight() - lblTimer.getHeight())/2 + lblTimerHeight);
 
@@ -169,7 +163,7 @@ public class BattleScreen extends GameState {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         //cameraController.update();
 
-        super.render(delta);//triggera metodi di input controller e normalExecution e loadingExecution
+        super.render(delta);//triggera metodi d'input controller e normalExecution e loadingExecution
     }
 
     @Override
@@ -330,6 +324,23 @@ public class BattleScreen extends GameState {
     }
     public void loadingExecution(Float delta){
 
+        Texture textureMenu = new Texture(GameConstants.BACKGROUND_LOADING_BATTLE);
+        Image backgroundMenu = new Image(textureMenu);
+        backgroundMenu.setBounds(0,0, GameConstants.screenWidth, GameConstants.screenHeight);
+
+        pg1 = new Image(new Texture("Img/Characters/" + GameConstants.CHARACTERS_NAMES[idC1] + "/" + GameConstants.CHARACTERS_NAMES[idC1] + ".png"));
+        pg1.setSize(GameConstants.screenWidth * 0.2f, GameConstants.screenHeight * 0.28f);
+        pg1.setPosition(GameConstants.screenWidth * 0.05f, GameConstants.screenHeight * 0.5f);
+
+        pg2 = new Image(new Texture("Img/Characters/" + GameConstants.CHARACTERS_NAMES[idC2] + "/" + GameConstants.CHARACTERS_NAMES[idC2] + "_isOverC2.png"));
+        pg2.setSize(GameConstants.screenWidth * 0.2f, GameConstants.screenHeight * 0.28f);
+        pg2.setScale(-1, 1);
+        pg2.setPosition(GameConstants.screenWidth - pg1.getX(), pg1.getY());
+
+        vs = new Image(new Texture("Img/BattleScreen/Versus.png"));
+        vs.setPosition(GameConstants.screenWidth/2f - vs.getWidth()/2, GameConstants.screenHeight * 0.45f);
+
+
         switch (loadingCounter){
             case 0:
                 loadingProgressBar.setValue(0);
@@ -338,13 +349,12 @@ public class BattleScreen extends GameState {
                 personaggio1 = new Character(camera3D, idC1, 0, 0, 0, 90, existingColliders);
                 personaggio1.set2DPosition(battleStage.getC1spawnPoint());
                 loadingProgressBar.setValue(25);
-
                 break;
             case 2:
                 personaggio2 = new Character(camera3D, idC2, 0, 0, 0, -90, existingColliders);
                 personaggio2.set2DPosition(battleStage.getC2spawnPoint());
-                loadingProgressBar.setValue(50);
 
+                loadingProgressBar.setValue(50);
                 break;
             case 3:
                 personaggio1.lodProjectiles();
@@ -416,7 +426,11 @@ public class BattleScreen extends GameState {
         }
 
         stageBackGroundBatch.begin();
+        backgroundMenu.draw(stageBackGroundBatch,1);
         loadingProgressBar.draw(stageBackGroundBatch,1);
+        pg1.draw(stageBackGroundBatch,1);
+        pg2.draw(stageBackGroundBatch,1);
+        vs.draw(stageBackGroundBatch,1);
         stageBackGroundBatch.end();
 
         System.out.println(loadingCounter);

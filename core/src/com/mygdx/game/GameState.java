@@ -42,7 +42,7 @@ public abstract class GameState implements Screen{
         loadingCounter = 0;
         loadingProgressBar = new ProgressBar(0,100,1,false,new Skin(Gdx.files.internal(GameConstants.SKIN_PROGRESSBAR)));
         loadingProgressBar.setSize(Gdx.graphics.getWidth()/2f,Gdx.graphics.getWidth()/20f);
-        loadingProgressBar.setPosition((Gdx.graphics.getWidth()-loadingProgressBar.getWidth())/2f,(Gdx.graphics.getHeight()-loadingProgressBar.getHeight())/2f);
+        loadingProgressBar.setPosition((Gdx.graphics.getWidth() - loadingProgressBar.getWidth())/2f,(Gdx.graphics.getHeight() - loadingProgressBar.getHeight())/5f);
 
 
         buttonsDelays = new float[16];
@@ -80,10 +80,6 @@ public abstract class GameState implements Screen{
 
             case PREFERENCES:
                 newScreen = new PreferencesScreen(game);
-                break;
-
-            case EXIT:
-                newScreen = new ExitScreen(game);
                 break;
 
             case BATTLESCREEN:

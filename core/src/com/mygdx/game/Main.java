@@ -14,7 +14,7 @@ public class Main extends Game {
 
      */
 
-    public static final boolean USE_CONTROLLERS = true;
+    public static final boolean USE_CONTROLLERS = false;
     public static boolean EMULATING_CONTROLLER_1 = true;//per adesso tastiera sempre attiva
 
     public Controller c1,c2;
@@ -49,7 +49,7 @@ public class Main extends Game {
 
         bgm = Gdx.audio.newMusic(Gdx.files.internal("BGM/" + pathMusic[0] + ".mp3"));
 
-        musicVolume = 0.1f;//min 0.01 = 1% max 1.0 = 100%
+        musicVolume = 0.0f;//min 0.01 = 1% max 1.0 = 100%
         bgm.setVolume(musicVolume);
         bgm.play();
         bgm.setLooping(true);
