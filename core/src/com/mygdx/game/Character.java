@@ -375,7 +375,7 @@ public class Character extends ModelInstance implements GameObject{
         jumpDeceleration = 0.0080f;
         falAcceleration = 0.01f;
         fastFallAcceleration = 0.0140f;
-        weight = 0.0045f;
+        weight = 0.0058f;
 
         Vector3 positionTmp = new Vector3();
         transform.getTranslation(positionTmp);
@@ -558,11 +558,13 @@ public class Character extends ModelInstance implements GameObject{
             }
 
             //knockback asse y
-            if(isStunned() && !grounded){
+            if(isStunned()){
                 Vector3 positionTmp = new Vector3();
                 transform.getTranslation(positionTmp);
                 transform.setTranslation(positionTmp.x,positionTmp.y + currentYForce,positionTmp.z);
-                currentYForce -= weight + 0.001;// +0.001 da traiettoria a parabola
+                if(!grounded){
+                    currentYForce -= weight + 0.001;// +0.001 da traiettoria a parabola
+                }
             }
 
             //rotazione di default verso avversario
@@ -737,18 +739,6 @@ public class Character extends ModelInstance implements GameObject{
             Vector3 positionTmp = new Vector3();
             transform.getTranslation(positionTmp);
 
-            //setto grounded
-            //if(positionTmp.y > groundHeight){
-            //    grounded = false;
-            //}else{
-            //    grounded = true;
-            //    if(!jumpedThisExecution){
-            //        availableJumps = numberOfJumps;
-            //        currentYForce = 0;
-            //    }
-            //    transform.setTranslation(positionTmp.x,groundHeight,positionTmp.z);
-
-            //}
 
             bodyCol.setX2DPosition(originalBodyColliderRelativeX * facingDirection);
             headCol.setX2DPosition(originalHeadColliderRelativeX * facingDirection);

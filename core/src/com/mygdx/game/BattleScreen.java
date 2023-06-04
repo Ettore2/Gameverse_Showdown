@@ -176,6 +176,7 @@ public class BattleScreen extends GameState {
     public void normalExecution(Float delta) {
         super.normalExecution(delta);
 
+
         if (!USE_DEBUG_FOR_P1 || (!personaggio1.isAttacking() || (((Gdx.input.isKeyPressed(Input.Keys.Z) && DEBUG_FRAME_TIMER == DEBUG_SNSIBILITY_DELAY))))) {//debug
             if (currentState == STATE_BATTLE) {
 
@@ -321,6 +322,10 @@ public class BattleScreen extends GameState {
         if (framesPassedByLastStartPress < START_BUTTON_DELAY) {
             framesPassedByLastStartPress++;
         }
+
+
+
+        System.out.println(personaggio2.isStunned() +" | " + personaggio2.currentYForce);
 
     }
     public void loadingExecution(Float delta){
