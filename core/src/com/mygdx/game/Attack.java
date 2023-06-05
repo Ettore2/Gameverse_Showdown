@@ -408,7 +408,7 @@ public abstract class Attack implements GameObject{
     //SONIC
     static class Attack_sonic_grounded_x_0 extends Attack{
         Attack_sonic_grounded_x_0(Character c) {
-            super(c,"smush_blender_import|smush_blender_import c00attack11.nuanmb",2f,4,6,4,7,20,22,24,32);
+            super(c,"smush_blender_import|smush_blender_import c00attack11.nuanmb",2f,5,7,4,7,20,22,24,32);
             setKnockBack(0.01f,0);
         }
 
@@ -423,7 +423,7 @@ public abstract class Attack implements GameObject{
     }//pugno 1 (combo 0)
     static class Attack_sonic_grounded_x_1 extends Attack{
         Attack_sonic_grounded_x_1(Character c) {
-            super(c,"smush_blender_import|smush_blender_import c00attack12.nuanmb",2f,5,8,5,7,23,23,23,36);
+            super(c,"smush_blender_import|smush_blender_import c00attack12.nuanmb",2f,6,9,5,7,23,23,23,36);
             setKnockBack(0.017f,0);
         }
 
@@ -436,7 +436,7 @@ public abstract class Attack implements GameObject{
     }//pugno 2 (combo 1)
     static class Attack_sonic_grounded_x_2 extends Attack{
         Attack_sonic_grounded_x_2(Character c) {
-            super(c,"smush_blender_import|smush_blender_import c00attack13.nuanmb",2f,11,16,7,15,27,30,33,31);
+            super(c,"smush_blender_import|smush_blender_import c00attack13.nuanmb",2f,13,18,7,15,27,30,33,31);
             setKnockBack(0.10f,0);
         }
         public void activeFrames(int nFrame){
@@ -457,7 +457,7 @@ public abstract class Attack implements GameObject{
     }//calcio (combo 2)
     static class Attack_sonic_grounded_y_0 extends Attack{
         Attack_sonic_grounded_y_0(Character c) {
-            super(c,"smush_blender_import|smush_blender_import c02attackhi3.nuanmb",2f,5,7,6,18,40,42,44,28);
+            super(c,"smush_blender_import|smush_blender_import c02attackhi3.nuanmb",2f,7,9,6,18,40,42,44,28);
             setKnockBack(0.11f,0.18f);
         }
 
@@ -479,7 +479,7 @@ public abstract class Attack implements GameObject{
     }//calci alti
     static class Attack_sonic_grounded_b_0 extends Attack{
         Attack_sonic_grounded_b_0(Character c) {
-            super(c,"smush_blender_import|smush_blender_import c01attacks3hi.nuanmb",2.4f,6,21,2,14,29, 22,37,33);
+            super(c,"smush_blender_import|smush_blender_import c01attacks3hi.nuanmb",2.4f,7,21,2,14,29, 22,37,33);
             setKnockBack(0.1f,0.05f);
         }
 
@@ -515,7 +515,7 @@ public abstract class Attack implements GameObject{
     }//spin aereo //sistemare hurtBox
     static class Attack_sonic_aerial_b_0 extends Attack{
         Attack_sonic_aerial_b_0(Character c) {
-            super(c,"smush_blender_import|smush_blender_import c05attackairf.nuanmb",2.5f,5,11,5,31,18,24,28,22);
+            super(c,"smush_blender_import|smush_blender_import c05attackairf.nuanmb",2.5f,6,12,5,31,18,24,28,22);
             setKnockBack(0.10f,0);
             this.setAllowMovementDuringActiveFrames(true);
         }
@@ -534,7 +534,7 @@ public abstract class Attack implements GameObject{
     }//testata rotante aerea //sistemare hurtBox
     static class Attack_sonic_aerial_y_0 extends Attack{
         Attack_sonic_aerial_y_0(Character c) {
-            super(c,"smush_blender_import|smush_blender_import c05attackairhi.nuanmb",2.2f,4,5,9,33,9,10,21,13);
+            super(c,"smush_blender_import|smush_blender_import c05attackairhi.nuanmb",2.2f,5,6,9,33,9,10,21,13);
             setKnockBack(0.11f,0.149f,KNOCKBACK_TYPE_ACTIVE_INPUT);
             applyContinuousKnockBack = true;
             this.setAllowMovementDuringActiveFrames(true);

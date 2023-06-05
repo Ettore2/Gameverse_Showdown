@@ -255,9 +255,9 @@ public class Character extends ModelInstance implements GameObject{
 
         controller.setAnimation(idleAnimation);//importante
 
-        maxLife = 200;
+        maxLife = 225;
         currentLife = maxLife;
-        maxGuardAmount = 30;
+        maxGuardAmount = 35;
         currentGuardAmount = maxGuardAmount;
         numberOfJumps = 2;
         availableJumps = numberOfJumps;
@@ -376,17 +376,17 @@ public class Character extends ModelInstance implements GameObject{
 
         controller.setAnimation(idleAnimation);//importante
 
-        maxLife = 170;
+        maxLife = 190;
         currentLife = maxLife;
-        maxGuardAmount = 20;
+        maxGuardAmount = 23;
         currentGuardAmount = maxGuardAmount;
         numberOfJumps = 2;
         availableJumps = numberOfJumps;
-        jumpForce = 0.162f;
-        jumpDeceleration = 0.0080f;
+        jumpForce = 0.158f;
+        jumpDeceleration = 0.0079f;
         falAcceleration = 0.01f;
         fastFallAcceleration = 0.0140f;
-        weight = 0.0058f;
+        weight = 0.0062f;
 
         Vector3 positionTmp = new Vector3();
         transform.getTranslation(positionTmp);
