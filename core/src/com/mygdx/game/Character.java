@@ -999,12 +999,23 @@ public class Character extends ModelInstance implements GameObject{
                         Vector3 positionTmp = new Vector3();
                         transform.getTranslation(positionTmp);
 
-                        if(currentHeadColliderInfo.center.y - currentHeadColliderInfo.radius < currentBodyColliderInfo.center.y - currentBodyColliderInfo.height / 2) {
-                            transform.setTranslation(positionTmp.x, otherCollider.get2DPosition().y + ((BoxCollider) otherCollider).height / 2 - currentHeadCollider.center.y + currentHeadCollider.radius + 0.01f, positionTmp.z);
+                        if(Math.abs(currentYForce * this.weight) > 0.001f){
+                            if(currentHeadColliderInfo.center.y - currentHeadColliderInfo.radius < currentBodyColliderInfo.center.y - currentBodyColliderInfo.height / 2) {
+                                transform.setTranslation(positionTmp.x, otherCollider.get2DPosition().y + ((BoxCollider) otherCollider).height / 2 - currentHeadCollider.center.y + currentHeadCollider.radius + 0.01f, positionTmp.z);
+                            }else{
+                                transform.setTranslation(positionTmp.x, otherCollider.get2DPosition().y + ((BoxCollider) otherCollider).height / 2 - currentBodyCollider.center.y + currentBodyCollider.height / 2 + 0.01f, positionTmp.z);
+                            }
+
+                            currentYForce = - currentYForce / 2;
                         }else{
-                            transform.setTranslation(positionTmp.x, otherCollider.get2DPosition().y + ((BoxCollider) otherCollider).height / 2 - currentBodyCollider.center.y + currentBodyCollider.height / 2 + 0.01f, positionTmp.z);
+                            if(currentHeadColliderInfo.center.y - currentHeadColliderInfo.radius < currentBodyColliderInfo.center.y - currentBodyColliderInfo.height / 2) {
+                                transform.setTranslation(positionTmp.x, otherCollider.get2DPosition().y + ((BoxCollider) otherCollider).height / 2 - currentHeadCollider.center.y + currentHeadCollider.radius - 0.01f, positionTmp.z);
+                            }else{
+                                transform.setTranslation(positionTmp.x, otherCollider.get2DPosition().y + ((BoxCollider) otherCollider).height / 2 - currentBodyCollider.center.y + currentBodyCollider.height / 2 - 0.01f, positionTmp.z);
+                            }
+
+                            currentYForce = 0;
                         }
-                        currentYForce = - currentYForce / 2;
                     }
                 }
             }

@@ -49,7 +49,6 @@ public class BattleScreen extends GameState {
     private int idC1, idC2;
     private ProgressBar health1, health2, stamina1, stamina2;
     private Image pg1Name, pg2Name, pg1Icn, pg2Icn;
-    private Image pg1, pg2, vs;
 
 
     private Environment environment;
@@ -72,13 +71,34 @@ public class BattleScreen extends GameState {
     Label lblTimer;
     int lblTimerHeight;
 
+    //grafica caricamento
+    Texture textureMenu;
+    Image pg1LoadingIcn, pg2LoadingIcn, vsLoadingIcn, backgroundMenu;
+
 
 
     //costruttore
     BattleScreen(final Main game,int idBattleStage, int idC1, int idC2, float matchTime){
         super(game);
 
+        //grafica per caricamento
+        textureMenu = new Texture(GameConstants.BACKGROUND_LOADING_BATTLE);
+        backgroundMenu = new Image(textureMenu);
+        backgroundMenu.setBounds(0,0, GameConstants.screenWidth, GameConstants.screenHeight);
 
+        pg1LoadingIcn = new Image(new Texture("Img/Characters/" + GameConstants.CHARACTERS_NAMES[idC1] + "/" + GameConstants.CHARACTERS_NAMES[idC1] + ".png"));
+        pg1LoadingIcn.setSize(GameConstants.screenWidth * 0.2f, GameConstants.screenHeight * 0.28f);
+        pg1LoadingIcn.setPosition(GameConstants.screenWidth * 0.05f, GameConstants.screenHeight * 0.5f);
+
+        pg2LoadingIcn = new Image(new Texture("Img/Characters/" + GameConstants.CHARACTERS_NAMES[idC2] + "/" + GameConstants.CHARACTERS_NAMES[idC2] + "_isOverC2.png"));
+        pg2LoadingIcn.setSize(GameConstants.screenWidth * 0.2f, GameConstants.screenHeight * 0.28f);
+        pg2LoadingIcn.setScale(-1, 1);
+        pg2LoadingIcn.setPosition(GameConstants.screenWidth - pg1LoadingIcn.getX(), pg1LoadingIcn.getY());
+
+        vsLoadingIcn = new Image(new Texture("Img/BattleScreen/Versus.png"));
+        vsLoadingIcn.setPosition(GameConstants.screenWidth/2f - vsLoadingIcn.getWidth()/2, GameConstants.screenHeight * 0.45f);
+
+        //altre cose da inizializzare prima di caricamento
         this.idC1 = idC1;
         this.idC2 = idC2;
 
@@ -95,8 +115,8 @@ public class BattleScreen extends GameState {
         stageBackGround.getCamera().viewportHeight = (float)Gdx.graphics.getHeight();
         stageBackGround.getCamera().position.set(stageBackGround.getCamera().viewportWidth/2, stageBackGround.getCamera().viewportHeight/2,0);
 
-
         existingColliders = new Vector<>();
+
 
         // Create an environment so we have some lighting
         environment = new Environment();
@@ -115,35 +135,11 @@ public class BattleScreen extends GameState {
         camera3D.update();
 
         //stage
-        Character.groundHeight = 0.086f;
         battleStage = new BattleStage(idBattleStage, existingColliders);
         stageBackGround.addActor(battleStage);
 
         //personaggi //cancellare commento
         instances = new Array<>();
-
-        //dichiarazione immagini
-        imgPause = new Image(new Texture("Img/battleScreen/Pause.png"));
-        imgP1Win = new Image(new Texture("Img/battleScreen/P1WINS.png"));
-        imgP2Win = new Image(new Texture("Img/battleScreen/P2WINS.png"));
-        imgDraw = new Image(new Texture("Img/battleScreen/Draw.png"));
-        imgResume = new Image(new Texture("Img/battleScreen/Resume.png"));
-
-        //"setBounds" immagini
-        imgPause.setPosition(stageBackGround.getCamera().position.x - (imgPause.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y - GameConstants.screenHeight * 0.252f);
-        imgP1Win.setPosition(stageBackGround.getCamera().position.x - (imgP1Win.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y + GameConstants.screenHeight * 0.05f);
-        imgP2Win.setPosition(stageBackGround.getCamera().position.x - (imgP2Win.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y + GameConstants.screenHeight * 0.05f);
-        imgDraw.setPosition(stageBackGround.getCamera().position.x - (imgDraw.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y + GameConstants.screenHeight * 0.05f);
-        imgResume.setScale(0.5f);
-        imgResume.setPosition(stageBackGround.getCamera().position.x - (imgResume.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y - GameConstants.screenHeight * 0.302f);
-
-        imgResumeAlphaValTimer = 0;
-
-        //timer
-        lblTimerHeight = 450;
-        lblTimer = new Label("" + (int)secondsToMatchEnd,new Skin(Gdx.files.internal(GameConstants.SKIN_GLASSY_RED)));
-        lblTimer.setSize(lblTimer.getPrefWidth(),lblTimer.getPrefHeight());
-        lblTimer.setPosition((Gdx.graphics.getWidth() - lblTimer.getWidth())/2,(Gdx.graphics.getHeight() - lblTimer.getHeight())/2 + lblTimerHeight);
 
 
         //"inizializzo" schermata di render
@@ -318,23 +314,6 @@ public class BattleScreen extends GameState {
     }
     public void loadingExecution(Float delta){
 
-        Texture textureMenu = new Texture(GameConstants.BACKGROUND_LOADING_BATTLE);
-        Image backgroundMenu = new Image(textureMenu);
-        backgroundMenu.setBounds(0,0, GameConstants.screenWidth, GameConstants.screenHeight);
-
-        pg1 = new Image(new Texture("Img/Characters/" + GameConstants.CHARACTERS_NAMES[idC1] + "/" + GameConstants.CHARACTERS_NAMES[idC1] + ".png"));
-        pg1.setSize(GameConstants.screenWidth * 0.2f, GameConstants.screenHeight * 0.28f);
-        pg1.setPosition(GameConstants.screenWidth * 0.05f, GameConstants.screenHeight * 0.5f);
-
-        pg2 = new Image(new Texture("Img/Characters/" + GameConstants.CHARACTERS_NAMES[idC2] + "/" + GameConstants.CHARACTERS_NAMES[idC2] + "_isOverC2.png"));
-        pg2.setSize(GameConstants.screenWidth * 0.2f, GameConstants.screenHeight * 0.28f);
-        pg2.setScale(-1, 1);
-        pg2.setPosition(GameConstants.screenWidth - pg1.getX(), pg1.getY());
-
-        vs = new Image(new Texture("Img/BattleScreen/Versus.png"));
-        vs.setPosition(GameConstants.screenWidth/2f - vs.getWidth()/2, GameConstants.screenHeight * 0.45f);
-
-
         switch (loadingCounter){
             case 0:
                 loadingProgressBar.setValue(0);
@@ -361,7 +340,7 @@ public class BattleScreen extends GameState {
                 addInstance(personaggio1);
                 addInstance(personaggio2);
 
-                //grafica statistiche personaggi
+                //grafica cose personaggi
                 if(true) {
                     healthSkin = new Skin(Gdx.files.internal(GameConstants.SKIN_PROGRESSBAR));
                     staminaSkin = new Skin(Gdx.files.internal(GameConstants.SKIN_PROGRESSBAR));
@@ -398,6 +377,7 @@ public class BattleScreen extends GameState {
                     pg2Name = new Image(new Texture("Img/CharaName/" + personaggio2.CHARACTERS_NAMES[personaggio2.id] + ".png"));
                     pg2Name.setScale(0.4f);
                     pg2Name.setPosition(GameConstants.screenWidth - GameConstants.screenWidth * 0.098f - (pg2Name.getWidth() * pg2Name.getScaleX()), GameConstants.screenHeight * 0.915f);
+
                 }
 
 
@@ -411,23 +391,51 @@ public class BattleScreen extends GameState {
                 stageBackGround.addActor(pg1Name);
                 stageBackGround.addActor(pg2Name);
 
+                //grafica stati e timer
+                if(true){
+                    //dichiarazione immagini
+                    imgPause = new Image(new Texture("Img/battleScreen/Pause.png"));
+                    imgP1Win = new Image(new Texture("Img/battleScreen/P1WINS.png"));
+                    imgP2Win = new Image(new Texture("Img/battleScreen/P2WINS.png"));
+                    imgDraw = new Image(new Texture("Img/battleScreen/Draw.png"));
+                    imgResume = new Image(new Texture("Img/battleScreen/Resume.png"));
+
+                    //"setBounds" immagini
+                    imgPause.setPosition(stageBackGround.getCamera().position.x - (imgPause.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y - GameConstants.screenHeight * 0.252f);
+                    imgP1Win.setPosition(stageBackGround.getCamera().position.x - (imgP1Win.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y + GameConstants.screenHeight * 0.05f);
+                    imgP2Win.setPosition(stageBackGround.getCamera().position.x - (imgP2Win.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y + GameConstants.screenHeight * 0.05f);
+                    imgDraw.setPosition(stageBackGround.getCamera().position.x - (imgDraw.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y + GameConstants.screenHeight * 0.05f);
+                    imgResume.setScale(0.5f);
+                    imgResume.setPosition(stageBackGround.getCamera().position.x - (imgResume.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y - GameConstants.screenHeight * 0.302f);
+
+                    imgResumeAlphaValTimer = 0;
+
+                    //timer
+                    lblTimerHeight = 450;
+                    lblTimer = new Label("" + (int)secondsToMatchEnd,new Skin(Gdx.files.internal(GameConstants.SKIN_GLASSY_RED)));
+                    lblTimer.setSize(lblTimer.getPrefWidth(),lblTimer.getPrefHeight());
+                    lblTimer.setPosition((Gdx.graphics.getWidth() - lblTimer.getWidth())/2,(Gdx.graphics.getHeight() - lblTimer.getHeight())/2 + lblTimerHeight);
+
+                }
+
+
                 loadingProgressBar.setValue(100);
                 break;
             default:
                 haveLoadedAssets = true;
                 currentState = STATE_BATTLE;
-
         }
 
+        //disegno grafica caricamento
         stageBackGroundBatch.begin();
         backgroundMenu.draw(stageBackGroundBatch,1);
         loadingProgressBar.draw(stageBackGroundBatch,1);
-        pg1.draw(stageBackGroundBatch,1);
-        pg2.draw(stageBackGroundBatch,1);
-        vs.draw(stageBackGroundBatch,1);
+        pg1LoadingIcn.draw(stageBackGroundBatch,1);
+        pg2LoadingIcn.draw(stageBackGroundBatch,1);
+        vsLoadingIcn.draw(stageBackGroundBatch,1);
         stageBackGroundBatch.end();
 
-        loadingCounter++;
+        loadingCounter++;//aumento contatore cicli di esecuzione del caricamento
     }
 
     public void resize(int width, int height) {

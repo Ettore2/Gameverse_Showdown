@@ -83,9 +83,6 @@ public class ChooseCharactersScreen extends GameState{
         camera3D.near = 1f;
         camera3D.far = 300f;
         camera3D.update();
-        UBJsonReader jsonReader = new UBJsonReader();
-        // Import and instantiate our model (called "myModel.g3dj")
-        ModelBuilder modelBuilder = new ModelBuilder();
 
         //table choose characters
         tableCharacters = new Table();
@@ -219,19 +216,22 @@ public class ChooseCharactersScreen extends GameState{
         stage.addActor(vs);
 
 
+        characters = new Vector<>();
+        for(int i=0; i < Character.AVILABLE_CHARACTERS; i++){
+            characters.add(new Character(camera3D, i,0,0,0,0));
+            characters.get(loadingCounter).setIdleAnimation();
+        }
+
+
+        updateC1(lblCharacters[c1_positionY][c1_positionX].id);
+        updateC2(lblCharacters[c2_positionY][c2_positionX].id);
+
         for (int i = 0; i < 4; i++) {
             stage.addActor(statsBar1[i]);
             stage.addActor(statsBar2[i]);
         }
 
-        characters = new Vector<>();
-        for(int i = 0; i< Character.AVILABLE_CHARACTERS; i++){
-            characters.add(new Character(camera3D, i,0,0,0,0));
-            characters.get(i).setIdleAnimation();
-        }
 
-        updateC1(lblCharacters[c1_positionY][c1_positionX].id);
-        updateC2(lblCharacters[c2_positionY][c2_positionX].id);
     }
 
     @Override
@@ -241,7 +241,7 @@ public class ChooseCharactersScreen extends GameState{
 
     public void render(float delta) {
         super.render(delta);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);//codice aggiunto
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         stage.act(delta);
         stage.draw();
