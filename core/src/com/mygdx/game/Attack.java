@@ -458,7 +458,7 @@ public abstract class Attack implements GameObject{
     static class Attack_sonic_grounded_y_0 extends Attack{
         Attack_sonic_grounded_y_0(Character c) {
             super(c,"smush_blender_import|smush_blender_import c02attackhi3.nuanmb",2f,7,9,6,18,40,42,44,28);
-            setKnockBack(0.11f,0.18f);
+            setKnockBack(0.13f,0.18f);
         }
 
         public void activeFrames(int nFrame){
