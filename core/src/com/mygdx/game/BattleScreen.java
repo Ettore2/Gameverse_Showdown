@@ -433,8 +433,6 @@ public class BattleScreen extends GameState {
         vs.draw(stageBackGroundBatch,1);
         stageBackGroundBatch.end();
 
-        System.out.println(loadingCounter);
-
         loadingCounter++;
     }
 
