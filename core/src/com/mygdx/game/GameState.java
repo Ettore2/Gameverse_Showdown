@@ -3,6 +3,8 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
@@ -20,6 +22,7 @@ public abstract class GameState implements Screen{
     int loadingCounter;
     boolean haveLoadedAssets;
     ProgressBar loadingProgressBar;
+    Image backgroundLoadingIcon;
 
 
     float[] buttonsDelays; //memorizza i valori a cui settate i timers quando si preme un tasto
@@ -36,6 +39,10 @@ public abstract class GameState implements Screen{
 
     public GameState(Main game){
         this.game=game;
+
+        //cose loading
+        backgroundLoadingIcon = new Image(new Texture(GameConstants.BACKGROUND_LOADING_GENERAL));
+        backgroundLoadingIcon.setBounds(0,0, GameConstants.screenWidth, GameConstants.screenHeight);
 
         game.stopMusic();
         haveLoadedAssets = false;
@@ -496,10 +503,13 @@ public abstract class GameState implements Screen{
         //per tasto ps: c1.getButton(5)
 
 
+        //System.out.print("render ");
         if(haveLoadedAssets){
             normalExecution(delta);
+            //System.out.println("normalExecution");
         }else{
             loadingExecution(delta);
+            //System.out.println("loadingExecution");
 
             if(haveLoadedAssets){
                 game.resumeMusic();
@@ -508,10 +518,10 @@ public abstract class GameState implements Screen{
 
 
     }
-    public void normalExecution(Float delta){
+    public void normalExecution(float delta){
 
     }
-    public void loadingExecution(Float delta){
+    public void loadingExecution(float delta){
         haveLoadedAssets = true;
 
     }

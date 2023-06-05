@@ -73,7 +73,7 @@ public class BattleScreen extends GameState {
 
     //grafica caricamento
     Texture textureMenu;
-    Image pg1LoadingIcn, pg2LoadingIcn, vsLoadingIcn, backgroundMenu;
+    Image pg1LoadingIcn, pg2LoadingIcn, vsLoadingIcn;
 
 
 
@@ -83,8 +83,8 @@ public class BattleScreen extends GameState {
 
         //grafica per caricamento
         textureMenu = new Texture(GameConstants.BACKGROUND_LOADING_BATTLE);
-        backgroundMenu = new Image(textureMenu);
-        backgroundMenu.setBounds(0,0, GameConstants.screenWidth, GameConstants.screenHeight);
+        backgroundLoadingIcon = new Image(textureMenu);
+        backgroundLoadingIcon.setBounds(0,0, GameConstants.screenWidth, GameConstants.screenHeight);
 
         pg1LoadingIcn = new Image(new Texture("Img/Characters/" + GameConstants.CHARACTERS_NAMES[idC1] + "/" + GameConstants.CHARACTERS_NAMES[idC1] + ".png"));
         pg1LoadingIcn.setSize(GameConstants.screenWidth * 0.2f, GameConstants.screenHeight * 0.28f);
@@ -156,8 +156,7 @@ public class BattleScreen extends GameState {
         super.render(delta);//triggera metodi d'input controller e normalExecution e loadingExecution
     }
 
-    @Override
-    public void normalExecution(Float delta) {
+    public void normalExecution(float delta) {
         super.normalExecution(delta);
 
 
@@ -312,7 +311,7 @@ public class BattleScreen extends GameState {
 
 
     }
-    public void loadingExecution(Float delta){
+    public void loadingExecution(float delta){
 
         switch (loadingCounter){
             case 0:
@@ -428,7 +427,7 @@ public class BattleScreen extends GameState {
 
         //disegno grafica caricamento
         stageBackGroundBatch.begin();
-        backgroundMenu.draw(stageBackGroundBatch,1);
+        backgroundLoadingIcon.draw(stageBackGroundBatch,1);
         loadingProgressBar.draw(stageBackGroundBatch,1);
         pg1LoadingIcn.draw(stageBackGroundBatch,1);
         pg2LoadingIcn.draw(stageBackGroundBatch,1);

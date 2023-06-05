@@ -2,6 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -27,6 +28,7 @@ public class ChooseCharactersScreen extends GameState{
     private String[] nameCharacter = {"Mario", "Donkey Kong","Sonic"};
     private Image backgroundImage;
     private Stage stage;
+    private Batch stageBatch;
     private Camera camera;
     private FitViewport viewPort;
     private Label lblG1, lblG2;
@@ -50,9 +52,15 @@ public class ChooseCharactersScreen extends GameState{
         super(game);
         setInputsDelay(0.15f);
 
+
+        //grafica per caricamento
+        backgroundLoadingIcon = new Image(new Texture(GameConstants.BACKGROUND_LOADING_GENERAL));
+        backgroundLoadingIcon.setBounds(0,0, GameConstants.screenWidth, GameConstants.screenHeight);
+
         camera = new OrthographicCamera();
         viewPort = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
         stage = new Stage(viewPort);
+        stageBatch = stage.getBatch();
 
         Gdx.input.setInputProcessor(stage);
 
@@ -61,186 +69,20 @@ public class ChooseCharactersScreen extends GameState{
         skinBlue = new Skin(Gdx.files.internal(GameConstants.SKIN_GLASSY_BLUE));
         skinRed = new Skin(Gdx.files.internal(GameConstants.SKIN_GLASSY_RED));
 
-        //select character
-
-        lblG1 = new Label("Player 1", skinOrange);
-        lblG2 = new Label("Player 2", skinOrange);
-
-        lblG1.setPosition(GameConstants.screenWidth * 0.066f,GameConstants.screenHeight * 0.915f);
-        lblG2.setPosition(GameConstants.screenWidth - (GameConstants.screenWidth * 0.066f) - lblG1.getWidth(), GameConstants.screenHeight * 0.915f);
-
-        //setup ambiente 3D
-        environment = new Environment();
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 1f, 1f, 1f, 1f));
-        environment.add(new DirectionalLight().set(0.4f, 0.4f, 0.4f, 0, -1, -5.5f));
-
-        modelBatch = new ModelBatch();
-
-        // Create a perspective camera with some sensible defaults
-        camera3D = new PerspectiveCamera(50, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera3D.position.set(0, 3f, 5.5f);
-        camera3D.lookAt(0, 2, 0);
-        camera3D.near = 1f;
-        camera3D.far = 300f;
-        camera3D.update();
-
-        //table choose characters
-        tableCharacters = new Table();
-        tableCharacters.defaults().size((float) (GameConstants.screenWidth * 0.1), (float) (GameConstants.screenHeight * 0.142));
-        tableCharacters.setPosition(GameConstants.screenWidth / 2f, GameConstants.screenHeight / 2.5f);
-
-        lblCharacters = new ImageC[3][6];
-
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 6; j++) {
-                if(i * 3 + j < Character.AVILABLE_CHARACTERS){
-                    lblCharacters[i][j] = new ImageC(new Texture(pathCharacters[i * 3 + j] + ".png"), pathCharacters[i * 3 + j] + ".png", pathCharacters[i * 3 + j] + "_isOver.png", pathCharacters[i * 3 + j] + "_isOverC2.png",i * 3 + j);
-                }else{
-                    lblCharacters[i][j] = new ImageC(new Texture(pathCharacters[pathCharacters.length - 1] + ".png"), pathCharacters[pathCharacters.length - 1] + ".png", pathCharacters[pathCharacters.length - 1] + "_isOver.png", pathCharacters[pathCharacters.length - 1] + "_isOverC2.png",-1);
-                }
-                tableCharacters.add(lblCharacters[i][j]).pad(0, 0, 25, 25);
-            }
-            tableCharacters.row();
-        }
-
-        //btn custom and confirms
-        Table tableBtn = new Table();
-        tableBtn.defaults().size((float) (GameConstants.screenWidth * 0.21), (float) (GameConstants.screenHeight * 0.12));
-        tableBtn.setPosition(GameConstants.screenWidth / 2.02f, GameConstants.screenHeight * 0.09f);
-
-        btnConfirmsCustom = new ButtonC[2];
-
-        btnConfirmsCustom[0] = new ButtonC("Customs", skinOrange, skinDarkOrange);
-        btnConfirmsCustom[1] = new ButtonC("Confirms", skinOrange, skinDarkOrange, true);
-
-        tableBtn.add(btnConfirmsCustom[0]).pad(0, 0,0, 25);
-        tableBtn.add(btnConfirmsCustom[1]);
-
         //background
         Texture background = new Texture(GameConstants.BACKGROUND_CHOOSECHARACTERS);
         backgroundImage = new Image(background);
         backgroundImage.setFillParent(true);
 
-        //Box statistic of characters
-
-        menuBox1 = new Texture(GameConstants.STATSBOX_TEXTURE_RED);
-        menuBox2 = new Texture(GameConstants.STATSBOX_TEXTURE_BLUE);
-
-        //width 1680 height 913
-        //width 3008 height 1639
-
-        boxImage1 = new Image(menuBox1);
-        boxImage1.setSize(GameConstants.screenWidth * 0.14f, GameConstants.screenHeight * 0.45f);
-        boxImage1.setPosition(GameConstants.screenWidth * 0.009f, GameConstants.screenHeight * 0.183f);
-
-        boxImage2 = new Image(menuBox2);
-        boxImage2.setSize(GameConstants.screenWidth * 0.14f, GameConstants.screenHeight * 0.45f);
-        boxImage2.setPosition(GameConstants.screenWidth * 0.84f, GameConstants.screenHeight * 0.183f);
-
-        statsBar1 = new ProgressBar[4];
-        statsBar2 = new ProgressBar[4];
-
-        for(int i = 0; i < 4; i++){
-            statsBar1[i] = new ProgressBar(0f, Character.MAX_STATS, 1f, false, skinRed);
-            statsBar1[i].setSize(GameConstants.screenWidth * 0.104f, GameConstants.screenHeight * 0.009f);
-
-            statsBar2[i] = new ProgressBar(0f, Character.MAX_STATS, 1f, false, skinBlue);
-            statsBar2[i].setSize(GameConstants.screenWidth * 0.104f, GameConstants.screenHeight * 0.009f);
-        }
-
-
-        statsBar1[0].setPosition(GameConstants.screenWidth * 0.03f, GameConstants.screenHeight * 0.531f);
-        statsBar1[1].setPosition(GameConstants.screenWidth * 0.03f, GameConstants.screenHeight * 0.426f);
-        statsBar1[2].setPosition(GameConstants.screenWidth * 0.03f, GameConstants.screenHeight * 0.316f);
-        statsBar1[3].setPosition(GameConstants.screenWidth * 0.03f, GameConstants.screenHeight * 0.216f);
-
-        statsBar2[0].setPosition(GameConstants.screenWidth * 0.855f, GameConstants.screenHeight * 0.531f);
-        statsBar2[1].setPosition(GameConstants.screenWidth * 0.855f, GameConstants.screenHeight * 0.426f);
-        statsBar2[2].setPosition(GameConstants.screenWidth * 0.855f, GameConstants.screenHeight * 0.316f);
-        statsBar2[3].setPosition(GameConstants.screenWidth * 0.855f, GameConstants.screenHeight * 0.216f);
-
-        //name of characters
-
-        c1Name = new Image(new Texture("Img/CharaName/Mario.png"));
-        c1Name.setPosition(GameConstants.screenWidth * 0.16f, GameConstants.screenHeight - (GameConstants.screenHeight * 0.246f));
-        c1Name.setScale(0.4f);
-
-        c2Name = new Image(new Texture("Img/CharaName/Donkey Kong.png"));
-        c2Name.setPosition(GameConstants.screenWidth - (GameConstants.screenWidth * 0.45f), GameConstants.screenHeight - (GameConstants.screenHeight * 0.246f));
-        c2Name.setScale(0.4f);
-
-        //vs
-
-        vs = new Image(new Texture("Img/BattleScreen/Versus.png"));
-        vs.setPosition(GameConstants.screenWidth/2f - vs.getWidth()/2, GameConstants.screenHeight - (GameConstants.screenHeight * 0.356f));
-
-        //variable for logic
-
-        checkLblCharacters = true;
-        checkBtnCustomsConfirms = false;
-
-        c1_positionX = 0;
-        c1_positionY = 0;
-
-        c1_positionBtnX = 0;
-        c1_tmpPosition = 0;
-
-        c2_positionX = 1;
-        c2_positionY = 0;
-
-        c1_positionIsTakenX = -1;
-        c1_positionIsTakenY = -1;
-
-        c2_positionIsTakenX = -1;
-        c2_positionIsTakenY = -1;
-
-        lblCharacters[0][1].isOverC2 = true;
-        lblCharacters[0][0].isOver = true;
-
-        //add component to stage
-
-        stage.addActor(backgroundImage);
-        stage.addActor(tableCharacters);
-
-        stage.addActor(lblG1);
-        stage.addActor(lblG2);
-
-        stage.addActor(tableBtn);
-
-        stage.addActor(boxImage1);
-        stage.addActor(boxImage2);
-
-        stage.addActor(c1Name);
-        stage.addActor(c2Name);
-
-        stage.addActor(vs);
-
-
+        //creazione vettore modelli personaggi
         characters = new Vector<>();
-        for(int i=0; i < Character.AVILABLE_CHARACTERS; i++){
-            characters.add(new Character(camera3D, i,0,0,0,0));
-            characters.get(loadingCounter).setIdleAnimation();
-        }
-
-
-        updateC1(lblCharacters[c1_positionY][c1_positionX].id);
-        updateC2(lblCharacters[c2_positionY][c2_positionX].id);
-
-        for (int i = 0; i < 4; i++) {
-            stage.addActor(statsBar1[i]);
-            stage.addActor(statsBar2[i]);
-        }
-
 
     }
 
-    @Override
-    public void show() {
+    public void normalExecution(float delta) {
+        super.normalExecution(delta);
 
-    }
-
-    public void render(float delta) {
-        super.render(delta);
+        Gdx.gl.glClearColor(1, 1, 1, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         stage.act(delta);
@@ -266,7 +108,194 @@ public class ChooseCharactersScreen extends GameState{
 
         modelBatch.end();
     }
+    public void loadingExecution(float delta) {
 
+        if(loadingCounter > 0 &&  loadingCounter < Character.AVILABLE_CHARACTERS + 1){
+            characters.add(new Character(camera3D, loadingCounter -1,0,0,0,0));
+            characters.get(loadingCounter - 1).setIdleAnimation();
+            loadingProgressBar.setValue((loadingCounter - 1) * 100f / (Character.AVILABLE_CHARACTERS + 1));
+        }else if(loadingCounter > 0){
+            //select character
+
+            lblG1 = new Label("Player 1", skinOrange);
+            lblG2 = new Label("Player 2", skinOrange);
+
+            lblG1.setPosition(GameConstants.screenWidth * 0.066f,GameConstants.screenHeight * 0.915f);
+            lblG2.setPosition(GameConstants.screenWidth - (GameConstants.screenWidth * 0.066f) - lblG1.getWidth(), GameConstants.screenHeight * 0.915f);
+
+            //setup ambiente 3D
+            environment = new Environment();
+            environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 1f, 1f, 1f, 1f));
+            environment.add(new DirectionalLight().set(0.4f, 0.4f, 0.4f, 0, -1, -5.5f));
+
+            modelBatch = new ModelBatch();
+
+            // Create a perspective camera with some sensible defaults
+            camera3D = new PerspectiveCamera(50, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            camera3D.position.set(0, 3f, 5.5f);
+            camera3D.lookAt(0, 2, 0);
+            camera3D.near = 1f;
+            camera3D.far = 300f;
+            camera3D.update();
+
+            //table choose characters
+            tableCharacters = new Table();
+            tableCharacters.defaults().size((float) (GameConstants.screenWidth * 0.1), (float) (GameConstants.screenHeight * 0.142));
+            tableCharacters.setPosition(GameConstants.screenWidth / 2f, GameConstants.screenHeight / 2.5f);
+
+            lblCharacters = new ImageC[3][6];
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 6; j++) {
+                    if(i * 3 + j < Character.AVILABLE_CHARACTERS){
+                        lblCharacters[i][j] = new ImageC(new Texture(pathCharacters[i * 3 + j] + ".png"), pathCharacters[i * 3 + j] + ".png", pathCharacters[i * 3 + j] + "_isOver.png", pathCharacters[i * 3 + j] + "_isOverC2.png",i * 3 + j);
+                    }else{
+                        lblCharacters[i][j] = new ImageC(new Texture(pathCharacters[pathCharacters.length - 1] + ".png"), pathCharacters[pathCharacters.length - 1] + ".png", pathCharacters[pathCharacters.length - 1] + "_isOver.png", pathCharacters[pathCharacters.length - 1] + "_isOverC2.png",-1);
+                    }
+                    tableCharacters.add(lblCharacters[i][j]).pad(0, 0, 25, 25);
+                }
+                tableCharacters.row();
+            }
+
+            //btn custom and confirms
+            Table tableBtn = new Table();
+            tableBtn.defaults().size((float) (GameConstants.screenWidth * 0.21), (float) (GameConstants.screenHeight * 0.12));
+            tableBtn.setPosition(GameConstants.screenWidth / 2.02f, GameConstants.screenHeight * 0.09f);
+
+            btnConfirmsCustom = new ButtonC[2];
+
+            btnConfirmsCustom[0] = new ButtonC("Customs", skinOrange, skinDarkOrange);
+            btnConfirmsCustom[1] = new ButtonC("Confirms", skinOrange, skinDarkOrange, true);
+
+            tableBtn.add(btnConfirmsCustom[0]).pad(0, 0,0, 25);
+            tableBtn.add(btnConfirmsCustom[1]);
+
+
+            //Box statistic of characters
+
+            menuBox1 = new Texture(GameConstants.STATSBOX_TEXTURE_RED);
+            menuBox2 = new Texture(GameConstants.STATSBOX_TEXTURE_BLUE);
+
+            //width 1680 height 913
+            //width 3008 height 1639
+
+            boxImage1 = new Image(menuBox1);
+            boxImage1.setSize(GameConstants.screenWidth * 0.14f, GameConstants.screenHeight * 0.45f);
+            boxImage1.setPosition(GameConstants.screenWidth * 0.009f, GameConstants.screenHeight * 0.183f);
+
+            boxImage2 = new Image(menuBox2);
+            boxImage2.setSize(GameConstants.screenWidth * 0.14f, GameConstants.screenHeight * 0.45f);
+            boxImage2.setPosition(GameConstants.screenWidth * 0.84f, GameConstants.screenHeight * 0.183f);
+
+            statsBar1 = new ProgressBar[4];
+            statsBar2 = new ProgressBar[4];
+
+            for(int i = 0; i < 4; i++){
+                statsBar1[i] = new ProgressBar(0f, Character.MAX_STATS, 1f, false, skinRed);
+                statsBar1[i].setSize(GameConstants.screenWidth * 0.104f, GameConstants.screenHeight * 0.009f);
+
+                statsBar2[i] = new ProgressBar(0f, Character.MAX_STATS, 1f, false, skinBlue);
+                statsBar2[i].setSize(GameConstants.screenWidth * 0.104f, GameConstants.screenHeight * 0.009f);
+            }
+
+
+            statsBar1[0].setPosition(GameConstants.screenWidth * 0.03f, GameConstants.screenHeight * 0.531f);
+            statsBar1[1].setPosition(GameConstants.screenWidth * 0.03f, GameConstants.screenHeight * 0.426f);
+            statsBar1[2].setPosition(GameConstants.screenWidth * 0.03f, GameConstants.screenHeight * 0.316f);
+            statsBar1[3].setPosition(GameConstants.screenWidth * 0.03f, GameConstants.screenHeight * 0.216f);
+
+            statsBar2[0].setPosition(GameConstants.screenWidth * 0.855f, GameConstants.screenHeight * 0.531f);
+            statsBar2[1].setPosition(GameConstants.screenWidth * 0.855f, GameConstants.screenHeight * 0.426f);
+            statsBar2[2].setPosition(GameConstants.screenWidth * 0.855f, GameConstants.screenHeight * 0.316f);
+            statsBar2[3].setPosition(GameConstants.screenWidth * 0.855f, GameConstants.screenHeight * 0.216f);
+
+            //name of characters
+
+            c1Name = new Image(new Texture("Img/CharaName/Mario.png"));
+            c1Name.setPosition(GameConstants.screenWidth * 0.16f, GameConstants.screenHeight - (GameConstants.screenHeight * 0.246f));
+            c1Name.setScale(0.4f);
+
+            c2Name = new Image(new Texture("Img/CharaName/Donkey Kong.png"));
+            c2Name.setPosition(GameConstants.screenWidth - (GameConstants.screenWidth * 0.45f), GameConstants.screenHeight - (GameConstants.screenHeight * 0.246f));
+            c2Name.setScale(0.4f);
+
+            //vs
+
+            vs = new Image(new Texture("Img/BattleScreen/Versus.png"));
+            vs.setPosition(GameConstants.screenWidth/2f - vs.getWidth()/2, GameConstants.screenHeight - (GameConstants.screenHeight * 0.356f));
+
+            //variable for logic
+
+            checkLblCharacters = true;
+            checkBtnCustomsConfirms = false;
+
+            c1_positionX = 0;
+            c1_positionY = 0;
+
+            c1_positionBtnX = 0;
+            c1_tmpPosition = 0;
+
+            c2_positionX = 1;
+            c2_positionY = 0;
+
+            c1_positionIsTakenX = -1;
+            c1_positionIsTakenY = -1;
+
+            c2_positionIsTakenX = -1;
+            c2_positionIsTakenY = -1;
+
+            lblCharacters[0][1].isOverC2 = true;
+            lblCharacters[0][0].isOver = true;
+
+            //add component to stage
+
+            stage.addActor(backgroundImage);
+            stage.addActor(tableCharacters);
+
+            stage.addActor(lblG1);
+            stage.addActor(lblG2);
+
+            stage.addActor(tableBtn);
+
+            stage.addActor(boxImage1);
+            stage.addActor(boxImage2);
+
+            stage.addActor(c1Name);
+            stage.addActor(c2Name);
+
+            stage.addActor(vs);
+
+
+            for (int i = 0; i < 4; i++) {
+                stage.addActor(statsBar1[i]);
+                stage.addActor(statsBar2[i]);
+            }
+
+            updateC1(lblCharacters[c1_positionY][c1_positionX].id);
+            updateC2(lblCharacters[c2_positionY][c2_positionX].id);
+            loadingProgressBar.setValue(100);
+
+            haveLoadedAssets = true;
+        }
+
+        stageBatch.begin();
+
+        backgroundLoadingIcon.draw(stageBatch,1);
+        loadingProgressBar.draw(stageBatch, 1);
+        stageBatch.end();
+
+        loadingCounter++;
+    }
+
+
+
+
+
+
+    @Override
+    public void show() {
+
+    }
     @Override
     public void resize(int width, int height) {
         viewPort.update(width, height,true);
