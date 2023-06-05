@@ -15,7 +15,7 @@ public class BattleStage extends GenericGameObject{
     final float BOUNDS_SIZE = 3;
 
     final String[] STAGES_NAMES = {"stage mario"};
-    final float[] STAGES_HEIGHTS = {-2.04f};
+    final float[] STAGES_HEIGHTS = {-1.999f};
     final String[] STAGES_PHOTOS = {"Stage 1/sfondo 1 tot.png"};
     final Point2D.Float[] STAGES_C1_SPAWNS = {new Point2D.Float(-1.5f,1.4f)};
     final Point2D.Float[] STAGES_C2_SPAWNS = {new Point2D.Float(1.5f,1.4f)};

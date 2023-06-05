@@ -443,18 +443,17 @@ public class Character extends ModelInstance implements GameObject{
         }
     }
 
-    public void lodProjectiles(){
+    public void loadProjectiles(){
         if(id == MARIO_ID){
+            /*
             if(AVAILABLE_PROJECTILE_MODELS[MARIO_PROVE_PROJECTILE] == null){
                 AVAILABLE_PROJECTILE_MODELS[MARIO_PROVE_PROJECTILE] = new Vector<>();
             }
             for(int i = 0; i < 4; i++){
                 AVAILABLE_PROJECTILE_MODELS[MARIO_PROVE_PROJECTILE].add( new ModelInstance(new G3dModelLoader(new JsonReader()).loadModel(Gdx.files.internal(Character.CHARACTERS_MODELS_DIRECTORY + Character.CHARACTERS_MODELS_FIlE[0]))));
             }
+             */
         }
-
-
-
     }
     public void executeInputs(){
         /*
