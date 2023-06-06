@@ -442,6 +442,14 @@ public class Character extends ModelInstance implements GameObject{
             existingColliders.add(currentHeadCollider);
         }
     }
+    public void setFeetAt(Point2D.Float position){
+        if(currentHeadCollider.center.y - currentHeadCollider.radius > currentBodyCollider.center.y - currentBodyCollider.height / 2){
+            transform.setTranslation(position.x - currentBodyCollider.center.x,position.y - currentBodyCollider.center.y + currentBodyCollider.height / 2, 0);
+        }else{
+            transform.setTranslation(position.x - currentBodyCollider.center.x,position.y - currentHeadCollider.center.y + currentHeadCollider.radius, 0);
+        }
+
+    }
 
     public void loadProjectiles(){
         if(id == MARIO_ID){

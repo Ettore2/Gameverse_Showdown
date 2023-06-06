@@ -14,11 +14,13 @@ public class BattleStage extends GenericGameObject{
     final String STAGES_PHOTOS_DIRECTORY = "Stages/";
     final float BOUNDS_SIZE = 3;
 
-    final String[] STAGES_NAMES = {"stage mario"};
-    final float[] STAGES_HEIGHTS = {-1.999f};
-    final String[] STAGES_PHOTOS = {"Stage 1/sfondo 1 tot.png"};
-    final Point2D.Float[] STAGES_C1_SPAWNS = {new Point2D.Float(-1.5f,1.4f)};
-    final Point2D.Float[] STAGES_C2_SPAWNS = {new Point2D.Float(1.5f,1.4f)};
+    final String[] STAGES_NAMES = {"stage Mario","shi fi stage","temple","desert"};
+    final float[] STAGES_HEIGHTS = {-1.999f,-2.05f,-2,-2.4f};
+    final String[] STAGES_PHOTOS = {"stage Mario.png","shi fi stage.jpg","temple stage.jpg","desert stage.jpg"};
+
+    final Point2D.Float[] STAGES_IMAGE_POSITION = {new Point2D.Float(0, -120),new Point2D.Float(0, 0),new Point2D.Float(0, 0),new Point2D.Float(0, 0)};
+    final float stagesScale[] = {1,1,1,0.5f};
+    final Point2D.Float[] STAGES_SPAWNS = {new Point2D.Float(-2f,-0.7f),new Point2D.Float(-3.2f,-0f),new Point2D.Float(-1.2f,-2),new Point2D.Float(-3.2f,-2.4f)};
 
 
 
@@ -42,7 +44,8 @@ public class BattleStage extends GenericGameObject{
     private void constructor(){
         this.tag=STAGE_TAG;
         img = new Image(new Texture(Gdx.files.internal(STAGES_PHOTOS_DIRECTORY + STAGES_PHOTOS[stageId])));
-        img.setPosition(0, -120);
+        img.setPosition(STAGES_IMAGE_POSITION[stageId].x, STAGES_IMAGE_POSITION[stageId].y);
+        img.setScale(stagesScale[stageId]);
 
 
         //setto colliders stages
@@ -75,11 +78,11 @@ public class BattleStage extends GenericGameObject{
 
     }
     public Point2D.Float getC1spawnPoint(){
-        return STAGES_C1_SPAWNS[this.stageId];
+        return new Point2D.Float(STAGES_SPAWNS[this.stageId].x, STAGES_SPAWNS[this.stageId].y);
 
     }
     public Point2D.Float getC2spawnPoint(){
-        return STAGES_C2_SPAWNS[this.stageId];
+        return new Point2D.Float(-STAGES_SPAWNS[this.stageId].x, STAGES_SPAWNS[this.stageId].y);
 
     }
 

@@ -319,12 +319,12 @@ public class BattleScreen extends GameState {
                 break;
             case 1:
                 personaggio1 = new Character(camera3D, idC1, 0, 0, 0, 90, existingColliders);
-                personaggio1.set2DPosition(battleStage.getC1spawnPoint());
+                personaggio1.setFeetAt(battleStage.getC1spawnPoint());
                 loadingProgressBar.setValue(25);
                 break;
             case 2:
                 personaggio2 = new Character(camera3D, idC2, 0, 0, 0, -90, existingColliders);
-                personaggio2.set2DPosition(battleStage.getC2spawnPoint());
+                personaggio2.setFeetAt(battleStage.getC2spawnPoint());
 
                 loadingProgressBar.setValue(50);
                 break;
