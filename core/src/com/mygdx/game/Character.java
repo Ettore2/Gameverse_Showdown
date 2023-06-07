@@ -32,6 +32,7 @@ public class Character extends ModelInstance implements GameObject{
 
     public static float groundHeight = 0;
     public static final int MOVE_SX = -1, MOVE_STOP = 0, MOVE_DX = 1;//non modificare
+    public static final int LOOK_DOWN = -1, LOOK_NONE = 0, LOOK_UP = 1;//non modificare
     public static final int FACING_SX = -1, FACING_DX = 1;//non modificare
     public static final int ATTACK_NONE = -1, ATTACK_1_GROUNDED = 0, ATTACK_2_GROUNDED = 1, ATTACK_3_GROUNDED = 2, ATTACK_1_AIRBORN = 3, ATTACK_2_AIRBORN = 4, ATTACK_3_AIRBORN = 5;
     public static final int ATTACK_BUTTON_X = 0, ATTACK_BUTTON_Y = 2, ATTACK_BUTTON_B = 1;
@@ -49,8 +50,6 @@ public class Character extends ModelInstance implements GameObject{
     public final int id;
     public String tag;
     private float attackStat, defenseStat, agilityStat, healthStat;
-    //attackPerfectStatsVal, defensePerfectStatsVal servono a porporzionare la barra delle statistiche:
-    // se un personaggio ha attackPerfectStatsVal vita avrà nelle statistiche la vita al massimo
     public Character enemy;
     int numberOfJumps, availableJumps;
     int maxLife, currentLife;
@@ -60,8 +59,9 @@ public class Character extends ModelInstance implements GameObject{
     float falAcceleration, fastFallAcceleration;
     float currentXForce, currentYForce;
     private boolean moveLeft,moveRight;
+    public boolean lookUp, lookDown;
     public boolean canMoveRight, canMoveLeft;
-    int moveDirection;
+    int moveDirection, lookDirection;
     int facingDirection;
     boolean tryingToGuard;
     int guardStartFramesCounter, guardExitFramesCounter;
@@ -70,7 +70,7 @@ public class Character extends ModelInstance implements GameObject{
     int currentStunFrames;
     boolean crouching;
     boolean jump;
-    Attack[][] attacks;
+    MeleeAttack[][] attacks;
     int inputtedAttackIndex, currentAttackId, lastAttackId, currentAttackState;
     boolean attackedLastFrame;
     float autoComboTimer;
@@ -90,7 +90,7 @@ public class Character extends ModelInstance implements GameObject{
     private Vector<Collider2D> personalColliders;
     private Vector<Collider2D> existingColliders;
 
-    Attack meleeHitsToExecute;
+    MeleeAttack meleeHitsToExecute;
     Vector<Projectile> projectileHitsToExecute;
 
 
@@ -118,7 +118,7 @@ public class Character extends ModelInstance implements GameObject{
         transform.setToRotation(axesX,axesY,axesZ,degrees);//impostante che sia prima di posizione
         transform.setTranslation(xPos,yPos,zPos);
         controller = new AnimationController(this);
-        attacks = new Attack[6][1]; // [id attacco] [stato attacco (combo)]
+        attacks = new MeleeAttack[6][1]; // [id attacco] [stato attacco (combo)]
         currentAttackId = ATTACK_NONE;
         lastAttackId = ATTACK_NONE;
         attackedLastFrame = false;
@@ -210,8 +210,6 @@ public class Character extends ModelInstance implements GameObject{
     }
 
     private void new_Mario(){
-        //debug proiettili
-
 
         attackStat = 2;
         defenseStat = 3;
@@ -241,15 +239,15 @@ public class Character extends ModelInstance implements GameObject{
         airHitAnimationSpeed = 1;
 
 
-        attacks[ATTACK_1_GROUNDED]=new Attack[3];
-        attacks[ATTACK_1_GROUNDED][0] = Attack.getAttack(this,ATTACK_1_GROUNDED,0);
-        attacks[ATTACK_1_GROUNDED][1] = Attack.getAttack(this,ATTACK_1_GROUNDED,1);
-        attacks[ATTACK_1_GROUNDED][2] = Attack.getAttack(this,ATTACK_1_GROUNDED,2);
-        attacks[ATTACK_2_GROUNDED][0] = Attack.getAttack(this,ATTACK_2_GROUNDED,0);
-        attacks[ATTACK_3_GROUNDED][0] = Attack.getAttack(this,ATTACK_3_GROUNDED,0);
-        attacks[ATTACK_1_AIRBORN][0] = Attack.getAttack(this,ATTACK_1_AIRBORN,0);
-        attacks[ATTACK_2_AIRBORN][0] = Attack.getAttack(this,ATTACK_2_AIRBORN,0);
-        attacks[ATTACK_3_AIRBORN][0] = Attack.getAttack(this,ATTACK_3_AIRBORN,0);
+        attacks[ATTACK_1_GROUNDED]=new MeleeAttack[3];
+        attacks[ATTACK_1_GROUNDED][0] = MeleeAttack.getAttack(this,ATTACK_1_GROUNDED,0);
+        attacks[ATTACK_1_GROUNDED][1] = MeleeAttack.getAttack(this,ATTACK_1_GROUNDED,1);
+        attacks[ATTACK_1_GROUNDED][2] = MeleeAttack.getAttack(this,ATTACK_1_GROUNDED,2);
+        attacks[ATTACK_2_GROUNDED][0] = MeleeAttack.getAttack(this,ATTACK_2_GROUNDED,0);
+        attacks[ATTACK_3_GROUNDED][0] = MeleeAttack.getAttack(this,ATTACK_3_GROUNDED,0);
+        attacks[ATTACK_1_AIRBORN][0] = MeleeAttack.getAttack(this,ATTACK_1_AIRBORN,0);
+        attacks[ATTACK_2_AIRBORN][0] = MeleeAttack.getAttack(this,ATTACK_2_AIRBORN,0);
+        attacks[ATTACK_3_AIRBORN][0] = MeleeAttack.getAttack(this,ATTACK_3_AIRBORN,0);
 
         //attacks[ATTACK_2_GROUNDED][0] = new Attack.Attack_mario_projectile_prove(this);
 
@@ -304,14 +302,14 @@ public class Character extends ModelInstance implements GameObject{
         guardHitAnimationSpeed = 1;
         airHitAnimationSpeed = 1;
 
-        attacks[ATTACK_1_GROUNDED]=new Attack[2];
-        attacks[ATTACK_1_GROUNDED][0] = Attack.getAttack(this,ATTACK_1_GROUNDED,0);
-        attacks[ATTACK_1_GROUNDED][1] = Attack.getAttack(this,ATTACK_1_GROUNDED,1);
-        attacks[ATTACK_2_GROUNDED][0] = Attack.getAttack(this,ATTACK_2_GROUNDED,0);
-        attacks[ATTACK_3_GROUNDED][0] = Attack.getAttack(this,ATTACK_3_GROUNDED,0);
-        attacks[ATTACK_1_AIRBORN][0] = Attack.getAttack(this,ATTACK_1_AIRBORN,0);
-        attacks[ATTACK_2_AIRBORN][0] = Attack.getAttack(this,ATTACK_2_AIRBORN,0);
-        attacks[ATTACK_3_AIRBORN][0] = Attack.getAttack(this,ATTACK_3_AIRBORN,0);
+        attacks[ATTACK_1_GROUNDED]=new MeleeAttack[2];
+        attacks[ATTACK_1_GROUNDED][0] = MeleeAttack.getAttack(this,ATTACK_1_GROUNDED,0);
+        attacks[ATTACK_1_GROUNDED][1] = MeleeAttack.getAttack(this,ATTACK_1_GROUNDED,1);
+        attacks[ATTACK_2_GROUNDED][0] = MeleeAttack.getAttack(this,ATTACK_2_GROUNDED,0);
+        attacks[ATTACK_3_GROUNDED][0] = MeleeAttack.getAttack(this,ATTACK_3_GROUNDED,0);
+        attacks[ATTACK_1_AIRBORN][0] = MeleeAttack.getAttack(this,ATTACK_1_AIRBORN,0);
+        attacks[ATTACK_2_AIRBORN][0] = MeleeAttack.getAttack(this,ATTACK_2_AIRBORN,0);
+        attacks[ATTACK_3_AIRBORN][0] = MeleeAttack.getAttack(this,ATTACK_3_AIRBORN,0);
 
         controller.setAnimation(idleAnimation);//importante
 
@@ -364,15 +362,15 @@ public class Character extends ModelInstance implements GameObject{
         guardHitAnimationSpeed = 1;
         airHitAnimationSpeed = 1;
 
-        attacks[ATTACK_1_GROUNDED]=new Attack[3];
-        attacks[ATTACK_1_GROUNDED][0] = Attack.getAttack(this,ATTACK_1_GROUNDED,0);
-        attacks[ATTACK_1_GROUNDED][1] = Attack.getAttack(this,ATTACK_1_GROUNDED,1);
-        attacks[ATTACK_1_GROUNDED][2] = Attack.getAttack(this,ATTACK_1_GROUNDED,2);
-        attacks[ATTACK_2_GROUNDED][0] = Attack.getAttack(this,ATTACK_2_GROUNDED,0);
-        attacks[ATTACK_3_GROUNDED][0] = Attack.getAttack(this,ATTACK_3_GROUNDED,0);
-        attacks[ATTACK_1_AIRBORN][0] = Attack.getAttack(this,ATTACK_1_AIRBORN,0);
-        attacks[ATTACK_2_AIRBORN][0] = Attack.getAttack(this,ATTACK_2_AIRBORN,0);
-        attacks[ATTACK_3_AIRBORN][0] = Attack.getAttack(this,ATTACK_3_AIRBORN,0);
+        attacks[ATTACK_1_GROUNDED]=new MeleeAttack[3];
+        attacks[ATTACK_1_GROUNDED][0] = MeleeAttack.getAttack(this,ATTACK_1_GROUNDED,0);
+        attacks[ATTACK_1_GROUNDED][1] = MeleeAttack.getAttack(this,ATTACK_1_GROUNDED,1);
+        attacks[ATTACK_1_GROUNDED][2] = MeleeAttack.getAttack(this,ATTACK_1_GROUNDED,2);
+        attacks[ATTACK_2_GROUNDED][0] = MeleeAttack.getAttack(this,ATTACK_2_GROUNDED,0);
+        attacks[ATTACK_3_GROUNDED][0] = MeleeAttack.getAttack(this,ATTACK_3_GROUNDED,0);
+        attacks[ATTACK_1_AIRBORN][0] = MeleeAttack.getAttack(this,ATTACK_1_AIRBORN,0);
+        attacks[ATTACK_2_AIRBORN][0] = MeleeAttack.getAttack(this,ATTACK_2_AIRBORN,0);
+        attacks[ATTACK_3_AIRBORN][0] = MeleeAttack.getAttack(this,ATTACK_3_AIRBORN,0);
 
         controller.setAnimation(idleAnimation);//importante
 
@@ -449,6 +447,9 @@ public class Character extends ModelInstance implements GameObject{
             transform.setTranslation(position.x - currentBodyCollider.center.x,position.y - currentHeadCollider.center.y + currentHeadCollider.radius, 0);
         }
 
+    }
+    public void setBodyAt(Point2D.Float position){
+            transform.setTranslation(position.x - currentBodyCollider.center.x,position.y - currentBodyCollider.center.y + currentBodyCollider.height / 2, 0);
     }
 
     public void loadProjectiles(){
@@ -529,7 +530,19 @@ public class Character extends ModelInstance implements GameObject{
                 }
 
             }
-            //System.out.println(moveLeft+"\t"+moveRight); //debug
+
+            //interpreto tasti di movimento e compilo lookDirection
+            if((lookUp && lookDown) || (!lookUp && !lookDown)){//se premo tutte 2 le direzioni o nessuna
+                lookDirection = LOOK_NONE;
+            }else{
+                if(lookUp){
+                    lookDirection = LOOK_UP;
+                }else{
+                    lookDirection = LOOK_DOWN;
+                }
+
+            }
+
 
             if(controller.current.animation.id.equals(idleAnimation) || controller.current.animation.id.equals(fallingAnimation)){
                 setCollidersConfiguration(idleBodyCol, idleHeadCol);
@@ -799,6 +812,8 @@ public class Character extends ModelInstance implements GameObject{
             grounded = false;
             moveLeft = false;
             moveRight = false;
+            lookUp = false;
+            lookDown = false;
             tryingToGuard = false;
             canMoveRight = true;
             canMoveLeft = true;
@@ -814,8 +829,6 @@ public class Character extends ModelInstance implements GameObject{
             }
 
 
-        }else{
-            controller.setAnimation(idleAnimation, -1);
         }
     }
 
@@ -827,7 +840,7 @@ public class Character extends ModelInstance implements GameObject{
     public void setAttack(int index){
         inputtedAttackIndex = index;
     }
-    public Attack getCurrentAttack(){
+    public MeleeAttack getCurrentAttack(){
         if(isAttacking()){
             return attacks[currentAttackId][currentAttackState];
         }
@@ -847,6 +860,14 @@ public class Character extends ModelInstance implements GameObject{
     }
     public void setMoveRight(boolean val){
         moveRight = val;
+
+    }
+    public void setLookUp(Boolean val){
+        lookUp = val;
+
+    }
+    public void setLookDown(Boolean val){
+        lookDown = val;
 
     }
     public boolean isStunned(){
@@ -920,7 +941,6 @@ public class Character extends ModelInstance implements GameObject{
         transform.setTranslation(p.x, p.y, 0);
 
     }
-
     public void setX2DPosition(float x) {
         Vector3 pos= new Vector3();
         transform.getTranslation(pos);
@@ -937,6 +957,7 @@ public class Character extends ModelInstance implements GameObject{
     }
     public String getTag() {
         return this.tag;
+
     }
     public void setTag(String tag) {
         this.tag = tag;
@@ -946,8 +967,8 @@ public class Character extends ModelInstance implements GameObject{
 
         //se la collisione è avvenuta tra il mio corpo e qualcosa
         if(myCollider.getTag().equals(BODY_COLLIDER_TAG)){
-            if(otherCollider.getTag().equals(Attack.ATTACK_COLLIDER_TAG)) {
-                meleeHitsToExecute = (Attack)(otherCollider.owner);
+            if(otherCollider.getTag().equals(MeleeAttack.ATTACK_COLLIDER_TAG)) {
+                meleeHitsToExecute = (MeleeAttack)(otherCollider.owner);
             }
             if(otherCollider.getTag().equals(BattleStage.RIGHT_BOUND_TAG) || otherCollider.getTag().equals(BattleStage.LEFT_BOUND_TAG)){
 

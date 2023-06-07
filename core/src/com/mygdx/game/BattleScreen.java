@@ -478,7 +478,6 @@ public class BattleScreen extends GameState {
 
 
     //--------------metodi inputs pulsanti-----------------------------
-    @Override
     public void c1_buttonDpadRight() {
         if(currentState == STATE_BATTLE){
             personaggio1.setMoveLeft(true);
@@ -494,12 +493,14 @@ public class BattleScreen extends GameState {
 
     }
     public void c1_buttonDpadUp() {
-        //System.out.println("action up");
+        if(currentState == STATE_BATTLE){
+            personaggio1.setLookUp(true);
+        }
 
     }
     public void c1_buttonDpadDown() {
         if(currentState == STATE_BATTLE){
-            personaggio1.crouching=true;
+            personaggio1.setLookDown(true);
         }
 
     }
@@ -593,10 +594,14 @@ public class BattleScreen extends GameState {
 
 
     }
-    public void c2_buttonDpadUp() {}
+    public void c2_buttonDpadUp() {
+        if(currentState == STATE_BATTLE){
+            personaggio2.setLookUp(true);
+        }
+    }
     public void c2_buttonDpadDown() {
         if(currentState == STATE_BATTLE){
-            personaggio2.crouching=true;
+            personaggio2.setLookDown(true);
         }
 
 
@@ -669,7 +674,14 @@ public class BattleScreen extends GameState {
 
     }
     public void c2_axisRightX(float val) {}
-    public void c2_axisLeftY(float val) {}
+    public void c2_axisLeftY(float val) {
+        if(currentState == STATE_BATTLE) {
+            if (val > 0) {
+                c2_buttonDpadDown();
+            } else {
+                c2_buttonDpadUp();
+            }
+        }}
     public void c2_axisRightY(float val) {}
 
 

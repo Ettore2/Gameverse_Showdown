@@ -7,14 +7,14 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
-public abstract class Attack implements GameObject{
+public abstract class MeleeAttack implements GameObject{
     //ricordo di dare tag a colliders (lo posso fare da costruttore)
     //usare metodi per settare attributi di attacchi
     static final String ATTACK_COLLIDER_TAG = "attack collider";
     static final String ATTACK_OBJ_TAG = "attack obj";
-    static final int KNOCKBACK_TYPE_NORMAL = 0,KNOCKBACK_TYPE_DIRECTIONAL = 1,KNOCKBACK_TYPE_ACTIVE_INPUT = 2;
+    static final int KNOCKBACK_NORMAL = 0, KNOCKBACK_DIRECTIONAL_X = 1, KNOCKBACK_DIRECTIONAL_Y = 2, KNOCKBACK_DIRECTIONAL_XY = 3, KNOCKBACK_ACTIVE_X = 4, KNOCKBACK_ACTIVE_Y = 5, KNOCKBACK_ACTIVE_XY = 6, KNOCKBACK_CUSTOM = -1;
     static final int HITTED_NONE = 0,HITTED_LIFE = 1,HITTED_GUARD = 2;
-    //settare absolute owner
+    //settare absolute owner in collider creati
 
     /*
     c01attacks3s calcio in mezzo
@@ -27,7 +27,7 @@ public abstract class Attack implements GameObject{
      */
 
     //MARIO
-    static class Attack_mario_grounded_x_0 extends Attack{
+    static class Attack_mario_grounded_x_0 extends MeleeAttack {
         Attack_mario_grounded_x_0(Character c) {
             super(c,"c00attack11",1.6f,8,10,7,20,16,17,25,20);
             setKnockBack(0.025f,0);
@@ -39,7 +39,7 @@ public abstract class Attack implements GameObject{
             addCollider(colTmp);
         }
     }//pugno 1 (combo 0)
-    static class Attack_mario_grounded_x_1 extends Attack{
+    static class Attack_mario_grounded_x_1 extends MeleeAttack {
         Attack_mario_grounded_x_1(Character c) {
             super(c,"c00attack12",1.6f,10,12,5,15,21,24,30,36);
             setKnockBack(0.025f,0);
@@ -51,7 +51,7 @@ public abstract class Attack implements GameObject{
             addCollider(colTmp);
         }
     }//pugno 2 (combo 1)
-    static class Attack_mario_grounded_x_2 extends Attack{
+    static class Attack_mario_grounded_x_2 extends MeleeAttack {
         Attack_mario_grounded_x_2(Character c) {
             super(c,"c00attack13",1.6f,13,15,7,25,6,8,18,30);
             setKnockBack(0.132f,0.141f);
@@ -77,7 +77,7 @@ public abstract class Attack implements GameObject{
             }
         }
     }//calcio (combo 2)
-    static class Attack_mario_grounded_y_0 extends Attack{
+    static class Attack_mario_grounded_y_0 extends MeleeAttack {
         Attack_mario_grounded_y_0(Character c) {
             super(c,"c02attackhi3",2f,6,5,10,16,10,17,26,24);
             setKnockBack(0.05f,0.18f);
@@ -105,7 +105,7 @@ public abstract class Attack implements GameObject{
             }
         }
     }//montante
-    static class Attack_mario_grounded_b_0 extends Attack{
+    static class Attack_mario_grounded_b_0 extends MeleeAttack {
         Attack_mario_grounded_b_0(Character c) {
             super(c,"c04attackhi4",2f,17,30,7,26,30,30,37,32);
             setKnockBack(0.1f,0);
@@ -137,7 +137,7 @@ public abstract class Attack implements GameObject{
 
         }
     }//testata (guard breaker)
-    static class Attack_mario_aerial_x_0 extends Attack{
+    static class Attack_mario_aerial_x_0 extends MeleeAttack {
         Attack_mario_aerial_x_0(Character c) {
             super(c,"c05attackairn",4f,6,6,9,17,10,15,21,10);
             setKnockBack(0.13f,0.08f);
@@ -148,7 +148,7 @@ public abstract class Attack implements GameObject{
             addCollider(new BoxCollider(this, creator, creator.facingDirection * 0.19f,-1.8f, ATTACK_COLLIDER_TAG,0.25f,0.14f));
         }
     }//calcio aereo
-    static class Attack_mario_aerial_b_0 extends Attack{
+    static class Attack_mario_aerial_b_0 extends MeleeAttack {
         Attack_mario_aerial_b_0(Character c) {
             super(c,"c05attackairf",2.5f,12,19,11,31,18,22,25,16);
             setKnockBack(0.09f,-0.16f);
@@ -177,7 +177,7 @@ public abstract class Attack implements GameObject{
             }
         }
     }//pugno aereo
-    static class Attack_mario_aerial_y_0 extends Attack{
+    static class Attack_mario_aerial_y_0 extends MeleeAttack {
         Attack_mario_aerial_y_0(Character c) {
             super(c,"c05attackairhi",1.4f,7,7,9,35,9,10,21,13);
             setKnockBack(0,0.143f);
@@ -211,7 +211,7 @@ public abstract class Attack implements GameObject{
         }
     }//calcio alto aereo
 
-    static class Attack_mario_projectile_prove extends Attack{
+    static class Attack_mario_projectile_prove extends MeleeAttack {
         Attack_mario_projectile_prove(Character c) {
             super(c,"c05attackairhi",1f,7,7,18,1,17,17,17,0);
             this.setAllowMovementDuringActiveFrames(false);
@@ -226,7 +226,7 @@ public abstract class Attack implements GameObject{
 
 
     //BONKEY KONG
-    static class Attack_donkeyKong_grounded_x_0 extends Attack{
+    static class Attack_donkeyKong_grounded_x_0 extends MeleeAttack {
         Attack_donkeyKong_grounded_x_0(Character c) {
             super(c,"c00attack11",1.6f,13,15,7,20,16,21,27,26);
             setKnockBack(0.028f,0);
@@ -242,7 +242,7 @@ public abstract class Attack implements GameObject{
 
         }
     }//pugno 1 (combo 0)
-    static class Attack_donkeyKong_grounded_x_1 extends Attack{
+    static class Attack_donkeyKong_grounded_x_1 extends MeleeAttack {
         Attack_donkeyKong_grounded_x_1(Character c) {
             super(c,"c00attack12",1.7f,19,50,11,30,32,36,39,36);
             setKnockBack(0.175f,0.19f);
@@ -260,10 +260,10 @@ public abstract class Attack implements GameObject{
 
         }
     }//pugno 2 (combo 1) (guard breaker)
-    static class Attack_donkeyKong_grounded_y_0 extends Attack{
+    static class Attack_donkeyKong_grounded_y_0 extends MeleeAttack {
         Attack_donkeyKong_grounded_y_0(Character c) {
             super(c,"c02attackhi3",2f,9,14,7,17,13,17,20,27);
-            setKnockBack(0.14f,0.14f,KNOCKBACK_TYPE_DIRECTIONAL);
+            setKnockBack(0.14f,0.14f, KNOCKBACK_DIRECTIONAL_X);
         }
 
         public void activeFrames(int nFrame){
@@ -301,7 +301,7 @@ public abstract class Attack implements GameObject{
 
         }
     }//manata alta
-    static class Attack_donkeyKong_grounded_b_0 extends Attack{
+    static class Attack_donkeyKong_grounded_b_0 extends MeleeAttack {
         Attack_donkeyKong_grounded_b_0(Character c) {
             super(c,"c01attacks3hi",2.5f,6,4,2,26,13,21,23,21);
             setKnockBack(0.089f,0);
@@ -321,11 +321,11 @@ public abstract class Attack implements GameObject{
 
         }
     }//schiaffo orizzontale (ranged poke)
-    static class Attack_donkeyKong_aerial_x_0 extends Attack{
+    static class Attack_donkeyKong_aerial_x_0 extends MeleeAttack {
         Attack_donkeyKong_aerial_x_0(Character c) {
             super(c,"c05attackairn",2f,7,12,3,30,10,15,19,10);
             //c05attackairn
-            setKnockBack(0.13f,0.08f,KNOCKBACK_TYPE_DIRECTIONAL);
+            setKnockBack(0.13f,0.08f, KNOCKBACK_DIRECTIONAL_X);
             this.setAllowMovementDuringActiveFrames(true);
         }
         public void activeFrames(int nFrame){
@@ -342,7 +342,7 @@ public abstract class Attack implements GameObject{
 
         }
     }//tornado aereo
-    static class Attack_donkeyKong_aerial_b_0 extends Attack{
+    static class Attack_donkeyKong_aerial_b_0 extends MeleeAttack {
         Attack_donkeyKong_aerial_b_0(Character c) {
             super(c,"c05attackairf",2.5f,13,23,3,38,19,21,25,16);
             setKnockBack(0.06f,-0.2f);
@@ -383,7 +383,7 @@ public abstract class Attack implements GameObject{
             }
         }
     }//pugno basso aereo
-    static class Attack_donkeyKong_aerial_y_0 extends Attack{
+    static class Attack_donkeyKong_aerial_y_0 extends MeleeAttack {
         Attack_donkeyKong_aerial_y_0(Character c) {
             super(c,"c05attackairhi",2f,8,9,3,68,14,18,20,21);
             setKnockBack(0.15f,0);
@@ -406,7 +406,7 @@ public abstract class Attack implements GameObject{
 
 
     //SONIC
-    static class Attack_sonic_grounded_x_0 extends Attack{
+    static class Attack_sonic_grounded_x_0 extends MeleeAttack {
         Attack_sonic_grounded_x_0(Character c) {
             super(c,"smush_blender_import|smush_blender_import c00attack11.nuanmb",2f,5,7,4,7,20,22,24,32);
             setKnockBack(0.01f,0);
@@ -421,7 +421,7 @@ public abstract class Attack implements GameObject{
             }
         }
     }//pugno 1 (combo 0)
-    static class Attack_sonic_grounded_x_1 extends Attack{
+    static class Attack_sonic_grounded_x_1 extends MeleeAttack {
         Attack_sonic_grounded_x_1(Character c) {
             super(c,"smush_blender_import|smush_blender_import c00attack12.nuanmb",2f,6,9,5,7,23,23,23,36);
             setKnockBack(0.017f,0);
@@ -434,7 +434,7 @@ public abstract class Attack implements GameObject{
             addCollider(new BoxCollider(this,creator.facingDirection * 0.61f,- 1.72f,ATTACK_COLLIDER_TAG,0.16f,0.13f));
         }
     }//pugno 2 (combo 1)
-    static class Attack_sonic_grounded_x_2 extends Attack{
+    static class Attack_sonic_grounded_x_2 extends MeleeAttack {
         Attack_sonic_grounded_x_2(Character c) {
             super(c,"smush_blender_import|smush_blender_import c00attack13.nuanmb",2f,13,18,7,15,27,30,33,31);
             setKnockBack(0.10f,0);
@@ -455,7 +455,7 @@ public abstract class Attack implements GameObject{
             }
         }
     }//calcio (combo 2)
-    static class Attack_sonic_grounded_y_0 extends Attack{
+    static class Attack_sonic_grounded_y_0 extends MeleeAttack {
         Attack_sonic_grounded_y_0(Character c) {
             super(c,"smush_blender_import|smush_blender_import c02attackhi3.nuanmb",2f,7,9,6,18,40,42,44,28);
             setKnockBack(0.13f,0.18f);
@@ -477,7 +477,7 @@ public abstract class Attack implements GameObject{
 
         }
     }//calci alti
-    static class Attack_sonic_grounded_b_0 extends Attack{
+    static class Attack_sonic_grounded_b_0 extends MeleeAttack {
         Attack_sonic_grounded_b_0(Character c) {
             super(c,"smush_blender_import|smush_blender_import c01attacks3hi.nuanmb",2.4f,7,21,2,14,29, 22,37,33);
             setKnockBack(0.1f,0.05f);
@@ -500,10 +500,10 @@ public abstract class Attack implements GameObject{
             }
         }
     }//calcio (guard breaker)
-    static class Attack_sonic_aerial_x_0 extends Attack{
+    static class Attack_sonic_aerial_x_0 extends MeleeAttack {
         Attack_sonic_aerial_x_0(Character c) {
             super(c,"smush_blender_import|smush_blender_import c05attackairn.nuanmb",2.2f,2,3,6,46,11,14,24,14);
-            setKnockBack(0.025f,0.02f,KNOCKBACK_TYPE_DIRECTIONAL);
+            setKnockBack(0.025f,0.02f, KNOCKBACK_DIRECTIONAL_X);
             multipleHitsDelay = 8;
             this.setAllowMovementDuringActiveFrames(true);
         }
@@ -513,7 +513,7 @@ public abstract class Attack implements GameObject{
             creator.setCollidersConfiguration(new BoxCollider(creator,0.15f,-1.7f,Character.BODY_COLLIDER_TAG,0,0), new CircularCollider(creator, 0.15f,-1.7f, Character.BODY_COLLIDER_TAG,0.27f));
         }
     }//spin aereo //sistemare hurtBox
-    static class Attack_sonic_aerial_b_0 extends Attack{
+    static class Attack_sonic_aerial_b_0 extends MeleeAttack {
         Attack_sonic_aerial_b_0(Character c) {
             super(c,"smush_blender_import|smush_blender_import c05attackairf.nuanmb",2.5f,6,12,5,31,18,24,28,22);
             setKnockBack(0.10f,0);
@@ -532,10 +532,10 @@ public abstract class Attack implements GameObject{
             }
         }
     }//testata rotante aerea //sistemare hurtBox
-    static class Attack_sonic_aerial_y_0 extends Attack{
+    static class Attack_sonic_aerial_y_0 extends MeleeAttack {
         Attack_sonic_aerial_y_0(Character c) {
             super(c,"smush_blender_import|smush_blender_import c05attackairhi.nuanmb",2.2f,5,6,9,33,9,10,21,13);
-            setKnockBack(0.11f,0.149f,KNOCKBACK_TYPE_ACTIVE_INPUT);
+            setKnockBack(0.11f,0.149f, KNOCKBACK_ACTIVE_X);
             applyContinuousKnockBack = true;
             this.setAllowMovementDuringActiveFrames(true);
 
@@ -627,7 +627,7 @@ public abstract class Attack implements GameObject{
     float lastTime;
 
     //costruttori
-    private Attack(@NotNull Character c,@NotNull String animationName, float animationSpeed, int lifeDamage, int guardDamage, int startUpFrames, int activeFrames, int lifeHitRecoveryFrames, int guardHitRecoveryFrames, int missRecoveryFrames, int enemyRecoveryFrames){
+    private MeleeAttack(@NotNull Character c, @NotNull String animationName, float animationSpeed, int lifeDamage, int guardDamage, int startUpFrames, int activeFrames, int lifeHitRecoveryFrames, int guardHitRecoveryFrames, int missRecoveryFrames, int enemyRecoveryFrames){
         this.position = new Point2D.Float(0,0);
         this.tag = ATTACK_OBJ_TAG;
 
@@ -649,7 +649,7 @@ public abstract class Attack implements GameObject{
         canHit = false;
         createdColliders = new Vector<>();
         knockBack = new Vector2(0,0);
-        knockBackType = KNOCKBACK_TYPE_NORMAL;
+        knockBackType = KNOCKBACK_NORMAL;
         applyContinuousKnockBack = false;
         this.setAllowMovementDuringActiveFrames(false);
         multipleHitsDelay = -1;
@@ -659,7 +659,7 @@ public abstract class Attack implements GameObject{
 
 
     //metodo da usare per ottenere attacchi
-    public static Attack getAttack(Character c,int attackId,int attackState){
+    public static MeleeAttack getAttack(Character c, int attackId, int attackState){
         if(c.id == Character.MARIO_ID){
             switch (attackId){
                 case Character.ATTACK_1_GROUNDED:
@@ -831,6 +831,76 @@ public abstract class Attack implements GameObject{
         enableMovement = allowMovement;
 
     }
+    public void applyKnockBack(Character c){
+        if(knockBackType == KNOCKBACK_NORMAL){
+            c.currentXForce = creator.facingDirection * knockBack.x;
+            c.currentYForce = knockBack.y;
+        }
+        if(knockBackType == KNOCKBACK_DIRECTIONAL_X){
+            c.currentYForce = knockBack.y;
+            if(c.get2DPosition().x * creator.facingDirection >= creator.get2DPosition().x * creator.facingDirection){
+                c.currentXForce = creator.facingDirection * knockBack.x;
+            }else{
+                c.currentXForce = creator.facingDirection * knockBack.x * -1;
+            }
+        }
+        if(knockBackType == KNOCKBACK_DIRECTIONAL_Y){
+            c.currentXForce = knockBack.x;
+            if(c.currentBodyCollider.get2DPosition().y >= creator.currentBodyCollider.get2DPosition().y){
+                c.currentYForce = knockBack.y;
+            }else{
+                c.currentYForce = knockBack.y * -1;
+            }
+        }
+        if(knockBackType == KNOCKBACK_DIRECTIONAL_XY){
+            if(c.get2DPosition().x * creator.facingDirection >= creator.get2DPosition().x * creator.facingDirection){
+                c.currentXForce = creator.facingDirection * knockBack.x;
+            }else{
+                c.currentXForce = creator.facingDirection * knockBack.x * -1;
+            }
+
+            if(c.currentBodyCollider.get2DPosition().y >= creator.currentBodyCollider.get2DPosition().y){
+                c.currentYForce = knockBack.y;
+            }else{
+                c.currentYForce = knockBack.y * -1;
+            }
+        }
+        if(knockBackType == KNOCKBACK_ACTIVE_X){
+            if(creator.moveDirection == Character.MOVE_STOP){
+                c.currentXForce = creator.facingDirection * knockBack.x;
+            }else{
+                c.currentXForce = creator.moveDirection * knockBack.x;
+            }
+            c.currentYForce = knockBack.y;
+
+        }
+        if(knockBackType == KNOCKBACK_ACTIVE_Y){
+            if(creator.lookDirection == Character.LOOK_NONE){
+                c.currentYForce =  knockBack.y;
+            }else{
+                c.currentYForce = knockBack.y * creator.lookDirection;
+            }
+            c.currentXForce = knockBack.x;
+        }
+        if(knockBackType == KNOCKBACK_ACTIVE_XY){
+            if(creator.moveDirection == Character.MOVE_STOP){
+                c.currentXForce = creator.facingDirection * knockBack.x;
+            }else{
+                c.currentXForce = creator.moveDirection * knockBack.x;
+            }
+
+            if(creator.lookDirection == Character.LOOK_NONE){
+                c.currentYForce =  knockBack.y;
+            }else{
+                c.currentYForce = knockBack.y * creator.lookDirection;
+            }
+        }
+        if(knockBackType == KNOCKBACK_CUSTOM){
+            customKnockBack();
+
+        }
+
+    }
 
 
 
@@ -984,31 +1054,6 @@ public abstract class Attack implements GameObject{
         }//se ho rotto la guardia in questa esecuzione
 
     }
-    public void applyKnockBack(Character c){
-        if(knockBackType == KNOCKBACK_TYPE_NORMAL){
-            c.currentXForce = creator.facingDirection * knockBack.x;
-            c.currentYForce = knockBack.y;
-        }
-        if(knockBackType == KNOCKBACK_TYPE_DIRECTIONAL){
-            c.currentYForce = knockBack.y;
-            if(c.get2DPosition().x * creator.facingDirection >= creator.get2DPosition().x * creator.facingDirection){
-                c.currentXForce = creator.facingDirection * knockBack.x;
-            }else{
-                c.currentXForce = creator.facingDirection * knockBack.x * -1;
-            }
-        }
-        if(knockBackType == KNOCKBACK_TYPE_ACTIVE_INPUT){
-            if(creator.moveDirection == Character.MOVE_STOP){
-                c.currentXForce = creator.facingDirection * knockBack.x;
-                c.currentYForce = knockBack.y;
-            }else{
-                c.currentXForce = creator.moveDirection * knockBack.x;
-                c.currentYForce = knockBack.y;
-            }
-
-        }
-
-    }
     public void interrupt(){
         removeAllColliders();
         creator.currentAttackState = 0;
@@ -1017,6 +1062,7 @@ public abstract class Attack implements GameObject{
 
         createdColliders = new Vector<>();
     }
+    private void customKnockBack() {}
 
 
 

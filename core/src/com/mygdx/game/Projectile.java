@@ -18,7 +18,7 @@ public abstract class Projectile implements GameObject{
         projectile_mario_prove(Character c) {
             super(c,c.walkAnimation, 1,Character.MARIO_PROVE_PROJECTILE,new Point2D.Float(0,-1.8f),new Point2D.Float(0,1.8f), 3, 2, 80, 4);
             velocity = new Vector2(c.facingDirection * 0.05f,0);
-            knockback = new Vector2(c.facingDirection * 0.02f,0);
+            knockBack = new Vector2(c.facingDirection * 0.02f,0);
 
             addCollider(new CircularCollider(this,creator,0,0,PROJECTILE_OLLIDER_TAG,0.1f));
         }
@@ -32,7 +32,7 @@ public abstract class Projectile implements GameObject{
     Character creator;
     String tag;
     Point2D.Float position, modelRelativePosition;
-    Vector2 knockback, velocity;
+    Vector2 knockBack, velocity;
     ModelInstance model;
     int lifeDamage, guardDamage;
     int frameOfExecution;//for future use
@@ -178,8 +178,8 @@ public abstract class Projectile implements GameObject{
 
     }
     public void applyKnockBack(Character c) {
-        c.currentXForce = knockback.x;
-        c.currentYForce = knockback.y;
+        c.currentXForce = knockBack.x;
+        c.currentYForce = knockBack.y;
     }
     private void projectileDestruction() {
         removeAllColliders();
