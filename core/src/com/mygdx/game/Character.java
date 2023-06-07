@@ -77,7 +77,7 @@ public class Character extends ModelInstance implements GameObject{
     boolean endedAttackThisExecution; //per evitare di avere un pixel di animazione camminata facendo auto combo
     float jumpTimer;
     boolean jumpedThisExecution; //per evitare che resetti i jump a 2 prima di staccarsi dal terreno
-    Vector<Projectile> existingCharacterProjectiles;
+    Vector<ProjectileAttack> existingCharacterProjectiles;
 
 
 
@@ -91,7 +91,7 @@ public class Character extends ModelInstance implements GameObject{
     private Vector<Collider2D> existingColliders;
 
     MeleeAttack meleeHitsToExecute;
-    Vector<Projectile> projectileHitsToExecute;
+    Vector<ProjectileAttack> projectileHitsToExecute;
 
 
 
@@ -249,7 +249,7 @@ public class Character extends ModelInstance implements GameObject{
         attacks[ATTACK_2_AIRBORN][0] = MeleeAttack.getAttack(this,ATTACK_2_AIRBORN,0);
         attacks[ATTACK_3_AIRBORN][0] = MeleeAttack.getAttack(this,ATTACK_3_AIRBORN,0);
 
-        //attacks[ATTACK_2_GROUNDED][0] = new Attack.Attack_mario_projectile_prove(this);
+        //attacks[ATTACK_2_GROUNDED][0] = new MeleeAttack.Attack_mario_projectile_prove(this);
 
         controller.setAnimation(idleAnimation);//importante
 
@@ -451,7 +451,6 @@ public class Character extends ModelInstance implements GameObject{
     public void setBodyAt(Point2D.Float position){
             transform.setTranslation(position.x - currentBodyCollider.center.x,position.y - currentBodyCollider.center.y + currentBodyCollider.height / 2, 0);
     }
-
     public void loadProjectiles(){
         if(id == MARIO_ID){
             /*
@@ -461,7 +460,7 @@ public class Character extends ModelInstance implements GameObject{
             for(int i = 0; i < 4; i++){
                 AVAILABLE_PROJECTILE_MODELS[MARIO_PROVE_PROJECTILE].add( new ModelInstance(new G3dModelLoader(new JsonReader()).loadModel(Gdx.files.internal(Character.CHARACTERS_MODELS_DIRECTORY + Character.CHARACTERS_MODELS_FIlE[0]))));
             }
-             */
+            */
         }
     }
     public void executeInputs(){
@@ -912,7 +911,7 @@ public class Character extends ModelInstance implements GameObject{
             meleeHitsToExecute = null;// se l'attacco sta ancora hittando hit sara ancora diversa da nul nel prossimo frame
         }//attacchi fisici
 
-        for(Projectile projectile: projectileHitsToExecute){
+        for(ProjectileAttack projectile: projectileHitsToExecute){
             projectile.hit(this);
 
             //se non ho armatura setto l'attacco a null
@@ -967,7 +966,7 @@ public class Character extends ModelInstance implements GameObject{
 
         //se la collisione è avvenuta tra il mio corpo e qualcosa
         if(myCollider.getTag().equals(BODY_COLLIDER_TAG)){
-            if(otherCollider.getTag().equals(MeleeAttack.ATTACK_COLLIDER_TAG)) {
+            if(otherCollider.getTag().equals(MeleeAttack.MELEE_ATTACK_COLLIDER_TAG)) {
                 meleeHitsToExecute = (MeleeAttack)(otherCollider.owner);
             }
             if(otherCollider.getTag().equals(BattleStage.RIGHT_BOUND_TAG) || otherCollider.getTag().equals(BattleStage.LEFT_BOUND_TAG)){
@@ -1048,8 +1047,8 @@ public class Character extends ModelInstance implements GameObject{
                     }
                 }
             }
-            if(otherCollider.getTag().equals(Projectile.PROJECTILE_OLLIDER_TAG)){
-                projectileHitsToExecute.add((Projectile)otherCollider.owner);
+            if(otherCollider.getTag().equals(ProjectileAttack.PROJECTILE_ATTACK_OLLIDER_TAG)){
+                projectileHitsToExecute.add((ProjectileAttack)otherCollider.owner);
             }
 
 

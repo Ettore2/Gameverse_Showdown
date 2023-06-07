@@ -220,7 +220,7 @@ public class BattleScreen extends GameState {
         modelBatch.render(instances, environment);
         //System.out.println(Character.AVAILABLE_PROJECTILE_MODELS[0].size());
         if (personaggio1 != null) {
-            for (Projectile projectile : personaggio1.existingCharacterProjectiles) {
+            for (ProjectileAttack projectile : personaggio1.existingCharacterProjectiles) {
                 if (projectile.model != null) {
                     modelBatch.render(projectile.model, environment);
                 }
@@ -228,7 +228,7 @@ public class BattleScreen extends GameState {
             }
         }
         if (personaggio2 != null) {
-            for (Projectile projectile : personaggio2.existingCharacterProjectiles) {
+            for (ProjectileAttack projectile : personaggio2.existingCharacterProjectiles) {
                 if (projectile.model != null) {
                     modelBatch.render(projectile.model, environment);
                 }

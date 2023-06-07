@@ -1,17 +1,15 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.math.Vector2;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
-public abstract class MeleeAttack implements GameObject{
+public abstract class MeleeAttack extends Attack{
     //ricordo di dare tag a colliders (lo posso fare da costruttore)
     //usare metodi per settare attributi di attacchi
-    static final String ATTACK_COLLIDER_TAG = "attack collider";
-    static final String ATTACK_OBJ_TAG = "attack obj";
+    static final String MELEE_ATTACK_COLLIDER_TAG = "melee attack collider";
+    static final String MELEE_ATTACK_OBJ_TAG = "melee attack obj";
     static final int KNOCKBACK_NORMAL = 0, KNOCKBACK_DIRECTIONAL_X = 1, KNOCKBACK_DIRECTIONAL_Y = 2, KNOCKBACK_DIRECTIONAL_XY = 3, KNOCKBACK_ACTIVE_X = 4, KNOCKBACK_ACTIVE_Y = 5, KNOCKBACK_ACTIVE_XY = 6, KNOCKBACK_CUSTOM = -1;
     static final int HITTED_NONE = 0,HITTED_LIFE = 1,HITTED_GUARD = 2;
     //settare absolute owner in collider creati
@@ -35,7 +33,7 @@ public abstract class MeleeAttack implements GameObject{
         public void firstActiveFrame(){
             super.firstActiveFrame();
 
-            BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.27f,-1.78f, ATTACK_COLLIDER_TAG,0.3f,0.1f);
+            BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.27f,-1.78f, MELEE_ATTACK_COLLIDER_TAG,0.3f,0.1f);
             addCollider(colTmp);
         }
     }//pugno 1 (combo 0)
@@ -47,7 +45,7 @@ public abstract class MeleeAttack implements GameObject{
         public void firstActiveFrame(){
             super.firstActiveFrame();
 
-            BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.43f,-1.76f, ATTACK_COLLIDER_TAG,0.4f,0.13f);
+            BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.43f,-1.76f, MELEE_ATTACK_COLLIDER_TAG,0.4f,0.13f);
             addCollider(colTmp);
         }
     }//pugno 2 (combo 1)
@@ -59,7 +57,7 @@ public abstract class MeleeAttack implements GameObject{
         public void firstActiveFrame(){
             super.firstActiveFrame();
 
-            BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.3f,-1.95f, ATTACK_COLLIDER_TAG,0.1f,0.13f);
+            BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.3f,-1.95f, MELEE_ATTACK_COLLIDER_TAG,0.1f,0.13f);
             addCollider(colTmp);
 
         }
@@ -84,7 +82,7 @@ public abstract class MeleeAttack implements GameObject{
         }
         public void firstActiveFrame() {
             super.firstActiveFrame();
-            addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.17f,-1.5f, ATTACK_COLLIDER_TAG,0.12f));
+            addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.17f,-1.5f, MELEE_ATTACK_COLLIDER_TAG,0.12f));
         }
 
         public void activeFrames(int nFrame){
@@ -113,7 +111,7 @@ public abstract class MeleeAttack implements GameObject{
         public void activeFrames(int nFrame){
             super.activeFrames(nFrame);
             if(nFrame == 4){
-                CircularCollider colTmp = new CircularCollider(this, creator, creator.facingDirection * -0.3f,-1.65f, ATTACK_COLLIDER_TAG,0.14f);
+                CircularCollider colTmp = new CircularCollider(this, creator, creator.facingDirection * -0.3f,-1.65f, MELEE_ATTACK_COLLIDER_TAG,0.14f);
                 addCollider(colTmp);
             }
             if(nFrame == 5){
@@ -145,7 +143,7 @@ public abstract class MeleeAttack implements GameObject{
         }
         public void firstActiveFrame() {
             super.firstActiveFrame();
-            addCollider(new BoxCollider(this, creator, creator.facingDirection * 0.19f,-1.8f, ATTACK_COLLIDER_TAG,0.25f,0.14f));
+            addCollider(new BoxCollider(this, creator, creator.facingDirection * 0.19f,-1.8f, MELEE_ATTACK_COLLIDER_TAG,0.25f,0.14f));
         }
     }//calcio aereo
     static class Attack_mario_aerial_b_0 extends MeleeAttack {
@@ -159,7 +157,7 @@ public abstract class MeleeAttack implements GameObject{
             super.activeFrames(nFrame);
 
             if(nFrame == 16){
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.39f,-1.65f, ATTACK_COLLIDER_TAG,0.12f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.39f,-1.65f, MELEE_ATTACK_COLLIDER_TAG,0.12f));
             }
             if(nFrame == 17){
                 createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.49f,-1.82f));
@@ -186,10 +184,10 @@ public abstract class MeleeAttack implements GameObject{
         public void activeFrames(int nFrame) {
             super.activeFrames(nFrame);
             if(nFrame == 8){
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.38f,-1.15f, ATTACK_COLLIDER_TAG,0.11f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.38f,-1.15f, MELEE_ATTACK_COLLIDER_TAG,0.11f));
             }
             if(nFrame == 9){
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.22f,-1.115f, ATTACK_COLLIDER_TAG,0.11f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.22f,-1.115f, MELEE_ATTACK_COLLIDER_TAG,0.11f));
             }
             if(nFrame == 10){
                 createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.07f,-1.110f));
@@ -220,7 +218,7 @@ public abstract class MeleeAttack implements GameObject{
             super.firstActiveFrame();
 
             //instanzio il proietile
-            new Projectile.projectile_mario_prove(this.creator);
+            new ProjectileAttack.projectile_mario_prove(this.creator);
         }
     }
 
@@ -236,7 +234,7 @@ public abstract class MeleeAttack implements GameObject{
             super.activeFrames(nFrame);
 
             if(nFrame == 7){
-                BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.4f,-1.7f, ATTACK_COLLIDER_TAG,1f,0.34f);
+                BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.4f,-1.7f, MELEE_ATTACK_COLLIDER_TAG,1f,0.34f);
                 addCollider(colTmp);
             }
 
@@ -251,7 +249,7 @@ public abstract class MeleeAttack implements GameObject{
             super.activeFrames(nFrame);
 
             if(nFrame == 4){
-                BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.65f,-1.6f, ATTACK_COLLIDER_TAG,0.8f,1.3f);
+                BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.65f,-1.6f, MELEE_ATTACK_COLLIDER_TAG,0.8f,1.3f);
                 addCollider(colTmp);
             }
             if(nFrame == 18){
@@ -270,13 +268,13 @@ public abstract class MeleeAttack implements GameObject{
             super.activeFrames(nFrame);
 
             if(nFrame == 6){
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.63f,-1.2f, ATTACK_COLLIDER_TAG,0.235f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.63f,-1.2f, MELEE_ATTACK_COLLIDER_TAG,0.235f));
             }
             if(nFrame == 7){
                 createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.63f,-1f));
             }
             if(nFrame == 9){
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.12f,-0.6f, ATTACK_COLLIDER_TAG,0.235f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.12f,-0.6f, MELEE_ATTACK_COLLIDER_TAG,0.235f));
                 createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.55f,-0.6f));
             }
             if(nFrame == 10){
@@ -309,7 +307,7 @@ public abstract class MeleeAttack implements GameObject{
         public void activeFrames(int nFrame){
             super.activeFrames(nFrame);
             if(nFrame == 4){
-                BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.3f,-1.65f, ATTACK_COLLIDER_TAG,0.65f,0.36f);
+                BoxCollider colTmp = new BoxCollider(this, creator, creator.facingDirection * 0.3f,-1.65f, MELEE_ATTACK_COLLIDER_TAG,0.65f,0.36f);
                 addCollider(colTmp);
             }
             if(nFrame > 4){
@@ -332,12 +330,12 @@ public abstract class MeleeAttack implements GameObject{
             super.activeFrames(nFrame);
 
             if(nFrame == 10){
-                addCollider(new CircularCollider(this, creator, creator.facingDirection *  0.42f,-1.76f, ATTACK_COLLIDER_TAG,0.21f));
-                addCollider(new CircularCollider(this, creator, creator.facingDirection *  0.25f,-1.66f, ATTACK_COLLIDER_TAG,0.21f));
-                addCollider(new CircularCollider(this, creator, creator.facingDirection *  0.1f,-1.56f, ATTACK_COLLIDER_TAG,0.21f));
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * -0.1f,-1.46f, ATTACK_COLLIDER_TAG,0.21f));
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * -0.25f,-1.36f, ATTACK_COLLIDER_TAG,0.21f));
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * -0.42f,-1.26f, ATTACK_COLLIDER_TAG,0.21f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection *  0.42f,-1.76f, MELEE_ATTACK_COLLIDER_TAG,0.21f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection *  0.25f,-1.66f, MELEE_ATTACK_COLLIDER_TAG,0.21f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection *  0.1f,-1.56f, MELEE_ATTACK_COLLIDER_TAG,0.21f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * -0.1f,-1.46f, MELEE_ATTACK_COLLIDER_TAG,0.21f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * -0.25f,-1.36f, MELEE_ATTACK_COLLIDER_TAG,0.21f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * -0.42f,-1.26f, MELEE_ATTACK_COLLIDER_TAG,0.21f));
             }
 
         }
@@ -354,7 +352,7 @@ public abstract class MeleeAttack implements GameObject{
 
 
             if(nFrame == 19){
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.78f,-1f, ATTACK_COLLIDER_TAG,0.21f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.78f,-1f, MELEE_ATTACK_COLLIDER_TAG,0.21f));
             }
             if(nFrame == 20){
                 createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.88f,-1.54f));
@@ -392,7 +390,7 @@ public abstract class MeleeAttack implements GameObject{
         public void activeFrames(int nFrame) {
             super.activeFrames(nFrame);
             if(nFrame == 11){
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.6f,-1.3f, ATTACK_COLLIDER_TAG,0.2f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.6f,-1.3f, MELEE_ATTACK_COLLIDER_TAG,0.2f));
             }
             if(nFrame == 12){
                 createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.7f,-1.75f));
@@ -417,7 +415,7 @@ public abstract class MeleeAttack implements GameObject{
             super.activeFrames(nFrame);
 
             if(nFrame == 3){
-                addCollider(new BoxCollider(this,creator.facingDirection * 0.63f,- 1.72f,ATTACK_COLLIDER_TAG,0.13f,0.13f));
+                addCollider(new BoxCollider(this,creator.facingDirection * 0.63f,- 1.72f, MELEE_ATTACK_COLLIDER_TAG,0.13f,0.13f));
             }
         }
     }//pugno 1 (combo 0)
@@ -431,7 +429,7 @@ public abstract class MeleeAttack implements GameObject{
         public void firstActiveFrame() {
             super.firstActiveFrame();
 
-            addCollider(new BoxCollider(this,creator.facingDirection * 0.61f,- 1.72f,ATTACK_COLLIDER_TAG,0.16f,0.13f));
+            addCollider(new BoxCollider(this,creator.facingDirection * 0.61f,- 1.72f, MELEE_ATTACK_COLLIDER_TAG,0.16f,0.13f));
         }
     }//pugno 2 (combo 1)
     static class Attack_sonic_grounded_x_2 extends MeleeAttack {
@@ -443,7 +441,7 @@ public abstract class MeleeAttack implements GameObject{
             super.activeFrames(nFrame);
 
             if(nFrame == 3){
-                addCollider(new BoxCollider(this, creator, creator.facingDirection * 0.283f,-2.06f, ATTACK_COLLIDER_TAG,0.18f,0.26f));
+                addCollider(new BoxCollider(this, creator, creator.facingDirection * 0.283f,-2.06f, MELEE_ATTACK_COLLIDER_TAG,0.18f,0.26f));
             }
             if(nFrame == 4){
                 createdColliders.get(0).set2DPosition(new Point2D.Float(creator.facingDirection * 0.76f,-1.65f));
@@ -465,8 +463,8 @@ public abstract class MeleeAttack implements GameObject{
             super.activeFrames(nFrame);
 
             if(nFrame == 8){
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.2f,-1.15f, ATTACK_COLLIDER_TAG,0.145f));
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.3f,-1f, ATTACK_COLLIDER_TAG,0.13f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.2f,-1.15f, MELEE_ATTACK_COLLIDER_TAG,0.145f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.3f,-1f, MELEE_ATTACK_COLLIDER_TAG,0.13f));
             }
 
             if(nFrame == 15){
@@ -493,7 +491,7 @@ public abstract class MeleeAttack implements GameObject{
         public void activeFrames(int nFrame){
             super.activeFrames(nFrame);
             if(nFrame == 8){
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.76f,-1.485f, ATTACK_COLLIDER_TAG,0.19f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.76f,-1.485f, MELEE_ATTACK_COLLIDER_TAG,0.19f));
             }
             if(nFrame == 12){
                 ((CircularCollider)createdColliders.get(0)).radius = 0.15f;
@@ -509,7 +507,7 @@ public abstract class MeleeAttack implements GameObject{
         }
         public void firstActiveFrame() {
             super.firstActiveFrame();
-            addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.15f,-1.7f, ATTACK_COLLIDER_TAG,0.27f));
+            addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.15f,-1.7f, MELEE_ATTACK_COLLIDER_TAG,0.27f));
             creator.setCollidersConfiguration(new BoxCollider(creator,0.15f,-1.7f,Character.BODY_COLLIDER_TAG,0,0), new CircularCollider(creator, 0.15f,-1.7f, Character.BODY_COLLIDER_TAG,0.27f));
         }
     }//spin aereo //sistemare hurtBox
@@ -524,7 +522,7 @@ public abstract class MeleeAttack implements GameObject{
             super.activeFrames(nFrame);
 
             if(nFrame == 5){
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.45f,-1.7f, ATTACK_COLLIDER_TAG,0.21f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.45f,-1.7f, MELEE_ATTACK_COLLIDER_TAG,0.21f));
                 creator.setCollidersConfiguration(new BoxCollider(creator,0.2f,-1.7f, Character.BODY_COLLIDER_TAG,0.75f,0.265f), new CircularCollider(creator, 0.45f,-1.7f, Character.BODY_COLLIDER_TAG,0.21f));
             }
             if(nFrame == 15){
@@ -543,10 +541,10 @@ public abstract class MeleeAttack implements GameObject{
         public void activeFrames(int nFrame) {
             super.activeFrames(nFrame);
             if(nFrame == 5){
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.43f,-1.66f, ATTACK_COLLIDER_TAG,0.12f));
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * -0.41f,-1.66f, ATTACK_COLLIDER_TAG,0.12f));
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.55f,-1.66f, ATTACK_COLLIDER_TAG,0.09f));
-                addCollider(new CircularCollider(this, creator, creator.facingDirection * -0.53f,-1.66f, ATTACK_COLLIDER_TAG,0.09f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.43f,-1.66f, MELEE_ATTACK_COLLIDER_TAG,0.12f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * -0.41f,-1.66f, MELEE_ATTACK_COLLIDER_TAG,0.12f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * 0.55f,-1.66f, MELEE_ATTACK_COLLIDER_TAG,0.09f));
+                addCollider(new CircularCollider(this, creator, creator.facingDirection * -0.53f,-1.66f, MELEE_ATTACK_COLLIDER_TAG,0.09f));
             }
 
             if(nFrame == 9){
@@ -581,7 +579,7 @@ public abstract class MeleeAttack implements GameObject{
         @Override
         public void applyKnockBack(Character c) {
             float posX,posY;
-            if(this.frameCounter < startUpFrames + 15){
+            if(this.framesOfExecution < startUpFrames + 15){
                 if(c.get2DPosition().x * creator.facingDirection > this.creator.get2DPosition().x * creator.facingDirection){
                     posX = createdColliders.get(0).get2DPosition().x - c.idleBodyCol.center.x;
                     posY = createdColliders.get(0).get2DPosition().y - c.idleBodyCol.center.y;
@@ -601,60 +599,31 @@ public abstract class MeleeAttack implements GameObject{
         }
     }//sforbiciata alta aerea
 
-
-    Character creator;
-    String tag;
-    Point2D.Float position;
-    String animationName;
-    float animationSpeed;
-    int lifeDamage, guardDamage;
-    Vector2 knockBack;
-    int frameCounter;//tiene conto di per quanti frame l'attacco è stato eseguito
     int startUpFrames;//frames inizializzazione dell'attacco (vulnerabilità) (artificiale rispetto ad animazione)
     int activeFrames;//frame di durata dell'attacco (comparsa hitBoxes non coincide con frame 0 peré animazione ha già startup frames)
     int lifeHitRecoveryFrames;//frame di "stun" finale se l'attacco colpisce nemico non bloccante (artificiale rispetto ad animazione)
     int guardHitRecoveryFrames;//frame di "stun" finale se l'attacco colpisce nemico bloccante (artificiale rispetto ad animazione)
     int missRecoveryFrames;//frame di "stun" finale se l'attacco manca il nemico (artificiale rispetto ad animazione)
-    int enemyRecoveryFrames;//frame di stun per nemico che viene colpito da questo attacco
     boolean currentlyEnableMovement, enableMovement;
-    Vector<Collider2D> createdColliders;
-    boolean canHit, applyContinuousKnockBack;
-    int lastThingHitted;
-    int knockBackType,multipleHitsDelay, frameToNextHit;//fra quanti frame puoi hittare di nuovo (-1 = non puoi)
 
-
-    //frame debug
-    float lastTime;
 
     //costruttori
     private MeleeAttack(@NotNull Character c, @NotNull String animationName, float animationSpeed, int lifeDamage, int guardDamage, int startUpFrames, int activeFrames, int lifeHitRecoveryFrames, int guardHitRecoveryFrames, int missRecoveryFrames, int enemyRecoveryFrames){
-        this.position = new Point2D.Float(0,0);
-        this.tag = ATTACK_OBJ_TAG;
+        super(c, animationName, animationSpeed, lifeDamage, guardDamage, enemyRecoveryFrames);
 
-        this.creator = c;
-        this.animationName = animationName;
-        this.animationSpeed = animationSpeed;
-        this.lifeDamage =  lifeDamage;
-        this.guardDamage =  guardDamage;
+        this.relativePosition = new Point2D.Float(0,0);
+        this.tag = MELEE_ATTACK_OBJ_TAG;
+
         this.startUpFrames = startUpFrames;
         this.activeFrames = activeFrames;
         this.lifeHitRecoveryFrames = lifeHitRecoveryFrames;
         this.guardHitRecoveryFrames = guardHitRecoveryFrames;
         this.missRecoveryFrames = missRecoveryFrames;
-        this.enemyRecoveryFrames = enemyRecoveryFrames;
 
         //parametri default
         currentlyEnableMovement = false;
-        frameCounter = 0;
-        canHit = false;
-        createdColliders = new Vector<>();
-        knockBack = new Vector2(0,0);
-        knockBackType = KNOCKBACK_NORMAL;
         applyContinuousKnockBack = false;
         this.setAllowMovementDuringActiveFrames(false);
-        multipleHitsDelay = -1;
-        frameToNextHit = 0;
-        lastThingHitted = HITTED_NONE;
     }
 
 
@@ -737,26 +706,21 @@ public abstract class MeleeAttack implements GameObject{
 
     //metodi da non averrydare
     public void execute(){
-        //System.out.print("frame: "+frameCounter+" "); //debug
-        creator.autoComboTimer=Character.AUTOCOMBO_TIME_TOLLERANCE;// valore temporaneo per non far cancellare lo stato
+        super.execute();
 
-        if(frameToNextHit > 0){
-            frameToNextHit--;
-        }
-        if(frameToNextHit == 0){
-            canHit = true;
-        }
 
-        if(frameCounter == 0){
+        creator.autoComboTimer = Character.AUTOCOMBO_TIME_TOLLERANCE;// valore temporaneo per non far cancellare lo stato
+
+        if(framesOfExecution == 0){
             attackStart();//avvio attacco
         }//codice start (1 volta a inizio attacco)
 
-        if(frameCounter < startUpFrames){//startup
-            startupFrames(frameCounter);
+        if(framesOfExecution < startUpFrames){//startup
+            startupFrames(framesOfExecution);
         }//stratup frames
 
-        if(frameCounter >= startUpFrames && frameCounter < startUpFrames+activeFrames){//active
-            activeFrames(frameCounter-startUpFrames);
+        if(framesOfExecution >= startUpFrames && framesOfExecution < startUpFrames+activeFrames){//active
+            activeFrames(framesOfExecution -startUpFrames);
 
             if(!creator.controller.current.animation.id.equals(this.animationName)){
                 creator.controller.setAnimation(this.animationName,1);
@@ -764,143 +728,121 @@ public abstract class MeleeAttack implements GameObject{
             }//mi assicuro di star mostrando l'animazione
         }//active frames
 
-        if(frameCounter >= startUpFrames+activeFrames){//recovery
-            if(lastThingHitted == HITTED_LIFE && frameCounter < startUpFrames+activeFrames+ lifeHitRecoveryFrames){
-                hitRecoveryFrames(frameCounter-(startUpFrames+activeFrames));
+        if(framesOfExecution >= startUpFrames+activeFrames){//recovery
+            if(lastThingHitted == HITTED_LIFE && framesOfExecution < startUpFrames+activeFrames+ lifeHitRecoveryFrames){
+                hitRecoveryFrames(framesOfExecution -(startUpFrames+activeFrames));
             }
-            if(lastThingHitted == HITTED_GUARD && frameCounter < startUpFrames+activeFrames+ guardHitRecoveryFrames){
-                hitRecoveryFrames(frameCounter-(startUpFrames+activeFrames));
+            if(lastThingHitted == HITTED_GUARD && framesOfExecution < startUpFrames+activeFrames+ guardHitRecoveryFrames){
+                hitRecoveryFrames(framesOfExecution -(startUpFrames+activeFrames));
             }
-            if(lastThingHitted == HITTED_NONE && frameCounter<startUpFrames+activeFrames+missRecoveryFrames){
-                missRecoveryFrames(frameCounter-(startUpFrames+activeFrames));
+            if(lastThingHitted == HITTED_NONE && framesOfExecution <startUpFrames+activeFrames+missRecoveryFrames){
+                missRecoveryFrames(framesOfExecution -(startUpFrames+activeFrames));
             }
         }//recovery frames
 
         //codice fine attacco (1 volta a fine attacco)
-        if(lastThingHitted == HITTED_LIFE && frameCounter == startUpFrames+activeFrames+ lifeHitRecoveryFrames){
+        if(lastThingHitted == HITTED_LIFE && framesOfExecution == startUpFrames+activeFrames+ lifeHitRecoveryFrames){
             attackHitEnd();//concludo attacco
             creator.currentAttackId=Character.ATTACK_NONE;
         }
-        if(lastThingHitted == HITTED_GUARD && frameCounter == startUpFrames+activeFrames+ guardHitRecoveryFrames){
+        if(lastThingHitted == HITTED_GUARD && framesOfExecution == startUpFrames+activeFrames+ guardHitRecoveryFrames){
             attackHitEnd();//concludo attacco
             creator.currentAttackId=Character.ATTACK_NONE;
         }
-        if(lastThingHitted == HITTED_NONE && frameCounter == startUpFrames+activeFrames+missRecoveryFrames){
+        if(lastThingHitted == HITTED_NONE && framesOfExecution == startUpFrames+activeFrames+missRecoveryFrames){
             attackMissEnd();//concludo attacco
             creator.currentAttackId=Character.ATTACK_NONE;
         }
 
-
-        frameCounter++;//commento per fare frame debug
-
-
-    }
-    public void addCollider(Collider2D col){
-        this.createdColliders.add(col);
-        creator.addCollider(col);
-    }
-    public void remoreCollider(Collider2D col){
-        if(this.createdColliders.contains(col)){
-            this.createdColliders.remove(col);
-            creator.removeCollider(col);
-        }
-
-    }
-    public void removeAllColliders(){
-        for(Collider2D col : createdColliders){
-            creator.removeCollider(col);
-        }
-    }
-    public void setKnockBack(Vector2 knockBack, int KnockBackType){
-        this.knockBack = knockBack;
-        this.knockBackType = KnockBackType;
-    }
-    public void setKnockBack(Vector2 knockBack){
-        setKnockBack(knockBack,0);
-
-    }
-    public void setKnockBack(float xVal, float yVal){
-        setKnockBack(new Vector2(xVal, yVal));
-
-    }
-    public void setKnockBack(float xVal, float yVal, int KnockBackType){
-        setKnockBack(new Vector2(xVal, yVal), KnockBackType);
 
     }
     public void setAllowMovementDuringActiveFrames(boolean allowMovement){
         enableMovement = allowMovement;
 
     }
-    public void applyKnockBack(Character c){
+    public void applyKnockBack(@NotNull Character c){
         if(knockBackType == KNOCKBACK_NORMAL){
-            c.currentXForce = creator.facingDirection * knockBack.x;
-            c.currentYForce = knockBack.y;
+            KNOCKBACK_NORMAL(c);
         }
         if(knockBackType == KNOCKBACK_DIRECTIONAL_X){
-            c.currentYForce = knockBack.y;
-            if(c.get2DPosition().x * creator.facingDirection >= creator.get2DPosition().x * creator.facingDirection){
-                c.currentXForce = creator.facingDirection * knockBack.x;
-            }else{
-                c.currentXForce = creator.facingDirection * knockBack.x * -1;
-            }
+            KNOCKBACK_DIRECTIONAL_X(c);
         }
         if(knockBackType == KNOCKBACK_DIRECTIONAL_Y){
-            c.currentXForce = knockBack.x;
-            if(c.currentBodyCollider.get2DPosition().y >= creator.currentBodyCollider.get2DPosition().y){
-                c.currentYForce = knockBack.y;
-            }else{
-                c.currentYForce = knockBack.y * -1;
-            }
+            KNOCKBACK_DIRECTIONAL_Y(c);
         }
         if(knockBackType == KNOCKBACK_DIRECTIONAL_XY){
-            if(c.get2DPosition().x * creator.facingDirection >= creator.get2DPosition().x * creator.facingDirection){
-                c.currentXForce = creator.facingDirection * knockBack.x;
-            }else{
-                c.currentXForce = creator.facingDirection * knockBack.x * -1;
-            }
-
-            if(c.currentBodyCollider.get2DPosition().y >= creator.currentBodyCollider.get2DPosition().y){
-                c.currentYForce = knockBack.y;
-            }else{
-                c.currentYForce = knockBack.y * -1;
-            }
+            KNOCKBACK_DIRECTIONAL_XY(c);
         }
         if(knockBackType == KNOCKBACK_ACTIVE_X){
-            if(creator.moveDirection == Character.MOVE_STOP){
-                c.currentXForce = creator.facingDirection * knockBack.x;
-            }else{
-                c.currentXForce = creator.moveDirection * knockBack.x;
-            }
-            c.currentYForce = knockBack.y;
-
+            KNOCKBACK_ACTIVE_X(c);
         }
         if(knockBackType == KNOCKBACK_ACTIVE_Y){
-            if(creator.lookDirection == Character.LOOK_NONE){
-                c.currentYForce =  knockBack.y;
-            }else{
-                c.currentYForce = knockBack.y * creator.lookDirection;
-            }
-            c.currentXForce = knockBack.x;
+            KNOCKBACK_ACTIVE_Y(c);
         }
         if(knockBackType == KNOCKBACK_ACTIVE_XY){
-            if(creator.moveDirection == Character.MOVE_STOP){
-                c.currentXForce = creator.facingDirection * knockBack.x;
-            }else{
-                c.currentXForce = creator.moveDirection * knockBack.x;
-            }
-
-            if(creator.lookDirection == Character.LOOK_NONE){
-                c.currentYForce =  knockBack.y;
-            }else{
-                c.currentYForce = knockBack.y * creator.lookDirection;
-            }
+            KNOCKBACK_ACTIVE_XY(c);
         }
         if(knockBackType == KNOCKBACK_CUSTOM){
-            customKnockBack();
-
+            KNOCKBACK_CUSTOM(c);
         }
 
     }
+    protected void KNOCKBACK_NORMAL(@NotNull Character c){
+        c.currentXForce = creator.facingDirection * knockBack.x;
+        c.currentYForce = knockBack.y;}
+    protected void KNOCKBACK_DIRECTIONAL_X(@NotNull Character c){
+        c.currentYForce = knockBack.y;
+        if(c.get2DPosition().x * creator.facingDirection >= creator.get2DPosition().x * creator.facingDirection){
+            c.currentXForce = creator.facingDirection * knockBack.x;
+        }else{
+            c.currentXForce = creator.facingDirection * knockBack.x * -1;
+        }}
+    protected void KNOCKBACK_DIRECTIONAL_Y(@NotNull Character c){
+        c.currentXForce = knockBack.x;
+        if(c.currentBodyCollider.get2DPosition().y >= creator.currentBodyCollider.get2DPosition().y){
+            c.currentYForce = knockBack.y;
+        }else{
+            c.currentYForce = knockBack.y * -1;
+        }}
+    protected void KNOCKBACK_DIRECTIONAL_XY(@NotNull Character c){
+        if(c.get2DPosition().x * creator.facingDirection >= creator.get2DPosition().x * creator.facingDirection){
+            c.currentXForce = creator.facingDirection * knockBack.x;
+        }else{
+            c.currentXForce = creator.facingDirection * knockBack.x * -1;
+        }
+
+        if(c.currentBodyCollider.get2DPosition().y >= creator.currentBodyCollider.get2DPosition().y){
+            c.currentYForce = knockBack.y;
+        }else{
+            c.currentYForce = knockBack.y * -1;
+        }}
+    protected void KNOCKBACK_ACTIVE_X(@NotNull Character c){
+        if(creator.moveDirection == Character.MOVE_STOP){
+            c.currentXForce = creator.facingDirection * knockBack.x;
+        }else{
+            c.currentXForce = creator.moveDirection * knockBack.x;
+        }
+        c.currentYForce = knockBack.y;}
+    protected void KNOCKBACK_ACTIVE_Y(@NotNull Character c){
+        if(creator.lookDirection == Character.LOOK_NONE){
+            c.currentYForce =  knockBack.y;
+        }else{
+            c.currentYForce = knockBack.y * creator.lookDirection;
+        }
+        c.currentXForce = knockBack.x;}
+    protected void KNOCKBACK_ACTIVE_XY(@NotNull Character c){
+        if(creator.moveDirection == Character.MOVE_STOP){
+            c.currentXForce = creator.facingDirection * knockBack.x;
+        }else{
+            c.currentXForce = creator.moveDirection * knockBack.x;
+        }
+
+        if(creator.lookDirection == Character.LOOK_NONE){
+            c.currentYForce =  knockBack.y;
+        }else{
+            c.currentYForce = knockBack.y * creator.lookDirection;
+        }}
+    protected void KNOCKBACK_CUSTOM(@NotNull Character c){}
 
 
 
@@ -911,7 +853,7 @@ public abstract class MeleeAttack implements GameObject{
         currentlyEnableMovement = false;
         creator.controller.setAnimation(creator.idleAnimation,-1);
 
-        this.canHit = true;
+        this.framesToNextHit = 0;
         lastThingHitted = HITTED_NONE;
         //System.out.println("start"); //debug
     }
@@ -972,8 +914,8 @@ public abstract class MeleeAttack implements GameObject{
         creator.endedAttackThisExecution = true;
         creator.canMove = true;
         creator.currentAttackId = Character.ATTACK_NONE;
-        frameCounter = 0;
-        canHit = true;
+        framesOfExecution = 0;
+        this.framesToNextHit = 0;
 
         removeAllColliders();
         createdColliders = new Vector<>();
@@ -985,114 +927,25 @@ public abstract class MeleeAttack implements GameObject{
         creator.canMove = true;
         //System.out.println("misEnd"); //debug
         creator.currentAttackId = Character.ATTACK_NONE;
-        frameCounter = 0;
-        canHit = true;
+        framesOfExecution = 0;
+        this.framesToNextHit = 0;
 
         removeAllColliders();
         createdColliders = new Vector<>();
-    }
-    public void hit(Character c){
-
-        //continua a infliggere stun -> combo costanti indipendentemente al frame in cui è avvenuta la hit
-        if(c.guarding){
-            c.currentStunFrames = Character.GUARD_HIT_STUN_FRAMES;
-        }else{
-            c.currentStunFrames = this.enemyRecoveryFrames;
-        }
-
-        //continua a infliggere knocback -> combo costanti indipendentemente al frame in cui è avvenuta la hit
-        if(!c.guarding && (applyContinuousKnockBack || canHit)){
-            applyKnockBack(c);
-        }
-
-        if(canHit){//fa danno 1 volta
-            if(c.grounded){
-                if(c.guarding){
-                    c.controller.setAnimation(c.guardHitAnimation,1);
-                    c.controller.current.time = 0;
-                    c.controller.current.speed = c.guardAnimationSpeed;
-                    c.currentGuardAmount -= guardDamage;
-                    lastThingHitted = HITTED_GUARD;
-                }else{
-                    c.controller.setAnimation(c.normalHitAnimation,1);
-                    c.controller.current.time = 0;
-                    c.controller.current.speed = c.normalHitAnimationSpeed;
-                    c.currentLife -= lifeDamage;
-                    lastThingHitted = HITTED_LIFE;
-
-                }
-            }else{
-                c.controller.setAnimation(c.airHitAnimation,1);
-                c.controller.current.time = 0;
-                c.controller.current.speed = c.airHitAnimationSpeed;
-                c.currentLife -= lifeDamage;
-                lastThingHitted = HITTED_LIFE;
-
-            }
-
-            if(c.currentLife < 0){
-                c.currentLife = 0;
-            }
-            if(c.currentGuardAmount < 0){
-                c.currentGuardAmount = 0;
-            }
-
-            canHit = false;
-            frameToNextHit = multipleHitsDelay;
-
-            c.currentAttackState = 0;
-            c.lastAttackId = Character.ATTACK_NONE;
-        }//fatto 1 sola volta
-
-
-        if(c.guarding && c.currentGuardAmount == 0){//se ho rotto la guardia
-            c.currentStunFrames = Character.GUARD_BREAKE_STUNN_FRAMES;
-            c.currentXForce = this.creator.facingDirection * Character.GUARD_BREAKE_X_CNOCKBACK;
-            c.guarding = false;
-            c.guardRegenerationFramesCounter = 0;
-            c.guardRegenerationRateoFramesCounter = 0;
-        }//se ho rotto la guardia in questa esecuzione
-
     }
     public void interrupt(){
         removeAllColliders();
         creator.currentAttackState = 0;
-        frameCounter = 0;
-        canHit = true;
+        framesOfExecution = 0;
+        this.framesToNextHit = 0;
 
         createdColliders = new Vector<>();
     }
-    private void customKnockBack() {}
-
 
 
 
     //metodi interfacce
     public void collision(Collider2D myCollider, Collider2D otherCollider) {
         //creator.collision(myCollider, otherCollider);
-    }
-    public Point2D.Float get2DPosition() {
-        Point2D.Float posTmp = creator.get2DPosition();
-        return new Point2D.Float(posTmp.x + this.position.x, posTmp.y + this.position.y);
-    }
-    public void setX2DPosition(float x) {
-        this.position.x = x;
-
-    }
-    public void setY2DPosition(float y) {
-        this.position.y = y;
-
-    }
-    public void set2DPosition(Point.Float p) {
-        this.position = p;
-
-    }
-    public String getTag() {
-        return tag;
-
-    }
-    public void setTag(String tag) {
-        this.tag = tag;
-
     }
 }
