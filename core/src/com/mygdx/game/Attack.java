@@ -66,15 +66,21 @@ public abstract class Attack implements GameObject{
 
     public boolean canHit(){
         return framesToNextHit == 0;
+
     }
     public void hit(@NotNull Character c){
 
         //continua a infliggere stun -> combo costanti indipendentemente al frame in cui è avvenuta la hit
-        if(c.guarding){
-            c.currentStunFrames = Character.GUARD_HIT_STUN_FRAMES;
+        if(!c.confused){
+            if(c.guarding){
+                c.currentStunFrames = Character.GUARD_HIT_STUN_FRAMES;
+            }else{
+                c.currentStunFrames = this.enemyRecoveryFrames;
+            }
         }else{
-            c.currentStunFrames = this.enemyRecoveryFrames;
+            c.currentStunFrames = Character.GUARD_BREAKE_STUNN_FRAMES;
         }
+
 
         //continua a infliggere knocback -> combo costanti indipendentemente al frame in cui è avvenuta la hit
         if(!c.guarding && (applyContinuousKnockBack || canHit())){
@@ -82,6 +88,10 @@ public abstract class Attack implements GameObject{
         }
 
         if(canHit()){//fa danno 1 volta
+
+            c.confused = false;
+            c.guardRegenerationFramesCounter = 0;
+
             if(c.grounded){
                 if(c.guarding){
                     c.controller.setAnimation(c.guardHitAnimation,1);
@@ -126,6 +136,7 @@ public abstract class Attack implements GameObject{
             c.guarding = false;
             c.guardRegenerationFramesCounter = 0;
             c.guardRegenerationRateoFramesCounter = 0;
+            c.confused = true;
         }//se ho rotto la guardia in questa esecuzione
 
     }
