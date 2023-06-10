@@ -200,6 +200,9 @@ public class BattleScreen extends GameState {
                 }
 
                 stageBackGround.act(Gdx.graphics.getDeltaTime());//esegue gli inputs di cose in stage
+
+                personaggio1.resetInputs();
+                personaggio2.resetInputs();
             }//funzionamento battaglia
             DEBUG_FRAME_TIMER = 0;
         }

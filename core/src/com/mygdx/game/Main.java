@@ -55,7 +55,7 @@ public class Main extends Game {
         bgm.setLooping(true);
 
         //this.setScreen(new ChooseCharactersScreen(this));
-        this.setScreen(new BattleScreen(this,3,2,0,999999));
+        this.setScreen(new BattleScreen(this,3,1,0,999999));
         //this.setScreen(new MenuScreen(this));
         //System.out.println(GameConstants.screenWidth+"   "+GameConstants.screenHeight);
     }

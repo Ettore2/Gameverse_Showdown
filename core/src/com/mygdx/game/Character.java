@@ -20,7 +20,7 @@ public class Character extends ModelInstance implements GameObject{
     public static final int GUARD_HIT_STUN_FRAMES = 20;
     public static final int GUARD_START_FRAMES_DELAY = 6;
     public static final int GUARD_EXIT_FRAMES_DELAY = 7;
-    public static final int GUARD_BREAKE_STUNN_FRAMES = 50;
+    public static final int GUARD_BREAKE_STUNN_FRAMES = 100;
     public static final float GUARD_BREAKE_X_CNOCKBACK = 0.002f;
     public static final int GUARD_NORMAL_REGENERATION_ACTIVATION_DELAY = 200;//dopo quanto
     public static final int GUARD_BREAK_REGENERATION_ACTIVATION_DELAY = 360;//dopo quanto (tenere >= GUARD_NORMAL_REGENERATION_DELAY)
@@ -68,8 +68,7 @@ public class Character extends ModelInstance implements GameObject{
     int guardRegenerationFramesCounter, guardRegenerationRateoFramesCounter;
     boolean grounded,canMove, guarding, haveArmor;// haveArmor ti rende impossibile de stunnare
     int currentStunFrames;
-    boolean crouching;
-    boolean jump;
+    boolean crouching, jump, confused;
     MeleeAttack[][] attacks;
     int inputtedAttackIndex, currentAttackId, lastAttackId, currentAttackState;
     boolean attackedLastFrame;
@@ -99,10 +98,12 @@ public class Character extends ModelInstance implements GameObject{
     public AnimationController controller;
     String idleAnimation, walkAnimation, firstJumpAnimation, secondJumpAnimation;
     String fallingAnimation, guardAnimation, normalHitAnimation, airHitAnimation, guardHitAnimation;
+    String confusedAnimation;
 
     float idleAnimationSpeed, walkAnimationSpeed, firstJumpAnimationSpeed, secondJumpAnimationSpeed;
     float fallingAnimationSpeed, guardAnimationSpeed;
     float normalHitAnimationSpeed, guardHitAnimationSpeed, airHitAnimationSpeed;
+    float confusedAnimationSpeed;
 
 
 
@@ -150,6 +151,7 @@ public class Character extends ModelInstance implements GameObject{
         normalHitAnimationSpeed = 1;
         guardHitAnimationSpeed = 1;
         airHitAnimationSpeed = 1;
+        confusedAnimationSpeed = 0.3f;
 
         currentXForce = 0;
         currentYForce = 0;
@@ -227,6 +229,7 @@ public class Character extends ModelInstance implements GameObject{
         airHitAnimation = "f01damageair1";
         guardHitAnimation = "b01guarddamage";
         guardAnimation = "b00guard";
+        confusedAnimation = "f02damageelec";
 
         idleAnimationSpeed = 1;
         walkAnimationSpeed = 2.2f;
@@ -291,6 +294,7 @@ public class Character extends ModelInstance implements GameObject{
         airHitAnimation = "f01damageair1";
         guardHitAnimation = "b01guarddamage";
         guardAnimation = "b00guard";
+        confusedAnimation = "f02damageelec";
 
         idleAnimationSpeed = 1;
         walkAnimationSpeed = 1.5f;
@@ -351,6 +355,7 @@ public class Character extends ModelInstance implements GameObject{
         airHitAnimation = "smush_blender_import|smush_blender_import f01damageair1.nuanmb";
         guardHitAnimation = "smush_blender_import|smush_blender_import b01guarddamage.nuanmb";
         guardAnimation = "smush_blender_import|smush_blender_import b00guard.nuanmb";
+        confusedAnimation = "smush_blender_import|smush_blender_import f02damageelec.nuanmb";
 
         idleAnimationSpeed = 1;
         walkAnimationSpeed = 1.7f;
@@ -542,13 +547,19 @@ public class Character extends ModelInstance implements GameObject{
 
             }
 
-
+            //setto CollidersConfiguration (per sicurezza)
             if(controller.current.animation.id.equals(idleAnimation) || controller.current.animation.id.equals(fallingAnimation)){
                 setCollidersConfiguration(idleBodyCol, idleHeadCol);
-            }//setto CollidersConfiguration (per sicurezza)
+            }
+
+            //setto confusedAnimation (mi assicuro di tenere confused sincronizzato con stun)
+            if(confused){
+                controller.setAnimation(confusedAnimation, -1);
+                controller.current.speed = confusedAnimationSpeed;
+            }
 
             //setto idle animation grounded
-            if(!guarding && !isStunned() && grounded && (moveDirection == MOVE_STOP || controller.current.loopCount == 0 || (isAttacking() && controller.current.animation.id.equals(walkAnimation))) && (!isAttacking() || controller.current.loopCount == 0 || controller.current.animation.id.equals(walkAnimation))){
+            if(!guarding && !isStunned() && !confused && grounded && (moveDirection == MOVE_STOP || controller.current.loopCount == 0 || (isAttacking() && controller.current.animation.id.equals(walkAnimation))) && (!isAttacking() || controller.current.loopCount == 0 || controller.current.animation.id.equals(walkAnimation))){
                 //controller.setAnimation(idleAnimation,-1);
                 controller.setAnimation(idleAnimation,-1);
                 controller.current.speed = idleAnimationSpeed;
@@ -773,7 +784,7 @@ public class Character extends ModelInstance implements GameObject{
             }
 
             //modifica di animazione di stun (per quando cambi da grounded o no e viceversa mid stun)
-            if(isStunned()){
+            if(isStunned() && !confused){
                 if(grounded){
                     if(!guarding && !controller.current.animation.id.equals(normalHitAnimation)){
                         float animationTime = controller.current.time;
@@ -806,28 +817,33 @@ public class Character extends ModelInstance implements GameObject{
             currentBodyCollider.setX2DPosition(currentBodyColliderInfo.center.x * facingDirection);
             currentHeadCollider.setX2DPosition(currentHeadColliderInfo.center.x * facingDirection);
 
-            //"consumo" input
-            inputtedAttackIndex = ATTACK_NONE;
-            grounded = false;
-            moveLeft = false;
-            moveRight = false;
-            lookUp = false;
-            lookDown = false;
-            tryingToGuard = false;
-            canMoveRight = true;
-            canMoveLeft = true;
-            jump = false;
 
-            attackedLastFrame = false;
-            if(isAttacking()){
-                attackedLastFrame = true;
+        }
+    }//----------------------- trova executeInputs-----------------
+    public void resetInputs(){
+        //"consumo" input
+        inputtedAttackIndex = ATTACK_NONE;
+        grounded = false;
+        moveLeft = false;
+        moveRight = false;
+        lookUp = false;
+        lookDown = false;
+        tryingToGuard = false;
+        canMoveRight = true;
+        canMoveLeft = true;
+        jump = false;
+
+        attackedLastFrame = false;
+        if(isAttacking()){
+            attackedLastFrame = true;
+        }
+
+        if(isStunned()){
+            currentStunFrames--;
+
+            if(currentStunFrames == 0){
+                confused = false;
             }
-
-            if(isStunned()){
-                currentStunFrames--;
-            }
-
-
         }
     }
 
