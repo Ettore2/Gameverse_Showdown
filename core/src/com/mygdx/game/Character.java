@@ -99,11 +99,13 @@ public class Character extends ModelInstance implements GameObject{
     String idleAnimation, walkAnimation, firstJumpAnimation, secondJumpAnimation;
     String fallingAnimation, guardAnimation, normalHitAnimation, airHitAnimation, guardHitAnimation;
     String confusedAnimation;
+    String winAnimation, winAnimationIdle, loseAnimation;
 
     float idleAnimationSpeed, walkAnimationSpeed, firstJumpAnimationSpeed, secondJumpAnimationSpeed;
     float fallingAnimationSpeed, guardAnimationSpeed;
     float normalHitAnimationSpeed, guardHitAnimationSpeed, airHitAnimationSpeed;
     float confusedAnimationSpeed;
+    float winAnimationSpeed, winAnimationIdleSpeed, loseAnimationSpeed;
 
 
 
@@ -152,6 +154,9 @@ public class Character extends ModelInstance implements GameObject{
         guardHitAnimationSpeed = 1;
         airHitAnimationSpeed = 1;
         confusedAnimationSpeed = 0.3f;
+        winAnimationSpeed = 2;
+        winAnimationIdleSpeed = 2;
+        loseAnimationSpeed = -1;
 
         currentXForce = 0;
         currentYForce = 0;
@@ -187,6 +192,15 @@ public class Character extends ModelInstance implements GameObject{
         }
         if(secondJumpHeadCol == null){
             secondJumpHeadCol = idleHeadCol;
+        }
+
+        if(loseAnimation == null){
+            loseAnimation = confusedAnimation;
+            loseAnimation = idleAnimation;
+        }
+        if(loseAnimationSpeed <= 0){
+            loseAnimationSpeed = confusedAnimationSpeed;
+            loseAnimationSpeed = idleAnimationSpeed;
         }
 
         setCollidersConfiguration(idleBodyCol, idleHeadCol);
@@ -230,6 +244,8 @@ public class Character extends ModelInstance implements GameObject{
         guardHitAnimation = "b01guarddamage";
         guardAnimation = "b00guard";
         confusedAnimation = "f02damageelec";
+        winAnimation = "j02win1";
+        winAnimationIdle = "j02win1wait";
 
         idleAnimationSpeed = 1;
         walkAnimationSpeed = 2.2f;
@@ -295,6 +311,9 @@ public class Character extends ModelInstance implements GameObject{
         guardHitAnimation = "b01guarddamage";
         guardAnimation = "b00guard";
         confusedAnimation = "f02damageelec";
+        winAnimation = "j02win1";
+        winAnimationIdle = "j02win1wait";
+
 
         idleAnimationSpeed = 1;
         walkAnimationSpeed = 1.5f;
@@ -356,6 +375,8 @@ public class Character extends ModelInstance implements GameObject{
         guardHitAnimation = "smush_blender_import|smush_blender_import b01guarddamage.nuanmb";
         guardAnimation = "smush_blender_import|smush_blender_import b00guard.nuanmb";
         confusedAnimation = "smush_blender_import|smush_blender_import f02damageelec.nuanmb";
+        winAnimation = "smush_blender_import|smush_blender_import j02win3+us_en.nuanmb";
+        winAnimationIdle = "smush_blender_import|smush_blender_import j02win3wait+us_en.nuanmb";
 
         idleAnimationSpeed = 1;
         walkAnimationSpeed = 1.7f;
@@ -968,6 +989,14 @@ public class Character extends ModelInstance implements GameObject{
         transform.getTranslation(pos);
 
         transform.setTranslation(pos.x, y, 0);
+
+    }
+    public void setYRotation(float yRotation) {
+        Vector3 pos= new Vector3();
+        transform.getTranslation(pos);
+
+        transform.setToRotation(0,1,0,yRotation);
+        transform.setTranslation(pos.x, pos.y, 0);
 
     }
     public String getTag() {

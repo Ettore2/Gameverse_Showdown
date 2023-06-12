@@ -2,7 +2,6 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -31,12 +30,13 @@ public class BattleScreen extends GameState {
     private static int DEBUG_ACTIVATION_FRAME_TIMER = 0;
     private static int DEBUG_FRAME_TIMER = 0;
     private static final float imgResumeAlphaValMultiplier = 2.5f;
-    public final int STATE_BATTLE = 0;
-    public final int STATE_WIN_P1 = 1;
-    public final int STATE_WIN_P2 = 2;
-    public final int STATE_DAW = 3;//(pareggio)
-    public final int STATE_PAUSE = 4;
-    public final int STATE_LOADING = 5;
+    public static final int STATE_BATTLE = 0;
+    public static final int STATE_WIN_P1 = 1;
+    public static final int STATE_WIN_P2 = 2;
+    public static final int STATE_TIME_DAW = 3;//(pareggio)
+    public static final int STATE_PAUSE = 4;
+    public static final int STATE_LOADING = 5;
+    public static final int STATE_LIFE_DAW = 6;
 
     static final int START_BUTTON_DELAY = 15;//faccio un delay custom perché deve essere condiviso tra i 2 player
     private Stage stageBackGround;
@@ -62,7 +62,7 @@ public class BattleScreen extends GameState {
 
 
     //immagini
-    Image imgPause, imgP1Win, imgP2Win, imgDraw, imgResume;
+    Image imgPause, imgResume, imgStop;
     float imgResumeAlphaValTimer;
     private Skin healthSkin;
     private Skin staminaSkin;
@@ -74,6 +74,10 @@ public class BattleScreen extends GameState {
     //grafica caricamento
     Texture textureMenu;
     Image pg1LoadingIcn, pg2LoadingIcn, vsLoadingIcn;
+
+    //transizione da BattleState a PostBattleState
+    float timeForEndBattleTimeout, timeForEndBattleTransition, imgStopMaxScale, imgStopGrowRate;
+    float timeCounterForEndBattleTimeout, timeCounterForEndBattleTransition;
 
 
 
@@ -147,17 +151,7 @@ public class BattleScreen extends GameState {
 
 
     //metodi GameState
-    public void render(float delta) {
-        // Clear the stuff that is left over from the previous render cycle
-        Gdx.gl.glClearColor(1, 1, 1, 0);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-        //cameraController.update();
-
-        super.render(delta);//triggera metodi d'input controller e normalExecution e loadingExecution
-    }
-
     public void normalExecution(float delta) {
-        super.normalExecution(delta);
 
 
         if (!USE_DEBUG_FOR_P1 || (!personaggio1.isAttacking() || (((Gdx.input.isKeyPressed(Input.Keys.Z) && DEBUG_FRAME_TIMER == DEBUG_SNSIBILITY_DELAY))))) {//debug
@@ -191,7 +185,7 @@ public class BattleScreen extends GameState {
                 if (personaggio1 != null) {//per precauzione
                     personaggio1.resolveHits();
                     health1.setValue(health1.getMaxValue() * personaggio1.currentLife / personaggio1.maxLife);
-                    stamina1.setValue(health1.getMaxValue() * personaggio1.currentGuardAmount / personaggio1.maxLife);
+                    stamina1.setValue(stamina1.getMaxValue() * personaggio1.currentGuardAmount / personaggio1.maxGuardAmount);
                 }
                 if (personaggio2 != null) {//per precauzione
                     personaggio2.resolveHits();
@@ -215,77 +209,70 @@ public class BattleScreen extends GameState {
         }//debug frames
 
 
-        //disegno grafica 2D
-        stageBackGround.draw();
+        if(true) {
+            //disegno grafica 2D
+            stageBackGround.draw();
 
-        //disegno grafica 3D
-        modelBatch.begin(camera3D);//begin
-        modelBatch.render(instances, environment);
-        //System.out.println(Character.AVAILABLE_PROJECTILE_MODELS[0].size());
-        if (personaggio1 != null) {
-            for (ProjectileAttack projectile : personaggio1.existingCharacterProjectiles) {
-                if (projectile.model != null) {
-                    modelBatch.render(projectile.model, environment);
-                }
+            //disegno grafica 3D
+            modelBatch.begin(camera3D);//begin
+            modelBatch.render(instances, environment);
+            //System.out.println(Character.AVAILABLE_PROJECTILE_MODELS[0].size());
+            if (personaggio1 != null) {
+                for (ProjectileAttack projectile : personaggio1.existingCharacterProjectiles) {
+                    if (projectile.model != null) {
+                        modelBatch.render(projectile.model, environment);
+                    }
 
-            }
-        }
-        if (personaggio2 != null) {
-            for (ProjectileAttack projectile : personaggio2.existingCharacterProjectiles) {
-                if (projectile.model != null) {
-                    modelBatch.render(projectile.model, environment);
                 }
             }
+            if (personaggio2 != null) {
+                for (ProjectileAttack projectile : personaggio2.existingCharacterProjectiles) {
+                    if (projectile.model != null) {
+                        modelBatch.render(projectile.model, environment);
+                    }
+                }
+            }
+            modelBatch.end();//end
+
+
+            //disegno colliders (se settati a visibili)
+            ShapeRenderer r = new ShapeRenderer();
+            r.setAutoShapeType(true);
+            r.begin(Filled);//begin
+            r.setColor(Collider2D.colorColliders);
+            for (Collider2D col : existingColliders) {
+                col.draw(r);
+            }
+            r.end();//end
+        }//maggioranza di grafica
+
+
+        //logica cambio stati (pareggi e vittorie)
+        if(currentState == STATE_BATTLE){//si attiva solo una volta -> non sovrascrive calcolo spareggio
+            if (secondsToMatchEnd <= 0) {
+                currentState = STATE_TIME_DAW;
+            }//pareggio di tempo //è il primo cosi viene sovrascritto dagli altri
+            if (personaggio1.currentLife <= 0 && personaggio2.currentLife > 0) {
+                currentState = STATE_WIN_P2;
+            }//vittoria p2
+            if (personaggio2.currentLife <= 0 && personaggio1.currentLife > 0) {
+                currentState = STATE_WIN_P1;
+            }//vittoria p1
+            if (personaggio1.currentLife <= 0 && personaggio2.currentLife <= 0) {
+                currentState = STATE_LIFE_DAW;
+            }//pareggio di vita
+
+            //se ho notato di aver concluso la battaglia setto characters a puppet = true
+            if(currentState != STATE_BATTLE){
+                personaggio1.puppet = true;
+                personaggio2.puppet = true;
+            }
+
         }
-        modelBatch.end();//end
-
-
-        //disegno colliders (se settati a visibili)
-        ShapeRenderer r = new ShapeRenderer();
-        r.setAutoShapeType(true);
-        r.begin(Filled);//begin
-        r.setColor(Collider2D.colorColliders);
-        for (Collider2D col : existingColliders) {
-            col.draw(r);
-        }
-        r.end();//end
-
-
-        //logica cambio stati
-        if (personaggio1.currentLife == 0) {
-            currentState = STATE_WIN_P2;
-        }//vittoria p2
-        if (personaggio2.currentLife == 0) {
-            currentState = STATE_WIN_P1;
-        }//vittoria p1
-        if (secondsToMatchEnd <= 0) {
-            currentState = STATE_DAW;
-        }//pareggio
 
 
         //grafica stati
         stageBackGroundBatch.begin();//begin
-        if (currentState == STATE_PAUSE) {
-            //System.out.println("stato pausa");
-            imgPause.draw(stageBackGroundBatch, 1);
-            imgResume.draw(stageBackGroundBatch, 0.5f + (float) ((Math.cos(imgResumeAlphaValTimer) + 1) / 2 * 0.5f));
-
-            imgResumeAlphaValTimer = (float) ((imgResumeAlphaValTimer + delta * imgResumeAlphaValMultiplier) % (2 * Math.PI));
-        }
-        if (currentState == STATE_DAW) {
-            //System.out.println("stato pareggio");
-            imgDraw.draw(stageBackGroundBatch, 1);
-        }
-        if (currentState == STATE_WIN_P1) {
-            //System.out.println("stato vittoria");
-            imgP1Win.draw(stageBackGroundBatch, 1);
-
-        }
-        if (currentState == STATE_WIN_P2) {
-            //System.out.println("stato vittoria");
-            imgP2Win.draw(stageBackGroundBatch, 1);
-
-        }
         if (currentState == STATE_BATTLE) {
 
             secondsToMatchEnd -= delta;
@@ -299,7 +286,35 @@ public class BattleScreen extends GameState {
             lblTimer.setSize(lblTimer.getPrefWidth(), lblTimer.getPrefHeight());
             lblTimer.setPosition((Gdx.graphics.getWidth() - lblTimer.getWidth()) / 2, (Gdx.graphics.getHeight() - lblTimer.getHeight()) / 2 + lblTimerHeight);
 
+        }//unico state che permette invio inputs a Character
+        if (currentState == STATE_PAUSE) {
+            //System.out.println("stato pausa");
+            imgPause.draw(stageBackGroundBatch, 1);
+            imgResume.draw(stageBackGroundBatch, 0.5f + (float) ((Math.cos(imgResumeAlphaValTimer) + 1) / 2 * 0.5f));
+
+            imgResumeAlphaValTimer = (float) ((imgResumeAlphaValTimer + delta * imgResumeAlphaValMultiplier) % (2 * Math.PI));
         }
+
+        if (currentState == STATE_TIME_DAW) {
+            //System.out.println("stato pareggio tempo");
+            imgStop.draw(stageBackGroundBatch, 1);
+        }
+        if (currentState == STATE_WIN_P1) {
+            //System.out.println("stato vittoria");
+            imgStop.draw(stageBackGroundBatch, 1);
+
+        }
+        if (currentState == STATE_WIN_P2) {
+            //System.out.println("stato vittoria");
+            imgStop.draw(stageBackGroundBatch, 1);
+
+        }
+        if (currentState == STATE_LIFE_DAW) {
+            //System.out.println("stato pareggio vita");
+            imgStop.draw(stageBackGroundBatch, 1);
+
+        }
+
         lblTimer.draw(stageBackGroundBatch, 1);//disegno timer
         stageBackGroundBatch.end();//end
 
@@ -309,8 +324,55 @@ public class BattleScreen extends GameState {
             framesPassedByLastStartPress++;
         }
 
+        //transizione a PostBattleScreen
+        if(currentState == STATE_TIME_DAW || currentState == STATE_WIN_P1 || currentState == STATE_WIN_P2 || currentState == STATE_LIFE_DAW){
+            //"animazione" crescita imgStop
+            if(timeCounterForEndBattleTimeout < timeForEndBattleTimeout){
+                timeCounterForEndBattleTimeout += delta;
+
+                if(imgStop.getScaleX() < imgStopMaxScale){
+                    imgStop.setScale(imgStop.getScaleX() + delta * imgStopGrowRate);
+                    if(imgStop.getScaleX() > imgStopMaxScale){
+                        imgStop.setScale(imgStopMaxScale);
+                    }
+                }//ingrandimento imgStop
+                System.out.println(imgStop.getScaleX());
+
+                //posizionamento imgStop con nuova scala
+                imgStop.setPosition(stageBackGround.getCamera().position.x - (imgStop.getWidth()*imgStop.getScaleX()/2),stageBackGround.getCamera().position.y - (imgStop.getHeight() * imgStop.getScaleY()/2) + GameConstants.screenHeight * 0.05f);
+            }else{
+                if(currentState == STATE_TIME_DAW){//spareggio scalando vita
+                    health1.setValue(health1.getValue() - 1);
+                    health2.setValue(health2.getValue() + 1);//health2 è invertita
+                    //(modificare la velocità di scorrimento barre diminuendo la loro MaxValue)
+
+                    if(health1.getValue() <= 0 || health2.getValue() >= health2.getMaxValue()){
+                        if(health1.getValue() <= 0 && health2.getValue() >= health2.getMaxValue()){
+                            currentState = STATE_LIFE_DAW;
+                        }else if(health1.getValue() <= 0){
+                            currentState = STATE_WIN_P2;
+                        }else{
+                            currentState = STATE_WIN_P1;
+                        }
+                    }//aggiornamento currentState
 
 
+                }else{//transizione a stato postBattle
+                    if(timeCounterForEndBattleTransition < timeForEndBattleTransition){
+                        timeCounterForEndBattleTransition += delta;
+                    }else{
+                        //transizione a PostBattleScreen
+                        game.setScreen(new PostBattleScreen(game, personaggio1, personaggio2, currentState, camera3D, environment));
+                    }
+                }
+            }
+
+        }
+
+
+        System.out.println(personaggio2.currentGuardAmount);
+        System.out.println(stamina2.getValue());
+        System.out.println();
 
 
     }
@@ -346,19 +408,19 @@ public class BattleScreen extends GameState {
                 if(true) {
                     healthSkin = new Skin(Gdx.files.internal(GameConstants.SKIN_PROGRESSBAR));
                     staminaSkin = new Skin(Gdx.files.internal(GameConstants.SKIN_PROGRESSBAR));
-                    health1 = new ProgressBar(0f, personaggio1.maxLife, 1f, false, healthSkin, "horizontal-lifeC1");
+                    health1 = new ProgressBar(0f, 300, 1f, false, healthSkin, "horizontal-lifeC1");
                     health1.setSize(GameConstants.screenWidth * 0.3f, GameConstants.screenHeight * 0.009f);
                     health1.setPosition(GameConstants.screenWidth * 0.1f, GameConstants.screenHeight * 0.89f);
 
-                    health2 = new ProgressBar(0f, personaggio2.maxLife, 1f, false, healthSkin, "horizontal-lifeC2");
+                    health2 = new ProgressBar(0f, 300, 1f, false, healthSkin, "horizontal-lifeC2");
                     health2.setSize(GameConstants.screenWidth * 0.3f, GameConstants.screenHeight * 0.009f);
                     health2.setPosition(GameConstants.screenWidth * 0.6f, health1.getY());
 
-                    stamina1 = new ProgressBar(0f, personaggio1.maxGuardAmount, 1f, false, staminaSkin, "horizontal-StaminaC1");
+                    stamina1 = new ProgressBar(0f, 300, 1f, false, staminaSkin, "horizontal-StaminaC1");
                     stamina1.setSize(GameConstants.screenWidth * 0.3f, GameConstants.screenHeight * 0.009f);
                     stamina1.setPosition(health1.getX(), health1.getY() * 0.95f);
 
-                    stamina2 = new ProgressBar(0f, personaggio2.maxGuardAmount, 1f, false, staminaSkin, "horizontal-StaminaC2");
+                    stamina2 = new ProgressBar(0f, 300, 1f, false, staminaSkin, "horizontal-StaminaC2");
                     stamina2.setSize(GameConstants.screenWidth * 0.3f, GameConstants.screenHeight * 0.009f);
                     stamina2.setPosition(health2.getX(), stamina1.getY());
 
@@ -382,7 +444,6 @@ public class BattleScreen extends GameState {
 
                 }
 
-
                 //aggiungo cose di grafica statistiche personaggi a stage
                 stageBackGround.addActor(health1);
                 stageBackGround.addActor(health2);
@@ -397,18 +458,20 @@ public class BattleScreen extends GameState {
                 if(true){
                     //dichiarazione immagini
                     imgPause = new Image(new Texture("Img/battleScreen/Pause.png"));
-                    imgP1Win = new Image(new Texture("Img/battleScreen/P1WINS.png"));
-                    imgP2Win = new Image(new Texture("Img/battleScreen/P2WINS.png"));
-                    imgDraw = new Image(new Texture("Img/battleScreen/Draw.png"));
                     imgResume = new Image(new Texture("Img/battleScreen/Resume.png"));
+                    imgStop = new Image(new Texture("Img/battleScreen/Stop.png"));
 
                     //"setBounds" immagini
-                    imgPause.setPosition(stageBackGround.getCamera().position.x - (imgPause.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y - GameConstants.screenHeight * 0.252f);
-                    imgP1Win.setPosition(stageBackGround.getCamera().position.x - (imgP1Win.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y + GameConstants.screenHeight * 0.05f);
-                    imgP2Win.setPosition(stageBackGround.getCamera().position.x - (imgP2Win.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y + GameConstants.screenHeight * 0.05f);
-                    imgDraw.setPosition(stageBackGround.getCamera().position.x - (imgDraw.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y + GameConstants.screenHeight * 0.05f);
+                    imgPause.setPosition(stageBackGround.getCamera().position.x - (imgPause.getWidth()*imgPause.getScaleX()/2),stageBackGround.getCamera().position.y - GameConstants.screenHeight * 0.252f);
                     imgResume.setScale(0.5f);
                     imgResume.setPosition(stageBackGround.getCamera().position.x - (imgResume.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y - GameConstants.screenHeight * 0.302f);
+                    imgStop.setScale(0);
+                    imgStopGrowRate = 3.5f;
+                    imgStopMaxScale = 1f;
+                    timeForEndBattleTimeout = 1f;//tempo durante il quale imgStop si ingrandisce e attesa per esecuzione spareggio
+                    timeForEndBattleTransition = 1f;//tempo di attesa dopo calcolo risultato prima di passare a postBattleState
+                    timeCounterForEndBattleTimeout = 0;
+                    timeCounterForEndBattleTransition = 0;
 
                     imgResumeAlphaValTimer = 0;
 
@@ -462,11 +525,6 @@ public class BattleScreen extends GameState {
             }else{
                 if(currentState == STATE_PAUSE){
                     currentState = STATE_BATTLE;
-                }else{
-                    if(currentState == STATE_DAW || currentState == STATE_WIN_P1 || currentState == STATE_WIN_P2){
-                        game.setScreen(new ChooseCharactersScreen(game));
-                        this.dispose();
-                    }
                 }
             }
         }

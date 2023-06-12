@@ -9,10 +9,10 @@ import com.badlogic.gdx.controllers.ControllerMapping;
 import com.badlogic.gdx.controllers.Controllers;
 
 public class Main extends Game {
-    /*TODO
-    implementing random character selection
+    //TODO:
+    // -implementing random character selection
+    // -modificare "raccolta hit" da eseguire sul personaggio ed applicazione knockBack in stesso frame
 
-     */
 
     public static final boolean USE_CONTROLLERS = true;
     public static boolean EMULATING_CONTROLLER_1 = true;//per adesso tastiera sempre attiva
@@ -55,8 +55,8 @@ public class Main extends Game {
         bgm.setLooping(true);
 
         //this.setScreen(new ChooseCharactersScreen(this));
-        this.setScreen(new BattleScreen(this,3,1,0,999999));
-        //this.setScreen(new MenuScreen(this));
+        //this.setScreen(new BattleScreen(this,3,2,1,999999));
+        this.setScreen(new MenuScreen(this));
         //System.out.println(GameConstants.screenWidth+"   "+GameConstants.screenHeight);
     }
 
