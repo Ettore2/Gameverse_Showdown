@@ -467,7 +467,7 @@ public class BattleScreen extends GameState {
                     imgResume.setPosition(stageBackGround.getCamera().position.x - (imgResume.getWidth()*imgResume.getScaleX()/2),stageBackGround.getCamera().position.y - GameConstants.screenHeight * 0.302f);
                     imgStop.setScale(0);
                     imgStopGrowRate = 3.5f;
-                    imgStopMaxScale = 1f;
+                    imgStopMaxScale = 0.8f;
                     timeForEndBattleTimeout = 1f;//tempo durante il quale imgStop si ingrandisce e attesa per esecuzione spareggio
                     timeForEndBattleTransition = 1f;//tempo di attesa dopo calcolo risultato prima di passare a postBattleState
                     timeCounterForEndBattleTimeout = 0;
